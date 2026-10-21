@@ -1,7 +1,7 @@
 'use strict';
-// 第三方程式庫：用到才載入。
-// OpenCV.js（10.9 MB）、ONNX Runtime Web（14 MB）很大，不在 App 開啟時下載；第一次用到才載入，
-// service worker 會把 /vendor/ 存進獨立快取（版本固定），之後離線也能用。來源與 sha256 見 vendor/SOURCES.md。
+// Third-party libraries: loaded only when needed .
+// OpenCV.js (10.9 MB) and ONNX Runtime Web (14 MB) are large and are not downloaded when the app opens; they load on first use,
+// and the service worker stores /vendor/ in a separate cache (version pinned), so they work offline afterward. Sources and sha256 are in vendor/SOURCES.md.
 (function () {
   const loaded = {};
   function script(src) {
@@ -12,7 +12,7 @@
       document.head.appendChild(s);
     });
   }
-  function once(key, make) {           // 同一個程式庫只載一次；失敗了下次可以再試
+  function once(key, make) {           // Load each library only once; if it fails, it can be retried next time
     if (!loaded[key]) loaded[key] = make().catch((e) => { loaded[key] = null; throw e; });
     return loaded[key];
   }
@@ -21,7 +21,7 @@
     opencv: () => once('cv', async () => {
       await script('vendor/opencv/opencv.js');
       let C = window.cv;
-      if (C instanceof Promise) C = await C;            // 有的版本給 Promise；自帶 then 的物件不要 await（會無限等待）
+      if (C instanceof Promise) C = await C;            // Some builds return a Promise; an object with its own then must not be awaited (it would wait forever)
       if (!(C && C.Mat)) {
         await new Promise((ok, bad) => {
           let n = 0;
@@ -31,12 +31,12 @@
         });
       }
       const cvObj = window.cv && window.cv.Mat ? window.cv : C;
-      // OpenCV（Emscripten）物件自帶 then：直接從 async 函式回傳會被當成「還沒完成的工作」無限等待、整個頁面卡死（ 實測）
+      // The OpenCV (Emscripten) object has its own then: returning it directly from an async function treats it as "unfinished work" and waits forever, freezing the whole page (measured 10-16)
       if (cvObj && typeof cvObj.then === 'function') delete cvObj.then;
       return cvObj;
     }),
     ort: () => once('ort', () => script('vendor/onnxruntime/ort.wasm.min.js').then(() => {
-      window.ort.env.wasm.wasmPaths = new URL('vendor/onnxruntime/', location.href).href;   // 要完整網址
+      window.ort.env.wasm.wasmPaths = new URL('vendor/onnxruntime/', location.href).href;   // A full URL is required
       window.ort.env.wasm.numThreads = 1;
       return window.ort;
     })),

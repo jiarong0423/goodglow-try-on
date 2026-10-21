@@ -1,5 +1,5 @@
-"""中英切換（第 1 階段：基礎＋index.html 靜態字）的完整性測試。
-英文逐字取自 docs/i18n/zh_en_map.csv，不改寫；中文零回歸的畫面快照另在瀏覽器比對（見 docs/i18n/APP_I18N_PLAN_20261021.md）。
+"""Completeness tests for the Chinese/English toggle (stage 1: foundation + static text in index.html).
+English is taken verbatim from docs/i18n/zh_en_map.csv, not rewritten; the zero-regression screen snapshots for Chinese are compared separately in the browser (see docs/i18n/APP_I18N_PLAN_20261021.md).
 """
 import csv
 import hashlib
@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CSV_EN_SHA = "abe5c6381dd5bf92b904eadbe622285a1c47835a05d725e8c9daaf7480fe4c51"   # id<TAB>en 逐行 sha256（925 列）
+CSV_EN_SHA = "abe5c6381dd5bf92b904eadbe622285a1c47835a05d725e8c9daaf7480fe4c51"   # per-row sha256 of id<TAB>en (925 rows)
 CJK = re.compile(r"[㐀-鿿]")
 
 
@@ -29,11 +29,11 @@ class TestTable(unittest.TestCase):
 
     def test_every_row_has_english_except_unit_word(self):
         blank = [r["id"] for r in self.rows if not r["en"].strip()]
-        self.assertEqual(blank, ["s0008"])        # 單位字「個」英文不需要單位，刻意留空
+        self.assertEqual(blank, ["s0008"])        # the unit character has no English counterpart, intentionally left blank
 
     def test_no_chinese_left_in_english_except_code_key(self):
         left = [r["id"] for r in self.rows if CJK.search(r["en"])]
-        self.assertEqual(left, ["s0889", "s0898", "s0899", "s0900", "s0901"])   # 程式比對用的正規表示式（含中文別名），不是畫面文字
+        self.assertEqual(left, ["s0889", "s0898", "s0899", "s0900", "s0901"])   # regular expressions used for program matching (including Chinese aliases), not on-screen text
 
 
 class TestBuild(unittest.TestCase):
@@ -88,7 +88,7 @@ JS_FILES = ["web/app.js", "web/capture_guide.js", "web/makeup_layers.js", "web/c
 
 
 class TestJsWrapping(unittest.TestCase):
-    """第 2 階段：JS 內的中文字串都包了 __t／__T；英文樣板逐字取自 CSV。"""
+    """Stage 2: all Chinese strings inside JS are wrapped in __t / __T; English templates are taken verbatim from the CSV."""
 
     def setUp(self):
         self.rows = list(csv.DictReader(open(ROOT / "docs/i18n/zh_en_map.csv", encoding="utf-8")))
@@ -114,12 +114,12 @@ class TestJsWrapping(unittest.TestCase):
 
     def test_comparison_literals_stay_chinese(self):
         app = (ROOT / "web/app.js").read_text(encoding="utf-8")
-        # 第 3 階段：伺服器回傳的判定改用代碼比對，畫面文字才能跟著語言換
+        # stage 3: verdicts returned by the server are matched by code so on-screen text can follow the language
         self.assertIn("ms[0].verdict_code === 'no_match'", app)
         self.assertIn("x.key === 'closest'", app)
         self.assertIn("['gap', 'no_match'].includes(r.matches[0].verdict_code)", app)
         self.assertNotIn("verdict === '沒有接近色'", app)
-        self.assertIn("/^[＋+]/.test(extra)", app)       # 中文是全形＋、英文是半形 +，兩種都要認
+        self.assertIn("/^[＋+]/.test(extra)", app)       # Chinese uses a full-width plus sign, English a half-width one; both must be recognized
 
     def test_js_syntax_valid_with_node(self):
         import shutil

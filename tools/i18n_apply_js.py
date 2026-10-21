@@ -1,15 +1,15 @@
-"""把 web 下 JS 檔裡使用者看得到的中文字串包成 t()／T()，英文逐字取自 docs/i18n/zh_en_map.csv。
+"""Wrap the user-visible Chinese strings in the JS files under web in t()/T(); the English is taken verbatim from docs/i18n/zh_en_map.csv.
 
-  python3 tools/i18n_apply_js.py --dry     # 只報告：會改幾處、哪些略過（比對用字串、物件鍵、表外中文）
-  python3 tools/i18n_apply_js.py           # 就地改寫；已包過的不重複包
-  python3 tools/i18n_apply_js.py --check   # 只檢查：還有沒包的、表外的中文就 exit 1
+  python3 tools/i18n_apply_js.py --dry     # report only: how many places would change and which are skipped (match strings, object keys, Chinese not in the table)
+  python3 tools/i18n_apply_js.py           # rewrite in place; already-wrapped strings are not wrapped again
+  python3 tools/i18n_apply_js.py --check   # check only: exit 1 if anything is still unwrapped or Chinese outside the table remains
 
-改法（中文模式輸出與原本逐字相同）
-- 一般字串  'XX'        →  __t('sNNNN', 'XX')                     英文取自 web/i18n/en.js 字典
-- 樣板字串  `…${v}…`    →  __T('sNNNN', () => `…${v}…`, () => `<英文樣板>`)   兩個都是呼叫處的閉包，變數照常可用；
-                                                                  英文樣板由本工具逐字從 CSV 複製進來
-略過（回報給人工處理）：比對用字串（=== 、includes( 、case ）、物件鍵、表外中文、英文欄是空的列。
-失敗路徑印 ERROR 並回非零。
+How it rewrites (Chinese-mode output is identical to the original, character for character)
+- Plain string  'XX'     →  __t('sNNNN', 'XX')                     English comes from the web/i18n/en.js dictionary
+- Template string  `…${v}…`    →  __T('sNNNN', () => `…${v}…`, () => `<English template>`)   both are closures at the call site, so variables work as usual;
+                                                                  the English template is copied verbatim from the CSV by this tool
+Skipped (reported for manual handling): match strings (=== , includes( , case ), object keys, Chinese not in the table, and rows whose English column is empty.
+Failure paths print ERROR and return non-zero.
 """
 from __future__ import annotations
 
@@ -64,7 +64,7 @@ def scan(rel, by_zh):
         if re.search(r"/\*i18n:keep\*/\s*$", before):
             skipped.append((rel, line, "標記保留（比對伺服器字串）", norm(body)[:50]))
             continue
-        if norm(body) in EN_BODIES:                      # 本工具先前插進去的英文樣板，不是待處理的中文
+        if norm(body) in EN_BODIES:                      # an English template this tool inserted earlier, not Chinese awaiting processing
             continue
         row = by_zh.get(norm(body))
         if row is None:
@@ -82,7 +82,7 @@ def scan(rel, by_zh):
         if tok[0] == "`":
             en = row["en"]
             wrapped_en = "`" + en + "`"
-            if "\\" in en or tokens(wrapped_en) != [(0, len(wrapped_en), "tpl")]:   # 巢狀的反引號只能出現在 ${…} 裡
+            if "\\" in en or tokens(wrapped_en) != [(0, len(wrapped_en), "tpl")]:   # nested backticks may appear only inside ${…}
                 skipped.append((rel, line, "英文樣板含不合法的反引號或反斜線", norm(body)[:50]))
                 continue
             rep = f"__T('{row['id']}', () => {tok}, () => `{en}`)"
@@ -99,17 +99,17 @@ def main(mode: str) -> int:
         src, edits, skipped, wrapped = scan(rel, by_zh)
         all_skipped += skipped
         total_edit += len(edits)
-        print(f"{rel}：待包 {len(edits)}、已包 {wrapped}、略過 {len(skipped)}")
+        print(f"{rel}: to wrap {len(edits)}, already wrapped {wrapped}, skipped {len(skipped)}")
         if mode == "apply" and edits:
             out = src
             for a, b, rep in sorted(edits, reverse=True):
                 out = out[:a] + rep + out[b:]
             (ROOT / rel).write_text(out, encoding="utf-8")
     for rel, line, why, text in all_skipped:
-        print(f"  略過 {rel}:{line} [{why}] {text}")
+        print(f"  skipped {rel}:{line} [{why}] {text}")
     if mode == "check":
         return 1 if total_edit or any(w in ("表外中文", "英文欄是空的") for _, _, w, _ in all_skipped) else 0
-    print(f"合計{'已改' if mode == 'apply' else '待改'} {total_edit} 處")
+    print(f"Total {'changed' if mode == 'apply' else 'to change'}: {total_edit} places")
     return 0
 
 

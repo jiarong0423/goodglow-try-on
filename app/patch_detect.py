@@ -1,13 +1,13 @@
-"""多尺度淺色區塊偵測（伺服器端，本機計算，不呼叫 YouCam、不扣點）。
+"""Multi-scale light-patch detection (server side, computed locally, no YouCam calls, no points spent).
 
+Owner's request (10-17): could color detail be detected by scaling frames and covering pixel points; computing on the computer is equivalent to a cloud service;
+the page connects to the computer for the computation. -> The page sends the photo (or the simulated made-up image) and the makeup region to /api/patch-mask, and the mask is computed here and returned.
 
-「網頁打開是連到電腦做運算」→ 網頁把照片（或上完妝的模擬圖）和上妝範圍送到 /api/patch-mask，這裡算出遮罩傳回。
-
-做法（隔離區原型 <本機紀錄> 的加速版）：
-- 同一張照片看三種尺度：細（幾個像素的淺點）、中（一般淺色區塊與交界）、粗（整片）。
-- 每個像素和「同一尺度、排除候選後的周圍皮膚」比：分數＝(亮度差 ÷ 4)＋(彩度差 ÷ 3)，超過門檻、且比周圍亮才算。
-- 排除：深色毛髮（L* < 35）、太小的雜點、皮膚反光（比附近亮很多、彩度很低的小亮點）。
-- 加速：每個尺度在「剛好夠用」的縮小解析度上算；周圍皮膚的平均（很平滑）再縮更小算，放大回來。
+Approach (a faster version of the isolation prototype <本機紀錄>):
+- The same photo is viewed at three scales: fine (light dots a few pixels wide), medium (ordinary light patches and borders), coarse (whole areas).
+- Each pixel is compared with the surrounding skin at the same scale after excluding candidates: score = (lightness difference / 4) + (chroma difference / 3); it counts only if above the threshold and brighter than its surroundings.
+- Excluded: dark hair (L* < 35), specks that are too small, skin shine (small bright spots much brighter than nearby with very low chroma).
+- Speed-up: each scale is computed at a downscaled resolution that is just enough; the surrounding-skin average (very smooth) is computed at an even smaller size and scaled back up.
 """
 from __future__ import annotations
 
@@ -15,15 +15,15 @@ import numpy as np
 from PIL import Image
 from scipy.ndimage import binary_dilation, gaussian_filter, label
 
-# 名稱: (取值模糊 σ, 周圍參考 σ, 門檻, 最小面積 px²)，以原尺寸 2284 寬（臉寬約 1250 px）為準；k 依實際寬度縮放
+# name: (value blur sigma, surrounding reference sigma, threshold, minimum area px²), based on the original width of 2284 (face width about 1250 px); k scales with the actual width
 SCALES = {
     "細": (1.5, 25, 1.4, 40),
     "中": (5.0, 70, 1.0, 400),
     "粗": (14.0, 180, 1.0, 4000),
 }
 REF_WIDTH = 2284
-WORK_SIGMA = 1.6          # 每個尺度縮到「取值模糊約 1.6 px」的解析度
-REF_SIGMA = 3.0           # 周圍參考縮到「σ 約 3 px」的解析度
+WORK_SIGMA = 1.6          # each scale is reduced to a resolution where the value blur is about 1.6 px
+REF_SIGMA = 3.0           # the surrounding reference is reduced to a resolution where sigma is about 3 px
 
 
 def srgb_to_lab(rgb: np.ndarray) -> np.ndarray:
@@ -40,7 +40,7 @@ def _resize(a: np.ndarray, size: tuple[int, int], resample) -> np.ndarray:
 
 
 def _nblur_at(v: np.ndarray, known: np.ndarray, sigma: float) -> np.ndarray:
-    """只用已知像素的模糊（不讓頭髮、範圍外混進來）；在縮小解析度上算再放大回原大小。"""
+    """Blur using only known pixels (keeps hair and out-of-region pixels from leaking in); computed at reduced resolution, then scaled back to the original size."""
     h, w = v.shape
     f = min(1.0, REF_SIGMA / max(sigma, 1e-3))
     sw, sh = max(4, round(w * f)), max(4, round(h * f))
@@ -64,7 +64,7 @@ def _scale_detect(lab: np.ndarray, known0: np.ndarray, s: float, R: float, th: f
     C = np.hypot(A, B)
     Rl = R * w / W
     known = kn.copy()
-    for _ in range(2):                                         # 第二輪扣掉候選再估周圍
+    for _ in range(2):                                         # second round: subtract the candidates and estimate the surroundings again
         refL, refC = _nblur_at(L, known, Rl), _nblur_at(C, known, Rl)
         dl = L - refL
         score = dl / 4 + (refC - C) / 3
@@ -80,7 +80,7 @@ def _scale_detect(lab: np.ndarray, known0: np.ndarray, s: float, R: float, th: f
 
 
 def shine_map(lab: np.ndarray, known: np.ndarray, k: float) -> np.ndarray:
-    """皮膚反光（油光小亮點）：細尺度比附近亮 10 以上、彩度不到附近 60%，往外擴一點。反光是光線，不是缺色素。"""
+    """Skin shine (small oily bright spots): at the fine scale, 10 or more brighter than nearby and chroma under 60% of nearby, expanded slightly. Shine is light, not missing pigment."""
     s = max(0.6, 1.5 * k)
     L = gaussian_filter(lab[..., 0], s)
     C = np.hypot(gaussian_filter(lab[..., 1], s), gaussian_filter(lab[..., 2], s))
@@ -90,7 +90,7 @@ def shine_map(lab: np.ndarray, known: np.ndarray, k: float) -> np.ndarray:
 
 
 def detect(rgb: np.ndarray, region: np.ndarray) -> np.ndarray:
-    """rgb：H×W×3（uint8）；region：H×W 布林（上妝範圍：臉＋脖子，已扣眼眉唇）。回傳 H×W 布林遮罩。"""
+    """rgb: HxWx3 (uint8); region: HxW boolean (makeup region: face + neck, with eyes, brows and lips removed). Returns an HxW boolean mask."""
     lab = srgb_to_lab(rgb)
     k = rgb.shape[1] / REF_WIDTH
     known0 = region & (lab[..., 0] >= 35)
@@ -101,7 +101,7 @@ def detect(rgb: np.ndarray, region: np.ndarray) -> np.ndarray:
 
 
 def mask_png(rgb: np.ndarray, region: np.ndarray, out_size: tuple[int, int]) -> tuple[bytes, float]:
-    """偵測後縮到網頁工作圖大小（面積平均＝柔邊），回傳 PNG 位元組與遮罩佔範圍比例。"""
+    """After detection, shrink to the web working-image size (area averaging = soft edges); returns the PNG bytes and the mask's share of the region."""
     import io
     m = detect(rgb, region)
     ratio = float(m.sum() / max(1, region.sum()))

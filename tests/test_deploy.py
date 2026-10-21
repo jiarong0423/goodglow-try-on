@@ -1,4 +1,4 @@
-"""公開部署（Dockerfile）與重運算並行上限。映像不含品牌資料、不帶金鑰、非 root、展示模式＋虛構型錄。"""
+"""Public deployment (Dockerfile) and the cap on concurrent heavy computation. The image has no brand data, no keys, runs as non-root, in demo mode with a fictional catalog."""
 import json
 import re
 import sys
@@ -29,7 +29,7 @@ class DockerfileChecks(unittest.TestCase):
     def test_live_mode_needs_both_switch_and_key_and_is_capped(self):
         cmd = DOCKERFILE[DOCKERFILE.index("CMD ["):]
         self.assertIn('"$GOODGLOW_LIVE\\" = \\"1\\"', cmd)
-        self.assertIn('-n \\"$YOUCAM_API_KEY\\"', cmd)                           # 缺開關或缺金鑰 → 走展示模式
+        self.assertIn('-n \\"$YOUCAM_API_KEY\\"', cmd)                           # missing switch or missing key -> demo mode
         self.assertIn('-n \\"$GOODGLOW_JUDGE_USER\\"', cmd)
         self.assertIn('-n \\"$GOODGLOW_JUDGE_PASSWORD\\"', cmd)
         self.assertIn("--judge-live", cmd)
@@ -42,7 +42,7 @@ class DockerfileChecks(unittest.TestCase):
     def test_image_has_no_brand_data_secrets_or_keys(self):
         for pat in ("app/partner_shades.json", "app/partner_shades_official.json", "app/brand_codes_local.json", "app/brand_alias.json", ".env"):
             self.assertIn(pat, DOCKERIGNORE, pat)
-        self.assertNotRegex(DOCKERFILE, r"YOUCAM_API_KEY\s*=")                 # 映像裡不寫金鑰
+        self.assertNotRegex(DOCKERFILE, r"YOUCAM_API_KEY\s*=")                 # the image does not write a key
         self.assertNotIn("--brand-alias", DOCKERFILE)
 
     def test_only_needed_files_are_copied(self):
@@ -74,16 +74,16 @@ class HeavyLimit(unittest.TestCase):
         td, httpd, state, base = self.start(1)
         try:
             body = {"style": "natural", "undertone": "neutral", "condition": "albinism", "demo": True, "selection": {}}
-            self.assertTrue(state.heavy.acquire(timeout=1))                    # 名額被占住
+            self.assertTrue(state.heavy.acquire(timeout=1))                    # the slot is occupied
             t0 = time.time()
             st, r = self.post(base, "/api/makeup", body)
             self.assertEqual((st, r["error_code"]), (503, "busy"))
             self.assertLess(time.time() - t0, 3)
             st, _ = self.post(base, "/api/match", {"hex": "#E1CDC6", "category": "foundation", "source": "demo", "top": 2})
-            self.assertEqual(st, 200)                                         # 輕量請求（色號比對）不受影響
+            self.assertEqual(st, 200)                                         # lightweight requests (shade matching) are unaffected
             state.heavy.release()
             st, _ = self.post(base, "/api/makeup", body)
-            self.assertEqual(st, 200)                                         # 名額還回去就恢復
+            self.assertEqual(st, 200)                                         # once the slot is returned, service resumes
         finally:
             server.HEAVY_WAIT_SECONDS = old
             httpd.shutdown(); httpd.server_close(); td.cleanup()
@@ -92,7 +92,7 @@ class HeavyLimit(unittest.TestCase):
         td, httpd, state, base = self.start(1)
         try:
             self.assertEqual(self.post(base, "/api/makeup", {"style": "nope", "selection": {}})[0], 400)
-            self.assertTrue(state.heavy.acquire(timeout=1))                   # 出錯後名額有還
+            self.assertTrue(state.heavy.acquire(timeout=1))                   # the slot is returned after an error
             state.heavy.release()
         finally:
             httpd.shutdown(); httpd.server_close(); td.cleanup()

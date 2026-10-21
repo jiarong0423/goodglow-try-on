@@ -1,4 +1,4 @@
-"""伺服器的抗濫用限制：像素上限（解壓炸彈）、格式白名單、請求格式錯誤、連線上限與逾時、安全標頭、大檔分段送出。"""
+"""Server abuse limits: pixel cap (decompression bomb), format allowlist, malformed requests, connection cap and timeout, security headers, chunked sending of large files."""
 import base64
 import io
 import json
@@ -68,7 +68,7 @@ class ImageLimitTests(_Base):
             self.assertEqual(out["error_code"], "image_too_large", path)
 
     def test_decompression_bomb_error_is_a_clean_400(self):
-        raw = png_bytes((14000, 14000))                       # PIL 自己的炸彈檢查會丟 DecompressionBombError
+        raw = png_bytes((14000, 14000))                       # PIL's own bomb check raises DecompressionBombError
         status, out = self.post("/api/patch-mask", {"image": data_url(raw), "region": data_url(raw)})
         self.assertIn(status, (400, 413))
         self.assertFalse(out["ok"])
@@ -83,7 +83,7 @@ class ImageLimitTests(_Base):
     def test_garbage_bytes_are_a_clean_400(self):
         status, out = self.post("/api/patch-mask", {"image": data_url(b"not an image"), "region": data_url(b"x")})
         self.assertEqual(status, 400)
-        self.assertNotIn("0x", json.dumps(out))              # 不回傳內部位址或例外字串
+        self.assertNotIn("0x", json.dumps(out))              # no internal addresses or exception strings are returned
 
 
 class RequestShapeTests(_Base):
@@ -126,7 +126,7 @@ class HardeningTests(_Base):
         threading.Thread(target=httpd.serve_forever, daemon=True).start()
         port = httpd.server_address[1]
         try:
-            hold = socket.create_connection(("127.0.0.1", port), timeout=10)      # 占住唯一的名額（不送請求）
+            hold = socket.create_connection(("127.0.0.1", port), timeout=10)      # occupy the only slot (no request sent)
             try:
                 import time
                 time.sleep(0.3)
@@ -135,9 +135,9 @@ class HardeningTests(_Base):
                 extra.settimeout(5)
                 try:
                     got = extra.recv(1024)
-                except ConnectionResetError:                                         # 直接關掉時，對方可能收到 RST
+                except ConnectionResetError:                                         # when closed directly, the peer may receive an RST
                     got = b""
-                self.assertEqual(got, b"")                                           # 第二條被直接關掉，沒有回應
+                self.assertEqual(got, b"")                                           # the second connection is closed directly, no response
                 extra.close()
             finally:
                 hold.close()

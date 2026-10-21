@@ -51,12 +51,12 @@ class FullLookTests(unittest.TestCase):
         self.assertEqual(s["brow"], "fill_light")
 
     def test_pale_brow_kept_as_is(self):
-        #：白眉官方試妝會把眉畫到原眉上方 → 眉毛很淡時完整妝容一律不上眉
+        #: the official try-on draws brows above the original brows for white brows -> when brows are very faint, the full look never adds brows
         for style in ("grooming", "natural", "polished"):
             out = fl.full_look("albinism", style, 2, "pink_cool", None, True, P, brow_visible=False)
             self.assertEqual(out["selection"]["brow"], "keep", style)
             self.assertTrue(out["brow_pale"])
-        r = rec.recommend("albinism", "polished", skin_hex="#DDC9C0", brow_hex="#C8B4A9")   # 白化症示範照實測色
+        r = rec.recommend("albinism", "polished", skin_hex="#DDC9C0", brow_hex="#C8B4A9")   # measured shade on the albinism demo photo
         self.assertEqual(r["full_look"]["selection"]["brow"], "keep")
 
     def test_visible_brow_still_gets_brow(self):
@@ -70,7 +70,7 @@ class FullLookTests(unittest.TestCase):
         self.assertNotIn("局部校色", titles("albinism"))
 
     def test_recommend_albinism_photo_brow_full_look(self):
-        # 瀏覽器實測抓到：白化症自然款「照原眉色補一點」算色號時沒帶眉色 → 400
+        # 10-16 caught in browser testing: albinism natural look "fill in slightly following the original brow color" computed the shade without the brow color -> 400
         for style in ("grooming", "natural", "polished"):
             r = rec.recommend("albinism", style, skin_hex="#D2B8AC", brow_hex="#B49A86")
             self.assertIn("full_look", r, style)

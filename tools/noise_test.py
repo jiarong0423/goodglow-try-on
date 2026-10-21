@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""重拍雜訊測試：同一張臉重拍多次，量 YouCam AI Skin Analysis 分數的雜訊範圍。
+"""Re-shoot noise test: re-shoot the same face several times and measure the noise range of the YouCam AI Skin Analysis scores.
 
-只存分數。不存照片、不存遮罩圖、不存 API 回應裡的網址。
-照片在記憶體內轉正方向、縮到 HD 規格、重新編碼成 JPEG（同時去掉 EXIF／GPS）後才上傳。
+Only scores are stored. No photos, no mask images, and no URLs from API responses are stored.
+Photos are orientation-corrected in memory, resized to HD spec and re-encoded as JPEG (which also strips EXIF/GPS) before upload.
 
-子指令：
-  check      只驗照片規格，不連網、不扣點
-  run        上傳並分析（需 --run 旗標與 YOUCAM_API_KEY 環境變數）
-  summarize  合併一或多次 run 的 scores.csv，比較不同拍攝條件
+Subcommands:
+  check      only validate photo specs; no network, no credits spent
+  run        upload and analyze (needs the --run flag and the YOUCAM_API_KEY environment variable)
+  summarize  merge scores.csv from one or more runs and compare shooting conditions
 
-API 格式依 https://docs.perfectcorp.com/reference/ai_skin_analysis（2026-10-15 讀取）。
+The API format follows https://docs.perfectcorp.com/reference/ai_skin_analysis (read on 2026-10-15).
 """
 from __future__ import annotations
 
@@ -66,7 +66,7 @@ def log_error(msg: str) -> None:
     print(f"ERROR {msg}", file=sys.stderr, flush=True)
 
 
-# ---------------------------------------------------------------- 照片
+# ---------------------------------------------------------------- Photos
 
 def list_photos(folder: Path) -> list[Path]:
     if not folder.is_dir():
@@ -75,7 +75,7 @@ def list_photos(folder: Path) -> list[Path]:
 
 
 def prepare_photo(path: Path) -> tuple[bytes, int, int]:
-    """回傳 (JPEG bytes, 寬, 高)。只在記憶體內處理，不寫檔。"""
+    """Return (JPEG bytes, width, height). Processed in memory only; nothing is written to disk."""
     try:
         return prepare_image_bytes(path.read_bytes())
     except PhotoError as exc:
@@ -95,7 +95,7 @@ def prepare_image_bytes(raw: bytes) -> tuple[bytes, int, int]:
     if min(w, h) < HD_MIN_SHORT:
         raise PhotoError(f"短邊 {min(w, h)}px，低於 HD 下限 {HD_MIN_SHORT}px")
     buf = io.BytesIO()
-    img.save(buf, "JPEG", quality=95)  # 不帶 exif 參數 → EXIF／GPS 不會寫入
+    img.save(buf, "JPEG", quality=95)  # no exif argument → EXIF/GPS is not written
     data = buf.getvalue()
     if len(data) >= MAX_UPLOAD_BYTES:
         raise PhotoError(f"重新編碼後 {len(data)} bytes，超過 10MB")
@@ -103,7 +103,7 @@ def prepare_image_bytes(raw: bytes) -> tuple[bytes, int, int]:
 
 
 def load_api_key() -> str:
-    """環境變數優先；沒有就讀專案根目錄 .env（只取這一個鍵，不印出值）。"""
+    """The environment variable takes priority; otherwise read .env in the project root (only this one key; the value is never printed)."""
     key = os.environ.get(KEY_ENV, "").strip()
     if key:
         return key
@@ -123,7 +123,7 @@ def sha12(path: Path) -> str:
 # ---------------------------------------------------------------- API
 
 class _SafeRedirect(urllib.request.HTTPRedirectHandler):
-    """換主機的轉址不帶 Authorization：金鑰只會送給原本要呼叫的那個主機。"""
+    """A redirect to a different host does not carry Authorization: the key is only ever sent to the host originally called."""
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         new = super().redirect_request(req, fp, code, msg, headers, newurl)
@@ -180,7 +180,7 @@ class YouCamClient:
         except ApiError as exc:
             if exc.status != 404:
                 raise
-            # 舊版文件的路徑寫法；File API 不扣點，退回重試無成本
+            # path style from the older docs; the File API spends no credits, so falling back and retrying costs nothing
             resp = self._json("POST", "/s2s/v2.0/file/skin-analysis", meta)
         entry = resp["data"]["files"][0]
         put = entry["requests"][0]
@@ -203,15 +203,15 @@ class YouCamClient:
             time.sleep(POLL_SECONDS)
 
 
-# ---------------------------------------------------------------- 解析
+# ---------------------------------------------------------------- Parsing
 
 def _num(v):
     return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
 
 
 def _flatten(name: str, node: dict) -> list[tuple[str, str, float | None, float | None]]:
-    # 實際回應（2026-10-15 實跑）：每個區域一筆，區域放在平的 "region" 欄位；
-    # "all"、"skin_age" 用 "score"；hd_skin_type 只有文字 "skin_type"（由 parse_labels 處理）
+    # Actual response (run on 2026-10-15): one entry per region, with the region in a flat "region" field;
+    # "all" and "skin_age" use "score"; hd_skin_type has only the text "skin_type" (handled by parse_labels)
     region = str(node.get("region") or "whole")
     if "raw_score" in node or "ui_score" in node:
         return [(name, region, _num(node.get("raw_score")), _num(node.get("ui_score")))]
@@ -225,7 +225,7 @@ def _flatten(name: str, node: dict) -> list[tuple[str, str, float | None, float 
 
 
 def parse_scores(data: dict) -> list[tuple[str, str, float | None, float | None]]:
-    """支援兩種格式：v1.7 起的 output 清單，以及 score_info.json 式的字典。"""
+    """Supports two formats: the output list from v1.7 on, and the dict style of score_info.json."""
     results = data.get("results", data)
     out = results.get("output", results) if isinstance(results, dict) else results
     rows: list = []
@@ -236,14 +236,14 @@ def parse_scores(data: dict) -> list[tuple[str, str, float | None, float | None]
     elif isinstance(out, dict):
         for key, val in out.items():
             if _num(val) is not None:
-                rows.append((key, "whole", _num(val), None))  # "all"、"skin_age"
+                rows.append((key, "whole", _num(val), None))  # "all", "skin_age"
             elif isinstance(val, dict):
                 rows += _flatten(key, val)
     return rows
 
 
 def parse_labels(data: dict) -> list[tuple[str, str, str]]:
-    """文字型結果，例如 hd_skin_type 的 whole／t_zone／u_zone → Normal、Oily…"""
+    """Text-type results, e.g. whole/t_zone/u_zone of hd_skin_type → Normal, Oily…"""
     results = data.get("results", data)
     out = results.get("output", []) if isinstance(results, dict) else results
     labels = []
@@ -255,7 +255,7 @@ def parse_labels(data: dict) -> list[tuple[str, str, str]]:
 
 
 def strip_urls(obj):
-    """留結構不留網址，供第一次實跑確認回應格式。"""
+    """Keep the structure but not the URLs; used on the first real run to confirm the response format."""
     if isinstance(obj, dict):
         return {k: strip_urls(v) for k, v in obj.items()}
     if isinstance(obj, list):
@@ -265,7 +265,7 @@ def strip_urls(obj):
     return obj
 
 
-# ---------------------------------------------------------------- 統計
+# ---------------------------------------------------------------- Statistics
 
 def quantile(values: list[float], q: float) -> float:
     s = sorted(values)
@@ -284,8 +284,8 @@ def describe(values: list[float]) -> dict:
         sd = statistics.stdev(values)
         diffs = [abs(a - b) for a, b in itertools.combinations(values, 2)]
         d["sd"] = sd
-        d["mdc95_normal"] = 1.96 * math.sqrt(2) * sd       # 常態假設下的最小可偵測變化
-        d["pair_diff_p95"] = quantile(diffs, 0.95)          # 經驗分位數，不假設分布
+        d["mdc95_normal"] = 1.96 * math.sqrt(2) * sd       # minimum detectable change under a normality assumption
+        d["pair_diff_p95"] = quantile(diffs, 0.95)          # empirical quantile, no distribution assumed
         d["noise_band"] = max(d["mdc95_normal"], d["pair_diff_p95"])
     else:
         d.update(sd=None, mdc95_normal=None, pair_diff_p95=None, noise_band=None)
@@ -310,7 +310,7 @@ def summarize_rows(rows: list[dict]) -> dict:
             entry[kind] = describe(vals)
         per_label.append(entry)
 
-    # 不同拍攝條件之間的平均位移，跟雜訊帶比
+    # mean shift between shooting conditions, compared with the noise band
     by_metric: dict[tuple, list[dict]] = {}
     for e in per_label:
         if "raw_score" in e:
@@ -364,7 +364,7 @@ def render_markdown(summary: dict, title: str) -> str:
     return "\n".join(lines)
 
 
-# ---------------------------------------------------------------- 指令
+# ---------------------------------------------------------------- Commands
 
 def cmd_check(args) -> int:
     try:
@@ -373,31 +373,31 @@ def cmd_check(args) -> int:
         log_error(str(exc))
         return 2
     if not photos:
-        log_error(f"{args.photos} 內沒有 jpg/jpeg/png 照片（iPhone HEIC 請先匯出成 JPEG）")
+        log_error(f"No jpg/jpeg/png photos in {args.photos} (export iPhone HEIC to JPEG first)")
         return 2
     bad = 0
     for p in photos:
         try:
             data, w, h = prepare_photo(p)
-            print(f"OK   {p.name}  上傳尺寸 {w}x{h}  {len(data) // 1024} KB")
-        except Exception as exc:  # PIL 讀不了的檔也算不合格
+            print(f"OK   {p.name}  upload size {w}x{h}  {len(data) // 1024} KB")
+        except Exception as exc:  # a file PIL cannot read also counts as failing
             bad += 1
-            log_error(f"{p.name}：{exc}")
-    print(f"共 {len(photos)} 張，合格 {len(photos) - bad} 張。check 不連網、不扣點。")
+            log_error(f"{p.name}: {exc}")
+    print(f"{len(photos)} photos, {len(photos) - bad} passed. check uses no network and spends no credits.")
     return 2 if bad else 0
 
 
 def cmd_run(args) -> int:
     if not args.run:
-        log_error("run 會扣 API 點數，必須加 --run 才執行；只想驗照片請用 check")
+        log_error("run spends API credits, so --run is required; use check to only validate photos")
         return 2
     api_key = load_api_key()
     if not api_key:
-        log_error(f"找不到 {KEY_ENV}：請設環境變數，或寫進 {PROJECT_ROOT / '.env'}")
+        log_error(f"{KEY_ENV} not found: set the environment variable, or write it into {PROJECT_ROOT / '.env'}")
         return 2
     concerns = [c.strip() for c in args.concerns.split(",") if c.strip()]
     if len({c.startswith("hd_") for c in concerns}) > 1:
-        log_error("HD（hd_ 開頭）與 SD 指標不能混在同一次請求")
+        log_error("HD (hd_ prefix) and SD metrics cannot be mixed in one request")
         return 2
     try:
         photos = list_photos(Path(args.photos))
@@ -405,18 +405,18 @@ def cmd_run(args) -> int:
         log_error(str(exc))
         return 2
     if not photos:
-        log_error(f"{args.photos} 內沒有照片")
+        log_error(f"No photos in {args.photos}")
         return 2
     if len(photos) > args.max_calls:
-        log_error(f"照片 {len(photos)} 張超過 --max-calls {args.max_calls}；要跑請提高上限")
+        log_error(f"{len(photos)} photos exceed --max-calls {args.max_calls}; raise the limit to run")
         return 2
 
     prepared = []
-    for p in photos:  # 全部先驗完才開始扣點
+    for p in photos:  # validate everything first, then start spending credits
         try:
             prepared.append((p, *prepare_photo(p)))
         except Exception as exc:
-            log_error(f"{p.name}：{exc}（未呼叫 API，未扣點）")
+            log_error(f"{p.name}: {exc} (API not called, no credits spent)")
             return 2
 
     run_id = dt.datetime.now().strftime("%Y%m%d_%H%M%S") + f"_{args.label}"
@@ -464,14 +464,14 @@ def cmd_run(args) -> int:
                     new = [dict(base, concern="", region="", raw_score="", ui_score="", label_value="",
                                 status="error", error_code=code, task_seconds=secs)]
                     failed += 1
-                    log_error(f"[{i}/{len(prepared)}] {path.name} task 失敗：{code}（失敗不扣點）")
+                    log_error(f"[{i}/{len(prepared)}] {path.name} task failed: {code} (failures spend no credits)")
             except (ApiError, KeyError, ValueError) as exc:
                 secs = round(time.monotonic() - t0, 1)
                 msg = client._redact(str(exc))[:200]
                 new = [dict(base, concern="", region="", raw_score="", ui_score="", label_value="",
                             status="error", error_code=msg, task_seconds=secs)]
                 failed += 1
-                log_error(f"[{i}/{len(prepared)}] {path.name}：{msg}")
+                log_error(f"[{i}/{len(prepared)}] {path.name}: {msg}")
             writer.writerows(new)
             fh.flush()
             rows += new
@@ -486,11 +486,11 @@ def cmd_run(args) -> int:
     md = render_markdown(summary, f"重拍雜訊測試 {run_id}")
     (run_dir / "summary.md").write_text(md, encoding="utf-8")
     print(md)
-    print(f"輸出：{run_dir}")
+    print(f"Output: {run_dir}")
     if failed:
-        log_error(f"{failed}/{len(prepared)} 張失敗，成功 {ok} 張")
+        log_error(f"{failed}/{len(prepared)} photos failed, {ok} succeeded")
         return 1
-    print(f"OK 全部 {ok} 張成功（成功的 task 會扣點，到 API 後台看實際扣點）")
+    print(f"OK all {ok} photos succeeded (successful tasks spend credits; check the API console for actual usage)")
     return 0
 
 
@@ -509,7 +509,7 @@ def cmd_summarize(args) -> int:
     try:
         rows = read_scores(args.inputs)
     except OSError as exc:
-        log_error(f"讀不到 scores.csv：{exc}")
+        log_error(f"cannot read scores.csv: {exc}")
         return 2
     summary = summarize_rows(rows)
     md = render_markdown(summary, "重拍雜訊測試：合併摘要")
@@ -519,24 +519,24 @@ def cmd_summarize(args) -> int:
         out.mkdir(parents=True, exist_ok=True)
         (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
         (out / "summary.md").write_text(md, encoding="utf-8")
-        print(f"輸出：{out}")
+        print(f"Output: {out}")
     if not summary["per_label"]:
-        log_error("沒有任何成功的分數可摘要")
+        log_error("no successful scores to summarize")
         return 1
     return 0
 
 
 def cmd_credit(args) -> int:
-    """查點數餘額（不扣點）。端點取自其他參賽者 README，尚未經官方文件確認。"""
+    """Check the credit balance (spends no credits). The endpoint is taken from another participant's README and has not been confirmed by the official docs."""
     api_key = load_api_key()
     if not api_key:
-        log_error(f"找不到 {KEY_ENV}：請設環境變數，或寫進 {PROJECT_ROOT / '.env'}")
+        log_error(f"{KEY_ENV} not found: set the environment variable, or write it into {PROJECT_ROOT / '.env'}")
         return 2
     client = YouCamClient(api_key, args.api_base)
     try:
         resp = client._json("GET", "/s2s/v1.0/client/credit")
     except ApiError as exc:
-        log_error(f"查餘額失敗：{client._redact(str(exc))}；請改到 API 後台看")
+        log_error(f"balance check failed: {client._redact(str(exc))}; check the API console instead")
         return 1
     print(json.dumps(strip_urls(resp), ensure_ascii=False, indent=2))
     return 0
@@ -546,27 +546,27 @@ def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
 
-    c = sub.add_parser("check", help="只驗照片規格，不連網")
-    c.add_argument("--photos", required=True, help="照片目錄")
+    c = sub.add_parser("check", help="only validate photo specs, no network")
+    c.add_argument("--photos", required=True, help="photo directory")
     c.set_defaults(func=cmd_check)
 
-    r = sub.add_parser("run", help="上傳並分析（扣點）")
-    r.add_argument("--photos", required=True, help="照片目錄（一個目錄 = 一種拍攝條件）")
-    r.add_argument("--label", required=True, help="拍攝條件名稱，例如 same_light、window")
-    r.add_argument("--concerns", default=",".join(DEFAULT_CONCERNS), help="逗號分隔，預設 hd_redness")
-    r.add_argument("--max-calls", type=int, default=DEFAULT_MAX_CALLS, help="張數上限，防止誤扣點")
-    r.add_argument("--run", action="store_true", help="確認要扣點才加")
+    r = sub.add_parser("run", help="upload and analyze (spends credits)")
+    r.add_argument("--photos", required=True, help="photo directory (one directory = one shooting condition)")
+    r.add_argument("--label", required=True, help="shooting condition name, e.g. same_light, window")
+    r.add_argument("--concerns", default=",".join(DEFAULT_CONCERNS), help="comma-separated, default hd_redness")
+    r.add_argument("--max-calls", type=int, default=DEFAULT_MAX_CALLS, help="maximum number of photos, to prevent spending credits by mistake")
+    r.add_argument("--run", action="store_true", help="add only when you are sure you want to spend credits")
     r.add_argument("--runs-dir", default=str(DEFAULT_RUNS_DIR))
     r.add_argument("--api-base", default=API_BASE, help=argparse.SUPPRESS)
     r.set_defaults(func=cmd_run)
 
-    k = sub.add_parser("credit", help="查點數餘額（不扣點）")
+    k = sub.add_parser("credit", help="check the credit balance (spends no credits)")
     k.add_argument("--api-base", default=API_BASE, help=argparse.SUPPRESS)
     k.set_defaults(func=cmd_credit)
 
-    s = sub.add_parser("summarize", help="合併多次 run 比較拍攝條件")
-    s.add_argument("inputs", nargs="+", help="run 目錄或 scores.csv")
-    s.add_argument("--out", help="輸出目錄（不給就只印）")
+    s = sub.add_parser("summarize", help="merge several runs and compare shooting conditions")
+    s.add_argument("inputs", nargs="+", help="run directory or scores.csv")
+    s.add_argument("--out", help="output directory (print only if omitted)")
     s.set_defaults(func=cmd_summarize)
     return ap
 

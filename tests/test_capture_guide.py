@@ -1,6 +1,6 @@
-"""拍攝小幫手（web/capture_guide.js）的判斷規則測試。
- ；門檻與出處以 docs/EVIDENCE_LIMITS.md 為準。
-JS 純函式用 node 跑；沒有 node 的環境略過。
+"""Tests for the decision rules of the capture helper (web/capture_guide.js).
+10-21 owner request: "attach the failure evidence" and "then add guidance for the photographer"; thresholds and sources follow docs/EVIDENCE_LIMITS.md.
+JS pure functions are run with node; skipped when node is unavailable.
 """
 import json
 import shutil
@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 NODE = shutil.which("node")
 
-# 1500×2000 的照片（官方標準化裁切同尺寸），臉寬 990（0.66）置中、正面、光線正常
+# 1500×2000 photo (same size as the official standardized crop), face width 990 (0.66), centered, frontal, normal lighting
 BASE = {"imgW": 1500, "imgH": 2000, "face": {"x": 255, "y": 500, "w": 990, "h": 1250},
         "noseX": 750, "mouthX": 750, "eyeWL": 150, "eyeWR": 148, "lightness": 72, "detScore": 0.92}
 
@@ -25,19 +25,19 @@ def case(**kw):
 
 CASES = {
     "frontal_ok": case(),
-    # 證據表第 1 列：側臉偏轉 0.162 > 0.15 擋下
+    # evidence table row 1: side-face yaw 0.162 > 0.15 is blocked
     "side_face": case(noseX=750 + 0.162 * 990, mouthX=750 + 0.12 * 990, eyeWR=100),
     "slightly_side": case(noseX=750 + 0.10 * 990),
-    # 證據表第 2 列：整張原圖臉寬 0.55–0.56 → 引導通過、自動裁；0.45 提醒；0.25 擋下
+    # evidence table row 2: face width 0.55-0.56 of the whole original -> guidance passes, auto-crop; 0.45 warns; 0.25 is blocked
     "face_055": case(imgW=2400, imgH=3200, face={"x": 534, "y": 900, "w": 1332, "h": 1690}, noseX=1200, mouthX=1200, eyeWL=200, eyeWR=198),
     "face_small_warn": case(face={"x": 412, "y": 700, "w": 675, "h": 850}, noseX=750, mouthX=750),
     "face_tiny": case(face={"x": 562, "y": 800, "w": 375, "h": 480}, noseX=750, mouthX=750, eyeWL=60, eyeWR=59),
-    # 證據表第 3 列：頭頂被切
+    # evidence table row 3: top of head cut off
     "cut_top": case(face={"x": 255, "y": -80, "w": 990, "h": 1250}),
     "near_edge": case(face={"x": 255, "y": 20, "w": 990, "h": 1250}),
     "too_dark": case(lightness=22),
     "too_bright": case(lightness=95),
-    # 證據表第 4 列：極淺膚色低對比，偵測分數低或兩個偵測器點位差大 → 只提醒不擋
+    # evidence table row 4: very light skin, low contrast, low detection score or large landmark gap between the two detectors -> warn only, do not block
     "low_contrast_score": case(detScore=0.48, lightness=88),
     "low_contrast_jitter": case(jitter=0.09, lightness=89),
     "no_face": case(detScore=None),
@@ -82,7 +82,7 @@ class CaptureGuideRules(unittest.TestCase):
         self.assertEqual(self.st("slightly_side", "frontal"), "warn")
 
     def test_face_size(self):
-        self.assertEqual(self.st("face_055", "face_size"), "pass")       # 0.555 → 引導通過，之後自動裁到 0.66
+        self.assertEqual(self.st("face_055", "face_size"), "pass")       # 0.555 -> guidance passes, later auto-cropped to 0.66
         self.assertAlmostEqual(self.res["face_055"]["crop"]["faceRatio"], 0.66, places=2)
         self.assertEqual(self.st("face_small_warn", "face_size"), "warn")
         self.assertEqual(self.st("face_tiny", "face_size"), "block")
@@ -126,7 +126,7 @@ class CaptureGuideRules(unittest.TestCase):
 
 @unittest.skipUnless(NODE, "沒有 node，略過前端規則測試")
 class LiveHintRules(unittest.TestCase):
-    """備用相機的即時提示：同一組數字規則，壓成一個要提示的方向。"""
+    """Live hints for the fallback camera: the same numeric rules, compressed into the single direction to hint."""
 
     @classmethod
     def setUpClass(cls):
@@ -153,7 +153,7 @@ class LiveHintRules(unittest.TestCase):
         self.assertEqual(self.live["slightly_side"], "front")
 
     def test_priority_closer_before_front(self):
-        # 臉又小又側時先講「再靠近」，一次只講一件事
+        # when the face is both small and turned, say "move closer" first, one thing at a time
         self.assertEqual(self.live["face_tiny"], "closer")
 
     def test_native_camera_wires_live_hint(self):
@@ -164,7 +164,7 @@ class LiveHintRules(unittest.TestCase):
 
 
 class TestBlockedPhotoFlow(unittest.TestCase):
-    """ 手機實測：側臉被擋下時，標題不能說「只差一點點」，也不能顯示從臉緣取到的假顏色。"""
+    """10-21 phone test: when a side face is blocked, the headline must not say "just a little off", and must not show a fake color taken from the face edge."""
 
     def setUp(self):
         self.app = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
@@ -184,7 +184,7 @@ class TestBlockedPhotoFlow(unittest.TestCase):
 
 
 class TestUnifiedStyle(unittest.TestCase):
-    """ 手機實測後統一風格：不用 emoji 圖示、底部按鈕列實底、預設白底。"""
+    """10-21 unified style after phone test: no emoji icons, solid bottom button bar, white background by default."""
 
     def setUp(self):
         self.html = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
@@ -197,7 +197,7 @@ class TestUnifiedStyle(unittest.TestCase):
         self.assertEqual(emoji.findall(self.html.replace("\u2600\ufe0e", "")), [])
 
     def test_dock_is_solid_not_transparent_gradient(self):
-        tail = self.css[self.css.rindex("統一風格"):]
+        tail = self.css[self.css.rindex("unified style"):]
         self.assertIn(".dock { background: var(--bg);", tail)
 
     def test_albinism_entry_no_longer_forces_dark(self):

@@ -52,7 +52,7 @@ def plan(server, payloads: list[dict]) -> list[dict]:
         cond = server.demo_condition(b)
         style = b.get("style", "natural")
         sel = dict(b.get("selection") or {}, undertone=b.get("undertone", "neutral"))
-        for k in ("brow_hex", "skin_hex", "foundation_hex", "face_shape"):      # 同 server.State.makeup
+        for k in ("brow_hex", "skin_hex", "foundation_hex", "face_shape"):      # same as server.State.makeup
             if b.get(k):
                 sel[k] = b[k]
         if all(sel.get(k, "keep") == "keep" for k in server.EXACT_ITEMS):
@@ -103,13 +103,13 @@ def main(argv=None) -> int:
             res = state.makeup(t["body"])
         except server.RequestError as exc:
             fail += 1
-            print(f"ERROR {n}/{len(need)} {t['tag']} {t['key']}：{exc}", file=sys.stderr, flush=True)
+            print(f"ERROR {n}/{len(need)} {t['tag']} {t['key']}: {exc}", file=sys.stderr, flush=True)
             if "預算" in str(exc) or "上限" in str(exc):
                 break
             continue
         raw = base64.b64decode(res["image"].split(",", 1)[1])
         t["out"].parent.mkdir(parents=True, exist_ok=True)
-        saved = shrink_jpeg(raw)               # YouCam 回 PNG、約 3.4 MB；展示用縮到長邊 1280 的 JPEG
+        saved = shrink_jpeg(raw)               # YouCam returns a PNG of about 3.4 MB; shrink it to a JPEG with a 1280 long side for display
         t["out"].write_bytes(saved)
         idx = json.loads(idx_path.read_text(encoding="utf-8")) if idx_path.is_file() else {}
         idx[t["key"]] = {"tag": t["tag"], "style": t["style"], "undertone": t["undertone"], "selection": t["selection"],

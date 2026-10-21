@@ -1,9 +1,9 @@
-"""評審登入：只用來打開線上版的「真實 YouCam 呼叫」；展示模式（重播錄好的結果）一直免登入。
+"""Judge login: used only to enable the online version's "real YouCam calls"; demo mode (replaying recorded results) never needs a login.
 
-- 帳號密碼只來自環境變數 GOODGLOW_JUDGE_USER／GOODGLOW_JUDGE_PASSWORD（部署平台設，不進 repo、不印出）。
-  沒設、或密碼少於 MIN_PASSWORD 個字元，就視為沒有評審登入，伺服器不會開真實呼叫。
-- 登入成功發一個簽章 cookie（HttpOnly、SameSite=Lax，6 小時）；簽章金鑰每次啟動隨機產生，重啟後舊 cookie 失效。
-- 連續輸錯 FAIL_LIMIT 次後鎖 FAIL_WINDOW 秒（全域計算，擋暴力猜測）。
+- The credentials come only from the environment variables GOODGLOW_JUDGE_USER / GOODGLOW_JUDGE_PASSWORD (set on the deployment platform, not in the repo, never printed).
+  If unset, or the password is shorter than MIN_PASSWORD characters, there is considered to be no judge login and the server will not enable real calls.
+- A successful login issues a signed cookie (HttpOnly, SameSite=Lax, 6 hours); the signing key is generated randomly at each start, so old cookies become invalid after a restart.
+- After FAIL_LIMIT consecutive wrong attempts, lock for FAIL_WINDOW seconds (counted globally, to stop brute-force guessing).
 """
 import hashlib
 import hmac
@@ -46,7 +46,7 @@ class JudgeAuth:
             return None
         return cls(user, password)
 
-    # ---- 輸錯鎖定
+    # ---- lockout after wrong attempts
     def locked(self, now: float | None = None) -> bool:
         now = time.time() if now is None else now
         with self._lock:
@@ -58,7 +58,7 @@ class JudgeAuth:
         with self._lock:
             self._fails.append(now)
 
-    # ---- 帳密比對（兩項都比，用定時比較）
+    # ---- credential comparison (compare both, using a constant-time comparison)
     def check(self, user: str, password: str, now: float | None = None) -> bool:
         now = time.time() if now is None else now
         ok_user = hmac.compare_digest(_digest(str(user)), self._user)
@@ -68,7 +68,7 @@ class JudgeAuth:
         self._record_failure(now)
         return False
 
-    # ---- 登入狀態 cookie
+    # ---- login-state cookie
     def _sign(self, expiry: int) -> str:
         return hmac.new(self._secret, str(expiry).encode(), hashlib.sha256).hexdigest()
 

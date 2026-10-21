@@ -1,4 +1,4 @@
-"""重現檢查：YouCam 整臉粉底對淺色區塊的亮度差幾乎沒有幫助，本機逐層填色明顯縮小（tools/repro_region_gap.py）。"""
+"""Reproduction check: YouCam full-face foundation barely helps the brightness gap on light patches, while local per-layer coloring clearly narrows it (tools/repro_region_gap.py)."""
 import hashlib
 import subprocess
 import sys

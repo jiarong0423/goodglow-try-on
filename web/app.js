@@ -1,15 +1,15 @@
 'use strict';
 
-// ---------------------------------------------------------------- 設定
+// ---------------------------------------------------------------- Settings
 const CAMERA_KIT_URL = 'https://plugins-media.makeupar.com/v2.2-camera-kit/sdk.js';
-const MIN_SHORT = 1080;            // 拒收低解析度（實測放大會失真）
+const MIN_SHORT = 640;             // Reject low resolution (no upscaling). Camera Kit outputs about 680x1080 on phones, so the old threshold of 1080 on the short side would reject every Kit photo (10-22 real device)
 const UNEVEN_RATIO = 0.8;
 const PREFS_KEY = 'goodglow.prefs.v1';
-const FP_KEY = 'goodglow.fingerprint.v1';   // 只存光線指紋數字，不存照片
+const FP_KEY = 'goodglow.fingerprint.v1';   // Store only the lighting fingerprint numbers, not the photo
 const ITEMS = [
-  { key: 'foundation', label: __t('s0159', '底妝') },   // 先上底妝（最接近膚色的色號），再疊其他
-  { key: 'contour', label: __t('s0160', '修容') },       // 白化症五官立體：冷調灰褐、顴骨下方
-  { key: 'highlight', label: __t('s0092', '打亮') },     // 面中／修容上方／T 字
+  { key: 'foundation', label: __t('s0159', '底妝') },   // Apply the foundation first (the shade closest to the skin tone), then layer the rest on top
+  { key: 'contour', label: __t('s0160', '修容') },       // Albinism facial-feature definition: cool grey-brown, below the cheekbones
+  { key: 'highlight', label: __t('s0092', '打亮') },     // Mid-face / upper contour / T-zone
   { key: 'brow', label: __t('s0161', '眉毛') },
   { key: 'lash', label: __t('s0162', '睫毛') },
   { key: 'blush', label: __t('s0163', '腮紅') },
@@ -23,11 +23,11 @@ const TONES = [
 ];
 
 const CONDITIONS = [
-  // 畫面不標病名，用中性的需求描述
+  // The screens do not label any condition name (design decision,: they want to be treated like anyone else); use a neutral description of needs
   { id: 'albinism', label: __t('s0169', '膚色很淺'), desc: __t('s0170', '容易怕光、眉睫顏色淡'), img: 'img/cover_albinism.jpg' },
   { id: 'vitiligo', label: __t('s0171', '膚色深淺不一'), desc: __t('s0172', '臉上有顏色較淺的區塊'), img: 'img/cover_vitiligo.jpg' },
 ];
-// 步驟條：拍照 → 膚色 → 色號 → 三題 → 建議 → 試妝 → 配色卡
+// Step bar: photo -> skin tone -> shade -> three questions -> suggestion -> try-on -> palette card
 const STEPS = [__t('s0015', '拍照'), __t('s0173', '膚色'), __t('s0174', '預期'), __t('s0175', '色號'), __t('s0176', '三題'), __t('s0177', '建議'), __t('s0019', '試妝'), __t('s0178', '配色卡')];
 const VIEW_STEP = { 'view-capture': 0, 'view-check': 1, 'view-expect': 2, 'view-shade': 3, 'view-sens': 4, 'view-advice': 5,
   'view-base': 6, 'view-quick': 6, 'view-adjust': 6, 'view-card': 7 };
@@ -35,9 +35,9 @@ const VIEW_STEP = { 'view-capture': 0, 'view-check': 1, 'view-expect': 2, 'view-
 const state = {
   presets: null, mode: 'mock',
   style: 'natural', tone: 'neutral', toneUnsure: true, sens: null,
-  browPts: [],                             // 本人點的眉形（兩道眉各 眉頭、眉峰、眉尾，相對座標）；點滿 6 點才由手機畫眉
-  expected: null, useExpected: false,      // 預期妝容（目前只有示範照有）；useExpected：色號改從預期妝容取色
-  cardPick: null,                          // 本人自己選的膚色色卡 {level, tone}；有選就優先
+  browPts: [],                             // The eyebrow shape the user tapped (for each of the two brows: head, peak and tail, in relative coordinates); the phone draws the brows only once all 6 points are set
+  expected: null, useExpected: false,      // Expected makeup (only the demo photo has one); useExpected: take the shades from the expected makeup
+  cardPick: null,                          // The skin-tone swatch the user picked themselves {level, tone}; if picked it takes priority
   photo: null, demo: false,
   quick: null, selection: {}, currentImage: null, item: 'brow',
   skinHex: null, skinTapped: false, lightOk: true, card: null,
@@ -45,22 +45,22 @@ const state = {
   condition: 'albinism', patchHex: null, patchRatio: null,
 };
 
-// ---------------------------------------------------------------- 小工具
+// ---------------------------------------------------------------- Utilities
 const $ = (id) => document.getElementById(id);
-// 翻頁特效：往後一步新頁從右滑入、往前一步從左滑入，0.8 秒。
-// 怕光模式（暗色畫面）或系統「減少動態效果」只做 0.6 秒淡入。時間與距離在 style.css 的 --vt-slide-time／--vt-fade-time／--vt-distance。切頁本身仍是同步的（後面的程式馬上量版面不受影響），動畫只加在新頁上。
+// 10-21 page-turn effect (owner's request: change the cover image together with the page-turn effect, and make it slow): going forward the new page slides in from the right, going back from the left, over 0.8 seconds.
+// In light-sensitive mode (dark screen) or with the system 'reduce motion' setting, only a 0.6 second fade-in. Timing and distance are in style.css as --vt-slide-time / --vt-fade-time / --vt-distance. The page switch itself is still synchronous (later code can measure the layout right away); the animation is only added to the new page.
 let currentView = 'view-start';
 function show(view) {
   const prev = currentView;
   currentView = view;
   swapView(view);
   if (prev === view) return;
-  const rank = (v) => ({ 'view-start': -1, 'view-mirror': 0.5 }[v] ?? VIEW_STEP[v] ?? 99);   // 鏡頭頁在拍照與取膚色之間
+  const rank = (v) => ({ 'view-start': -1, 'view-mirror': 0.5 }[v] ?? VIEW_STEP[v] ?? 99);   // The camera page sits between taking the photo and sampling the skin tone
   const gentle = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.getAttribute('data-theme') === 'dark';
   const el = document.getElementById(view);
   if (!el) return;
   el.classList.remove('vt-fwd', 'vt-back', 'vt-fade');
-  void el.offsetWidth;                                   // 重新觸發動畫（連點同一方向時）
+  void el.offsetWidth;                                   // Re-trigger the animation (when the same direction is tapped repeatedly)
   el.classList.add(gentle ? 'vt-fade' : (rank(view) < rank(prev) ? 'vt-back' : 'vt-fwd'));
   el.addEventListener('animationend', () => el.classList.remove('vt-fwd', 'vt-back', 'vt-fade'), { once: true });
 }
@@ -79,22 +79,22 @@ function swapView(view) {
 }
 const STEP_VIEW = ['view-capture', 'view-check', 'view-expect', 'view-shade', 'view-sens', 'view-advice', 'view-base', 'view-card'];
 function goStep(i) {
-  // 回到已完成的步驟：要重新整理內容的頁用原本的進入函式，其餘直接切頁
-  if (i === 2) return state.expected ? goExpect() : show('view-check');   // 沒有預期妝容就回取膚色
+  // Returning to a completed step: pages that need their content refreshed use their original entry function, the others just switch pages
+  if (i === 2) return state.expected ? goExpect() : show('view-check');   // With no expected makeup, go back to skin-tone sampling
   if (i === 4) return goSens();
   if (i === 6 && !state.baseLooks) return goBase();
   show(STEP_VIEW[i]);
 }
-function store(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (_) { /* 私密模式 */ } }
+function store(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (_) { /* Private mode */ } }
 function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch (_) { return null; } }
-function speak() { /* 語音說明已移除（瀏覽器語音在英文與部分手機上不可靠）；留一個空函式，呼叫處不用改 */ }
+function speak() { /* Voice guidance has been removed (browser speech is unreliable in English and on some phones); an empty function is kept so call sites need no change */ }
 function busy(on, text = __t('s0158', '試妝中…')) {
   $('loading').hidden = !on;
   $('loading-text').textContent = text;
   if (on) speak(text);
 }
 async function api(path, body) {
-  const lang = { 'X-App-Lang': (window.I18N && window.I18N.lang()) || 'zh' };   // 伺服器端文字依這個回英文（中文模式回傳不變）
+  const lang = { 'X-App-Lang': (window.I18N && window.I18N.lang()) || 'zh' };   // Server-side text returns English according to this (Chinese mode returns unchanged)
   const r = await fetch(path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json', ...lang }, body: JSON.stringify(body) } : { headers: lang });
   const j = await r.json().catch(() => ({ ok: false, hint: __t('s0181', '伺服器回應格式錯誤') }));
   if (!r.ok || j.ok === false) throw new Error(j.hint || __t('s0182', '發生問題，請再試一次'));
@@ -110,41 +110,41 @@ function optionColor(item, id) {
   if (item === 'foundation') { const f = foundationShade(); return f ? f.hex : null; }
   if (o.from_photo) return (state.recommendation && state.recommendation.brow && state.recommendation.brow[o.from_photo].hex) || null;
   const tone = state.presets.undertones[state.tone];
-  const dc = state.recommendation && state.recommendation.depth_colors;   // 腮紅、唇依膚色深淺帶×冷暖（跟試妝一致）
+  const dc = state.recommendation && state.recommendation.depth_colors;   // Blush and lips follow the skin-tone depth band x warm/cool (consistent with the try-on)
   if (item === 'blush') return o.color || (dc ? dc.blush : tone.blush);
   if (o.use_undertone_color) return item === 'lip' && dc ? dc.lip : tone[item === 'lip' ? 'lip' : item];
   return o.color || null;
 }
 function photoPayload() { return { ...(state.demo ? { demo: true, condition: state.condition } : { image: state.photo }), ...colorPayload() }; }
 function foundationShade() { return (state.recommendation && state.recommendation.foundation_shade) || null; }
-// 底妝取色：選了「用預期妝容對色號」就用預期妝容的內頰色，否則用照片取到的膚色
+// Foundation color: if 'match shades using the expected makeup' is chosen, use the inner-cheek color of the expected makeup, otherwise the skin tone sampled from the photo
 function pickedCell() {
   const p = state.cardPick;
   return p && state.skinCard ? state.skinCard.cells.find((c) => c.level === p.level && c.tone === p.tone) : null;
 }
 function baseSkinHex() {
   const cell = pickedCell();
-  if (cell) return cell.hex;                                   // 本人選的色卡格子優先
+  if (cell) return cell.hex;                                   // The swatch cell the user picked takes priority
   return state.useExpected && state.expected ? state.expected.zones.base.hex : state.skinHex;
 }
 function colorPayload() {
-  const out = state.skinHex ? { skin_hex: baseSkinHex() } : {};   // 白斑：薄透底妝往周圍膚色靠
+  const out = state.skinHex ? { skin_hex: baseSkinHex() } : {};   // Vitiligo: sheer foundation leans toward the surrounding skin tone
   if (state.browHex && state.skinHex) out.brow_hex = state.browHex;
   const f = foundationShade();
-  if (f) out.foundation_hex = f.hex;            // 底妝顏色＝最接近膚色的色號
+  if (f) out.foundation_hex = f.hex;            // Foundation color = the shade closest to the skin tone
   const shape = state.face && state.face.facts && state.face.facts.face_shape;
-  if (shape) out.face_shape = shape;            // 有五官結果就依臉型選打亮圖樣
+  if (shape) out.face_shape = shape;            // If there are facial-feature results, pick the highlight pattern by face shape
   return out;
 }
 
-// ---------------------------------------------------------------- 開始畫面
+// ---------------------------------------------------------------- Start screen
 function renderStart() {
   const prefs = load(PREFS_KEY) || {};
   state.style = prefs.style || 'natural';
   state.tone = 'neutral';
-  state.toneUnsure = true;                 // 冷暖一律先由照片推估，色號頁再讓本人確認
+  state.toneUnsure = true;                 // Warm/cool is always estimated from the photo first; the shade page lets the user confirm
   state.condition = prefs.condition === 'vitiligo' ? 'vitiligo' : 'albinism';
-  $('opt-dark').checked = !!(prefs.darkSet && prefs.dark);       // 只認本人明確選過的暗色；舊版預設暗色不再沿用
+  $('opt-dark').checked = !!(prefs.darkSet && prefs.dark);       // Only a dark theme the user explicitly picked is honored; the old default dark theme is no longer carried over
   applyTheme();
   const cb = $('condition-options');
   cb.innerHTML = '';
@@ -158,7 +158,7 @@ function renderStart() {
     cb.appendChild(b);
   }
 }
-const CARE_TIP = {                        // 保養提醒（經驗建議放在取膚色後、試妝前與色卡頂端）
+const CARE_TIP = {                        // Skincare reminder (the adjacent suggestion is placed after the skin-tone step, before the try-on and at the top of the palette card)
   albinism: __t('s0066', '☀︎ 淺色肌膚的光防護是第一步：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。'),
   vitiligo: __t('s0184', '☀︎ 淺色區塊比較怕曬：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。'),
 };
@@ -166,7 +166,7 @@ function chooseCondition(c) {
   const prefs = load(PREFS_KEY) || {};
   state.condition = c.id;
   document.querySelectorAll('.care-tip').forEach((el) => { el.textContent = CARE_TIP[c.id] || CARE_TIP.albinism; });
-  // 風格統一：全站預設白底（官網風格指南）；怕光的人在提醒彈窗一鍵改暗色，本人選過的偏好照舊（系統暗色模式也照系統）
+  // 10-21 unified style: the whole site defaults to a white background (official style guide); people who are sensitive to light switch to dark with one tap in the reminder popup, a preference the user already chose stays as is (the system dark mode is also followed)
   applyTheme();
   savePrefs();
   syncWarnDark(c.id === 'albinism');
@@ -190,10 +190,10 @@ function syncWarnDark(show) {
   b.textContent = on ? __t('s0186', '已是暗色畫面（點一下改回白底）') : __t('s0026', '怕光？改成暗色畫面');
 }
 
-// ---------------------------------------------------------------- 取景：先用 YouCam Camera Kit，失敗退回原生相機
+// ---------------------------------------------------------------- Viewfinder: use YouCam Camera Kit first, fall back to the native camera on failure
 let kitPromise = null, kitActive = false, nativeStream = null, nativeTimer = null, kitWatch = null, kitSeen = false;
 
-function syncBannerHeight() {          // 上方橫條的高度（相機畫面要扣掉它，按鈕才看得到）
+function syncBannerHeight() {          // Height of the top bar (the camera view must subtract it so the buttons stay visible)
   const b = $('mode-banner');
   document.documentElement.style.setProperty('--banner-h', (b && !b.hidden ? b.offsetHeight : 0) + 'px');
 }
@@ -204,7 +204,7 @@ function loadCameraKit() {
   kitPromise = new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('timeout')), 15000);
     let started = false;
-    // 其他 YouCam Camera Kit 專案的做法：ymkAsyncInit 有時不會觸發，所以腳本載好後也輪詢 window.YMK；init 與監聽只做一次
+    // As done in the other YouCam Camera Kit projects: ymkAsyncInit sometimes does not fire, so after the script loads, also poll window.YMK; init and listeners run only once
     const start = function () {
       if (started || !window.YMK) return;
       started = true;
@@ -215,8 +215,8 @@ function loadCameraKit() {
         window.YMK.addEventListener('faceQualityChanged', onKitQuality);
         window.YMK.addEventListener('faceDetectionCaptured', onKitCaptured);
         window.YMK.addEventListener('cameraFailed', onKitFailed);
-        window.YMK.addEventListener('unsupportedResolution', onKitFailed);       // 這支手機的相機解析度不夠：改用備用相機／相簿
-        window.YMK.addEventListener('closeClicked', () => { if (kitActive) { closeMirror(); show('view-capture'); } });   // 按了畫面上的 X：回到選照片頁
+        window.YMK.addEventListener('unsupportedResolution', onKitFailed);       // This phone's camera resolution is not enough: switch to the fallback camera / photo library
+        window.YMK.addEventListener('closeClicked', () => { if (kitActive) { closeMirror(); show('view-capture'); } });   // The X on the screen was tapped: return to the photo selection page
         clearTimeout(timer);
         resolve();
       } catch (e) { clearTimeout(timer); reject(e); }
@@ -250,7 +250,7 @@ async function openMirror() {
     kitActive = true;
     kitSeen = false;
     clearTimeout(kitWatch);
-    kitWatch = setTimeout(() => {       // 10 秒內 Camera Kit 沒有任何畫面回報：多半是別的分頁或程式正在用相機
+    kitWatch = setTimeout(() => {       // No Camera Kit frame reported within 10 seconds: most likely another tab or app is using the camera
       if (!kitSeen && kitActive) setHint(__t('s0978', '相機沒有回應：請關掉其他正在用相機的分頁或程式，或改從相簿選照片。'));
     }, 10000);
     window.YMK.openCameraKit();
@@ -276,7 +276,7 @@ function onKitCaptured(result) {
   findImage(result).then((url) => { closeMirror(); if (url) goCheck(url); else setHint(__t('s0194', '沒拿到照片，請再試一次')); });
 }
 function onKitFailed() {
-  try { window.YMK.close(); } catch (_) { /* 已關 */ }
+  try { window.YMK.close(); } catch (_) { /* Closed */ }
   kitActive = false;
   startNative();
 }
@@ -305,7 +305,7 @@ async function startNative() {
   try {
     nativeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1440 }, height: { ideal: 1920 } }, audio: false });
     $('video').srcObject = nativeStream;
-    if (window.FaceAuto && window.FaceAuto.loadLandmarker) window.FaceAuto.loadLandmarker();   // 先載入臉部定位，載好才有即時的角度、大小、切邊提示
+    if (window.FaceAuto && window.FaceAuto.loadLandmarker) window.FaceAuto.loadLandmarker();   // Load face localization first; only once it is loaded are there live angle, size and edge-cutoff hints
     nativeTimer = setInterval(checkNative, 700);
   } catch (_) {
     $('btn-shutter').hidden = true;
@@ -313,7 +313,7 @@ async function startNative() {
   }
 }
 let nativeBusy = false;
-// 備用相機的即時提示：每 0.7 秒量一次光線，再用臉部定位＋拍攝小幫手規則看臉有沒有找到、大小、有沒有切邊、角度（定位還沒載好就只提示光線）
+// Live hints for the fallback camera: measure the lighting every 0.7 seconds, then use face localization + the capture-assistant rules to check whether a face is found, its size, whether it is cut off at the edge, and the angle (if localization has not loaded yet, only the lighting hint is shown)
 async function checkNative() {
   const v = $('video');
   if (!v.videoWidth || nativeBusy) return;
@@ -325,7 +325,7 @@ async function checkNative() {
     if (window.FaceAuto && window.FaceAuto.measure && window.CaptureGuide && window.CaptureGuide.liveHint) {
       try { m = await window.FaceAuto.measure(v); } catch (_) { m = null; }
     }
-    if (!nativeStream) return;                                     // 量的時候已經關掉相機
+    if (!nativeStream) return;                                     // The camera was already closed at measurement time
     if (m) {
       const g = window.CaptureGuide.assess(m), hint = window.CaptureGuide.liveHint(g);
       const has = (id) => { const it = g.items.find((i) => i.id === id); return it ? it.status === 'pass' : null; };
@@ -355,7 +355,7 @@ function captureNative() {
 }
 function closeMirror() {
   clearTimeout(kitWatch);
-  if (kitActive) { try { window.YMK.close(); } catch (_) { /* 已關 */ } }
+  if (kitActive) { try { window.YMK.close(); } catch (_) { /* Closed */ } }
   kitActive = false;
   if (nativeTimer) clearInterval(nativeTimer);
   nativeTimer = null;
@@ -368,7 +368,7 @@ function setChecks(c) {
   for (const [k, id] of Object.entries(map)) { $(id).classList.toggle('good', c[k] === true); $(id).classList.toggle('bad', c[k] === false); }
 }
 
-// ---------------------------------------------------------------- 光線指紋
+// ---------------------------------------------------------------- Lighting fingerprint
 const probe = document.createElement('canvas');
 function lightStats(source, sw, sh) {
   probe.width = 60; probe.height = 80;
@@ -403,14 +403,14 @@ function fingerprintMessages(fp) {
   return msgs;
 }
 
-// ---------------------------------------------------------------- 確認照片
+// ---------------------------------------------------------------- Confirm photo
 function loadImage(src) {
   return new Promise((resolve, reject) => { const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = src; });
 }
 async function goCheck(dataUrl, demo = false, points = {}) {
   let img;
   try { img = await loadImage(dataUrl); } catch (_) { alert(__t('s0204', '讀不到這張照片')); return; }
-  // 拍攝小幫手：自己的照片先檢查能不能用；可以用就自動裁成臉寬約 66%、3:4（只裁切與縮放，不修圖）
+  // 10-21 capture assistant: the user's own photo is first checked for usability; if usable it is auto-cropped so the face is about 66% of the width, 3:4 (crop and resize only, no retouching)
   let guide = null;
   state.guideBlock = false;
   if (!demo) {
@@ -421,14 +421,14 @@ async function goCheck(dataUrl, demo = false, points = {}) {
   }
   state.photo = dataUrl;
   state.demo = demo;
-  state.wbGains = demo ? null : grayWorldGains(img);   // 室內黃光等偏色：灰世界法估增益，只校正一半、限制 ±8%
-  if (!demo) state.expected = null;          // 預期妝容只有示範照有
+  state.wbGains = demo ? null : grayWorldGains(img);   // Color casts such as indoor yellow light: estimate the gain with the gray-world method, correct only half, limited to +-8%
+  if (!demo) state.expected = null;          // Only the demo photo has an expected makeup
   state.useExpected = false;
-  state.cardPick = null; state.suggested = null; state.toneUnsure = true;   // 換照片：色卡選擇重來
+  state.cardPick = null; state.suggested = null; state.toneUnsure = true;   // Changing the photo: the swatch selection starts over
   state.browPts = []; if ($('brow-dots')) { drawBrowDots(); $('browpts-status').hidden = true; }
   $('check-photo').src = dataUrl;
-  $('check-photo').parentElement.style.setProperty('--ar', String(img.naturalWidth / img.naturalHeight));   // 照片框寬度上限用長寬比算
-  // 版面就緒才讓人點，點選座標才準；最多等 1.5 秒（背景分頁有時 decode 不回應）
+  $('check-photo').parentElement.style.setProperty('--ar', String(img.naturalWidth / img.naturalHeight));   // The upper limit of the photo frame width is computed from the aspect ratio
+  // Let people tap only once the layout is ready, so tap coordinates are accurate; wait at most 1.5 seconds (background tabs sometimes do not respond to decode)
   await Promise.race([$('check-photo').decode().catch(() => {}), new Promise((r) => setTimeout(r, 1500))]);
   const box = $('check-msgs');
   box.innerHTML = '';
@@ -455,10 +455,10 @@ async function goCheck(dataUrl, demo = false, points = {}) {
   state.lowRes = lowRes;
   setSampleMode('skin', true);
   $('sample-dot').hidden = true;
-  // 示範照用人工確認過的點；自己的照片先用臉部定位自動取色（失敗才退回：白化症取受光側臉頰、白斑症請本人點）
+  // Demo photos use manually confirmed points; the user's own photo first uses face localization to pick the color automatically (only on failure fall back: for albinism take the lit-side cheek, for vitiligo ask the user to tap)
   state.skinHex = null;
   clearAutoDots();
-  if (state.guideBlock) setSkin(null);                              // 小幫手擋下的照片取不出可信的顏色，不顯示假結果
+  if (state.guideBlock) setSkin(null);                              // A photo rejected by the assistant yields no trustworthy color, so no fake result is shown
   else if (points.normal) setSkin(sampleSkin(img, { x: points.normal[0], y: points.normal[1] }), 'demo');
   else if (!vit) setSkin(autoSkin(img), 'cheek');
   else setSkin(null);
@@ -466,9 +466,9 @@ async function goCheck(dataUrl, demo = false, points = {}) {
   if (points.brow) setBrow(sampleSkin(img, { x: points.brow[0], y: points.brow[1] }, true), 'demo');
   if (state.guideBlock) $('auto-status').textContent = __t('s0208', '這張先不取色：請照上面的方法重拍或換一張。');
   else if (!points.normal) runAutoColors(img, dataUrl);
-  if (vit && window.FaceAuto) {                                     // 先載入臉部定位、臉部分割（額頭到髮際）、OpenCV，等一下局部遮瑕比較快
+  if (vit && window.FaceAuto) {                                     // Load face localization, face segmentation (forehead to hairline) and OpenCV first, so local concealing is faster later
     window.FaceAuto.loadLandmarker();
-    if (window.FaceAuto.segmentCached) setTimeout(() => window.FaceAuto.segmentCached(dataUrl, img), 300);   // 背景先分割（額頭到髮際）
+    if (window.FaceAuto.segmentCached) setTimeout(() => window.FaceAuto.segmentCached(dataUrl, img), 300);   // Segment the background first (forehead to hairline)
     if (window.Vendor) window.Vendor.opencv().catch(() => {});
   }
   updateTry();
@@ -478,7 +478,7 @@ async function goCheck(dataUrl, demo = false, points = {}) {
   speak([guideText, ...msgs.map((m) => m[1])].filter(Boolean).join(__t('s0391', '。') + __sp()));
 }
 
-// ---------------------------------------------------------------- 拍攝小幫手（web/capture_guide.js 的規則；照片只在手機上算）
+// ---------------------------------------------------------------- Capture assistant (rules from web/capture_guide.js; the photo is only computed on the phone)
 const GUIDE_CHIP = { pass: __t('s0209', '可以用'), warn: __t('s0210', '可以用，有小提醒'), block: __t('s0211', '換一張會更好') };
 async function runCaptureGuide(img) {
   if (!window.CaptureGuide || !window.FaceAuto || !window.FaceAuto.measure) return { guide: null };
@@ -490,7 +490,8 @@ async function runCaptureGuide(img) {
   const guide = window.CaptureGuide.assess(m);
   const c = guide.crop;
   if (guide.overall === 'block' || !c || (c.w >= m.imgW * 0.97 && c.h >= m.imgH * 0.97)) return { guide };
-  const cv = document.createElement('canvas');                // 只裁切、縮放（2D canvas 輸出 sRGB），不磨皮、不改輪廓
+  if (Math.min(c.w, c.h) < MIN_SHORT) return { guide };      // After cropping, the short side would fall below the lower limit (real device 590x787): do not crop, keep the original resolution
+  const cv = document.createElement('canvas');                // Only crop and resize (2D canvas outputs sRGB); no skin smoothing, no change to the outline
   cv.width = c.w; cv.height = c.h;
   cv.getContext('2d').drawImage(img, c.x, c.y, c.w, c.h, 0, 0, c.w, c.h);
   const url = cv.toDataURL('image/jpeg', 0.92);
@@ -517,10 +518,10 @@ function renderGuide(guide, demo) {
   return [sum, ...shown.map((i) => i.hint)].join('');
 }
 
-// ---------------------------------------------------------------- 取膚色（本機計算，不上傳）
+// ---------------------------------------------------------------- Skin-tone sampling (computed locally, not uploaded)
 const SKIN_W = 300;
 function sampleSkin(img, point, dark = false, radius = 6) {
-  // point：0–1 的相對座標，取周圍 (2r+1)² 像素（300px 寬的縮圖上）
+  // point: relative coordinates 0-1; samples the surrounding (2r+1)^2 pixels (on a 300px-wide thumbnail)
   const h = Math.round(SKIN_W * img.naturalHeight / img.naturalWidth);
   const c = document.createElement('canvas');
   c.width = SKIN_W; c.height = h;
@@ -533,15 +534,15 @@ function sampleSkin(img, point, dark = false, radius = 6) {
     const d = g.getImageData(Math.max(0, cx - r), Math.max(0, cy - r), 2 * r + 1, 2 * r + 1).data;
     for (let i = 0; i < d.length; i += 4) px.push([d[i], d[i + 1], d[i + 2]]);
   }
-  // 膚色用中位數，避開眉毛、痣、反光；眉色只取較暗的 30%（毛髮），避開毛間皮膚
+  // Skin tone uses the median, avoiding eyebrows, moles and glare; eyebrow color takes only the darker 30% (hair), avoiding the skin between hairs
   const pool = dark ? px.sort((a, b) => lum(a) - lum(b)).slice(0, Math.max(1, Math.floor(px.length * 0.3))) : px;
   const med = (k) => pool.map((v) => v[k]).sort((a, b) => a - b)[pool.length >> 1];
-  const wb = state.wbGains || [1, 1, 1];                // 自己的照片：取色前先做白平衡校正（示範照不校正）
+  const wb = state.wbGains || [1, 1, 1];                // The user's own photo: white-balance correction before sampling (the demo photo is not corrected)
   return '#' + [0, 1, 2].map((k) => Math.min(255, Math.round(med(k) * wb[k])).toString(16).padStart(2, '0')).join('').toUpperCase();
 }
 function lum(v) { return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; }
 function grayWorldGains(img) {
-  // 灰世界法（經驗建議）：整張平均應接近灰色；人像整張不一定是灰，所以只校正一半、限制在 ±8%
+  // Gray-world method (suggested by an external advisor, 10-16): the whole-image average should be close to gray; a portrait is not necessarily gray overall, so correct only half, limited to +-8%
   const c = document.createElement('canvas'); c.width = 64; c.height = Math.max(1, Math.round(64 * img.naturalHeight / img.naturalWidth));
   const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, c.width, c.height);
   const d = g.getImageData(0, 0, c.width, c.height).data; const s = [0, 0, 0]; let n = 0;
@@ -554,7 +555,7 @@ function luma(hex) {
   return 0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255);
 }
 function autoSkin(img) {
-  // 兩頰分開取，用受光那一側（側光時平均會被陰影拉暗）
+  // Sample the two cheeks separately and use the lit side (with side lighting the average is pulled darker by shadow)
   const left = sampleSkin(img, { x: 0.3, y: 0.62 }), right = sampleSkin(img, { x: 0.7, y: 0.62 });
   return luma(left) >= luma(right) ? left : right;
 }
@@ -574,7 +575,7 @@ function setPatch(hex, src = 'tap') {
 }
 function updateTry() {
   const vit = state.condition === 'vitiligo';
-  $('btn-try').disabled = !!state.lowRes || !!state.guideBlock || !state.skinHex || (vit && !state.patchHex);   // 取到膚色才能看色號；小幫手擋下時先換一張
+  $('btn-try').disabled = !!state.lowRes || !!state.guideBlock || !state.skinHex || (vit && !state.patchHex);   // Shades can be viewed only once a skin tone has been obtained; if the assistant rejected the photo, switch to another photo first
 }
 function setBrow(hex, src = 'tap') {
   state.browHex = hex;
@@ -589,7 +590,7 @@ function setSampleMode(mode, quiet = false) {
   if (!quiet) speak({ brow: __t('s0228', '請點一下眉毛'), patch: __t('s0229', '請點一下淺色區塊'), skin: __t('s0230', '請點一下臉頰或下顎線，臉和脖子交界的地方'),
     browpts: __t('s0231', '請依序點眉頭、眉峰、眉尾。先點照片左邊那道眉，再點右邊那道。') }[mode]);
 }
-// ---------------------------------------------------------------- 眉形三點（眉毛很淡時，官方與臉部點位都會把眉畫錯位置）
+// ---------------------------------------------------------------- Three-point eyebrow shape (when the eyebrows are very faint, both the official result and the face landmarks put the brows in the wrong place)
 const BROW_STEP = [__t('s0232', '眉頭'), __t('s0233', '眉峰'), __t('s0234', '眉尾')];
 function drawBrowDots() {
   const box = $('brow-dots');
@@ -603,7 +604,7 @@ function browLight() {
   return !!(state.browHex && state.skinHex) && luma(state.skinHex) - luma(state.browHex) < 25;
 }
 function updateBrowTip() { $('browpts-tip').hidden = !browLight(); }
-function browPale() {                       // 眉毛很淡（白眉）：試妝不畫眉、調整頁不給眉毛（白眉不畫）
+function browPale() {                       // Very faint eyebrows (white brows): the try-on does not draw brows and the adjust page does not offer brows (design decision,: do not draw white brows)
   const fl = state.recommendation && state.recommendation.full_look;
   return fl && typeof fl.brow_pale === 'boolean' ? fl.brow_pale : browLight();
 }
@@ -615,7 +616,7 @@ function browColorFor(id) {
 }
 function useLocalBrow(sel) { return state.browPts.length >= 6 && sel.brow && sel.brow !== 'keep'; }
 function drawBrowsOn(dataUrl, color) {
-  // 三點畫眉：通過眉峰的二次曲線，眉頭粗、眉尾細；先半透明疊色（色彩相乘，保留皮膚紋理），再加細毛筆觸
+  // Three-point brow drawing: a quadratic curve through the brow peak, thick at the head and thin at the tail; first overlay a semi-transparent color (multiplicative, keeping the skin texture), then add fine hair strokes
   return loadImage(dataUrl).then((img) => {
     const W = img.naturalWidth, H = img.naturalHeight;
     const c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -628,13 +629,13 @@ function drawBrowsOn(dataUrl, color) {
       const len = Math.hypot(t.x - h.x, t.y - h.y);
       const pt = (u) => ({ x: (1 - u) ** 2 * h.x + 2 * (1 - u) * u * cx + u * u * t.x, y: (1 - u) ** 2 * h.y + 2 * (1 - u) * u * cy + u * u * t.y });
       const tan = (u) => { const dx = 2 * (1 - u) * (cx - h.x) + 2 * u * (t.x - cx), dy = 2 * (1 - u) * (cy - h.y) + 2 * u * (t.y - cy); const m = Math.hypot(dx, dy) || 1; return { x: dx / m, y: dy / m }; };
-      const width = (u) => len * (0.22 - 0.14 * u);          // 眉頭約 22%、眉尾約 8% 的眉長（白眉要蓋得住原眉）
+      const width = (u) => len * (0.22 - 0.14 * u);          // Head about 22% and tail about 8% of the brow length (white brows must cover the original brow)
       const top = [], bot = [];
       for (let i = 0; i <= 30; i++) {
         const u = i / 30, p = pt(u), d = tan(u), w = width(u) / 2;
         top.push({ x: p.x + d.y * w, y: p.y - d.x * w }); bot.push({ x: p.x - d.y * w, y: p.y + d.x * w });
       }
-      // 眉形另畫在一層：眉頭淡、眉身深、眉尾略淡；縮小再放大讓邊緣柔和（iPhone Safari 不支援 canvas filter）
+      // Draw the brow shape on its own layer: faint at the head, dark in the body, slightly faint at the tail; shrink then enlarge to soften the edges (iPhone Safari does not support canvas filter)
       const m = document.createElement('canvas'); m.width = W; m.height = H;
       const mg = m.getContext('2d');
       const grad = mg.createLinearGradient(h.x, h.y, t.x, t.y);
@@ -648,7 +649,7 @@ function drawBrowsOn(dataUrl, color) {
       g.globalCompositeOperation = 'multiply'; g.imageSmoothingQuality = 'high';
       g.globalAlpha = 0.5; g.drawImage(s, 0, 0, W, H);
       g.globalAlpha = 0.3; g.strokeStyle = color; g.lineWidth = Math.max(1, len * 0.005); g.lineCap = 'round';
-      for (let n = 0; n < 140; n++) {                         // 細毛：沿眉的方向、略往上斜；眉頭少、眉身多
+      for (let n = 0; n < 140; n++) {                         // Fine hairs: along the brow direction, slanting slightly upward; fewer at the head, more in the body
         const u = Math.sqrt(rnd()), p = pt(u), d = tan(u), off = (rnd() - 0.5) * width(u) * 0.9;
         const sx = p.x - d.y * off, sy = p.y + d.x * off, l = len * (0.04 + 0.05 * rnd()), ang = Math.atan2(d.y, d.x) + (d.x >= 0 ? -0.35 : 0.35);
         g.beginPath(); g.moveTo(sx, sy); g.lineTo(sx + Math.cos(ang) * l, sy + Math.sin(ang) * l); g.stroke();
@@ -679,7 +680,7 @@ async function onPhotoTap(e) {
   speak(__t('s0240', '已改用你點選的膚色'));
 }
 
-// ---------------------------------------------------------------- 自動取色（face_auto.js）
+// ---------------------------------------------------------------- Automatic color picking (face_auto.js)
 function clearAutoDots() { $('auto-dots').innerHTML = ''; $('auto-status').textContent = ''; }
 function drawAutoDots(points) {
   const box = $('auto-dots');
@@ -697,7 +698,7 @@ async function runAutoColors(img, dataUrl) {
   if (!window.FaceAuto) return;
   $('auto-status').textContent = __t('s0241', '自動找臉部位置、取色中…');
   const r = await window.FaceAuto.autoColors(img, state.condition, sampleSkin);
-  if (state.photo !== dataUrl) return;                       // 期間換了照片
+  if (state.photo !== dataUrl) return;                       // The photo was changed in the meantime
   if (!r) { $('auto-status').textContent = __t('s0242', '沒有找到臉的位置，請在照片上點選取色。'); return; }
   if (r.skin) setSkin(r.skin, 'auto');
   if (r.patch) setPatch(r.patch, 'auto');
@@ -711,7 +712,7 @@ async function runAutoColors(img, dataUrl) {
   speak($('auto-status').textContent);
 }
 
-// ---------------------------------------------------------------- 白斑：膚色分析（本機，不扣點）
+// ---------------------------------------------------------------- Vitiligo: skin-tone analysis (local, no credits spent)
 function recommendPayload() {
   const vit = state.condition === 'vitiligo';
   return { condition: state.condition, style: state.style, brow_hex: state.browHex,
@@ -724,7 +725,7 @@ const LEVEL_TEXT = {
   two_shade_plus: __t('s0247', '色差很明顯：建議兩個色號，必要時先修色。'),
 };
 function bestCode(ms) {
-  // 最近的色號也「沒有接近色」時不假裝有：直接說型錄沒有，色塊顯示要找的顏色
+  // When even the nearest shade is 'not a close match', do not pretend: say plainly that the catalog does not have it, and show the color to look for as a swatch
   if (!ms.length || ms[0].verdict_code === 'no_match') return __t('s0249', '型錄沒有接近的色號，照色塊到專櫃找');
   return ms[0].fit ? `${ms[0].brand} ${ms[0].code}` : ms[0].code;
 }
@@ -773,12 +774,12 @@ const TONE_OF_ID = { pink_cool: 'cool', neutral: 'neutral', warm_ivory: 'warm' }
 const ID_OF_TONE = { cool: 'pink_cool', neutral: 'neutral', warm: 'warm_ivory' };
 const TONE_NAME = { cool: __t('s0262', '冷調'), neutral: __t('s0166', '中性'), warm: __t('s0263', '暖調') };
 function renderPick(rec) {
-  // 自己選膚色色卡：程式建議的那格標「建議」；點了就照那一格重新對色號
+  // The user picks a skin-tone swatch themselves: the cell the program suggested is labeled 'suggested'; tapping re-matches the shades from that cell
   if (!state.skinCard) return;
   if (!state.suggested || !state.cardPick) state.suggested = { level: rec.skin_level, tone: TONE_OF_ID[rec.undertone_id] || 'neutral' };
   const sug = state.suggested, cur = state.cardPick || sug;
-  // 用 外部查證 改寫的 A 版（使用者視角）取代「程式建議…」。依據：官方膚色判讀對很淺的膚色偏暗偏黃（實測 ΔE00 9.8–12.5，
-  // <本機紀錄>）。這句只適用膚色很淺的入口；另一個入口不能說「白皙」，只拿掉「程式」二字
+  // 10-21 (design decision): the rewritten version A (user's point of view) replaces 'the program suggests...'. Basis: the official skin-tone reading runs dark and yellow for very light skin (measured dE00 9.8-12.5,
+  // <本機紀錄>). This sentence applies only to the entrance for very light skin; the other entrance cannot say 'fair', and only the word 'program' is removed
   const hint = state.condition === 'albinism'
     ? __t('s0264', '為了不讓白皙的你被配到太深、偏黃的粉底，我們直接用你照片上的膚色來幫你對色。若覺得不像，隨時都能點選別格調整喔！')
     : __T('s0265', () => `建議第 ${sug.level} 級・${TONE_NAME[sug.tone]}（色卡上標「建議」的那格）。照片會受光線影響，覺得不像可以自己點一格。`, () => `Suggested: level ${sug.level}・${TONE_NAME[sug.tone]} (the cell marked "Suggested" on the card). Photos are affected by lighting; if it doesn't look right, you can tap a cell yourself.`);
@@ -812,7 +813,7 @@ function renderPick(rec) {
 }
 function choosePick(level, tone) {
   state.cardPick = { level, tone };
-  state.toneUnsure = false;                       // 自己選了冷暖，就照本人的
+  state.toneUnsure = false;                       // If the user picked warm/cool themselves, follow the user's choice
   state.tone = ID_OF_TONE[tone];
   state.recommendation = null;
   speak(__T('s0269', () => `第 ${level} 級，${TONE_NAME[tone]}`, () => `Level ${level}, ${TONE_NAME[tone]}`));
@@ -850,10 +851,10 @@ async function goShade() {
   setupCamo();
   speak(`${$('shade-summary').textContent}`);
 }
-// ---------------------------------------------------------------- 底妝預覽（shade_preview.js，手機上算、不扣點）
+// ---------------------------------------------------------------- Foundation preview (shade_preview.js, computed on the phone, no credits spent)
 const pv = { hex: null, list: [], picking: false, look: 'base', gen: 0 };
-// 今天的妝容模板：色碼取自三種妝感的完整妝容、
-// <本機紀錄>（鉑金髮女王三種）與 fair_male_grooming 研究（理容潤唇）
+// Today's makeup template : color codes come from the full looks of three makeup moods,
+// <本機紀錄> (the three platinum-blonde queen looks) and the fair_male_grooming study (grooming lip balm)
 const LOOK_TEMPLATES = [
   { id: 'base', label: __t('s0281', '只有底妝'), layers: [] },
   { id: 'grooming', label: __t('s0282', '理容'), cov: 50, layers: [{ item: 'lip', hex: '#C99198', a: 0.25, name: __t('s0283', '潤色護唇') }] },
@@ -888,7 +889,7 @@ function renderPvLooks() {
   }
 }
 async function pvLookMatches() {
-  // 模板裡的唇、腮紅 → 型錄最接近的色號（色差排序）
+  // Lips and blush in the template -> the closest shades in the catalog (sorted by color difference)
   const t = lookOf(pv.look), box = $('pv-look-match');
   const want = t.layers.filter((l) => l.item === 'lip' || l.item === 'blush');
   if (!want.length) { box.innerHTML = ''; return; }
@@ -904,7 +905,7 @@ async function pvLookMatches() {
 }
 function covLabel(v) { return v <= 30 ? __t('s0294', '輕薄') : v <= 55 ? __t('s0284', '自然') : v <= 80 ? __t('s0295', '遮蓋較高') : __t('s0296', '全覆蓋'); }
 function pvShadeList() {
-  // 候選：三條試色（淺一階／最接近／深一階）＋各品牌最接近的色號
+  // Candidates: three trial strips (one step lighter / closest / one step deeper) plus the closest shade of each brand
   const b = state.recommendation && state.recommendation.base;
   if (!b) return [];
   const list = [];
@@ -925,7 +926,7 @@ async function setupPreview() {
   renderPvChips();
   renderPvLooks();
   $('pv-status').textContent = __t('s0298', '找臉的位置中…');
-  const gen = ++pv.gen;                          // 快速換照片時，舊的準備結果不能蓋掉新的
+  const gen = ++pv.gen;                          // When photos are changed quickly, a stale preparation result must not overwrite the new one
   try {
     await window.ShadePreview.prepare(state.photo);
     if (gen !== pv.gen) return;
@@ -949,7 +950,7 @@ function pvRender() {
   const v = Number($('pv-cov').value);
   $('pv-cov-v').textContent = __T('s0301', () => `${v}（${covLabel(v)}）`, () => `${v} (${covLabel(v)})`);
   const orig = $('pv-orig').getAttribute('aria-pressed') === 'true';
-  clearTimeout(pvTimer);                         // 拉滑桿時合併連續事件（不用 requestAnimationFrame：頁面在背景時不會執行）
+  clearTimeout(pvTimer);                         // Coalesce consecutive events while the slider is dragged (requestAnimationFrame is not used: it does not run while the page is in the background)
   pvTimer = setTimeout(() => {
     try {
       const layers = lookOf(pv.look).layers;
@@ -983,7 +984,7 @@ async function pvPickAt(e) {
   }
   $('pv-status').textContent = __T('s0304', () => `取到 ${hex}，查對應色號中…`, () => `Got ${hex}; looking up the matching shade…`);
   try {
-    // 吸管取到的顏色 → 膚色色卡格子 → 同一格的專櫃色號（和色號頁同一套），另附遮瑕
+    // Eyedropper color -> skin-tone swatch cell -> counter shade of the same cell (the same set as the shade page), plus a concealer
     const res = await api('/api/card', { undertone: state.tone, undertone_unsure: state.toneUnsure && !state.toneFromSkin,
       selection: {}, skin_hex: hex, condition: 'albinism', source: 'all' });
     const f = res.items.find((i) => i.item === 'foundation'), c = res.items.find((i) => i.item === 'concealer');
@@ -1003,7 +1004,7 @@ async function pvPickAt(e) {
   }
 }
 
-// ---------------------------------------------------------------- 淺色區塊局部遮瑕（camo_editor.js：OpenCV 找邊界→SVG 路徑可編輯→Canvas 分層）
+// ---------------------------------------------------------------- Local concealing for light patches (camo_editor.js: OpenCV finds the boundary -> editable SVG path -> Canvas layering)
 const camo = { gen: 0, stage: null, layer: null, sel: null, timer: 0, mode: 'makeup', off: {}, check: null, rgen: 0 };
 const camoOn = (id) => $(id).getAttribute('aria-pressed') === 'true';
 async function setupCamo() {
@@ -1038,7 +1039,7 @@ function camoLabels() {
   const np = Number($('camo-passes').value);
   $('camo-passes-v').textContent = np === 1 ? __t('s0311', '1 次') : __T('s0312', () => `${np} 次（第 2 次起只補還有差的地方）`, () => `${np} times (from the 2nd time on, only the spots that still differ are filled in)`);
 }
-const CAMO_ROUND_COLOR = ['#2fbf71', '#ff9f1c', '#3a86ff', '#e63946'];   // 綠＝第一次抓到；橘／藍／紅＝第 1／2／3 輪抓到的留白
+const CAMO_ROUND_COLOR = ['#2fbf71', '#ff9f1c', '#3a86ff', '#e63946'];   // Green = caught the first time; orange / blue / red = the blanks left after rounds 1 / 2 / 3
 async function camoDrawEditor() {
   const K = await Vendor.konva(), sz = CamoEditor.size();
   if (camo.stage) camo.stage.destroy();
@@ -1065,10 +1066,10 @@ async function camoDrawEditor() {
   }
   camo.layer.draw();
 }
-// 額頭、下巴分區判別的說明（camo_editor.js zoneDetect）：各區用自己的受光亮度當參考
-// 化妝塗層模式用的產品：色號直接來自推薦；遮瑕從推薦清單挑「換算到這張照片後最接近周圍膚色」的一支
-// 示範照：遮瑕、粉底、修容用「對目標妝容擬合」對到的色號與不透明度。
-// 擬合是在預期妝容底妝色（base.normal）的換算下做的，所以只在「用預期妝容對色號」時套用；自己的照片沒有目標圖。
+// Notes on the forehead / chin zone detection (camo_editor.js zoneDetect): each zone uses its own lit brightness as the reference
+// Products for the makeup-layer mode : shades come straight from the recommendation; the concealer is picked from the recommendation list as the one 'closest to the surrounding skin once converted to this photo'
+// Demo photo: concealer, foundation and contour use the shades and opacities fitted by 'fitting to the target makeup' .
+// The fit was done under the conversion of the expected makeup's base color (base.normal), so it applies only when 'match shades using the expected makeup' is on; the user's own photo has no target image.
 function camoFit() {
   return state.useExpected && state.expected && state.expected.layer_fit ? state.expected.layer_fit : null;
 }
@@ -1099,7 +1100,7 @@ const camoColors = (p) => {
   const b = state.recommendation.base, hx = (l) => (l || []).map((m) => m && m.hex).filter(Boolean);
   return { corrector: p.corrector && p.corrector.hex, concealer: p.concealer && p.concealer.hex, edge: p.edge && p.edge.hex,
     foundation: p.foundation.hex, contour: p.contour.hex, highlight: p.highlight.hex, normal: p.normal,
-    // 美妝教學「一支對不準就兩支混」：遮瑕可從遮瑕＋粉底候選裡混，修邊從交界候選、粉底從粉底候選
+    // Makeup tutorial 'if one shade does not match, mix two': the concealer may be mixed from concealer + foundation candidates, the edge blend from border candidates, the foundation from foundation candidates
     concealerList: camoFit() ? [p.concealer.hex] : [...new Set([...hx(b.concealer), ...hx(b.foundation)])], edgeList: hx(b.edge),
     foundationList: camoFit() ? [p.foundation.hex] : hx(b.foundation) };
 };
@@ -1122,7 +1123,7 @@ function camoSetMode(mode) {
   $('camo-algo').hidden = mode === 'makeup';
   camoRender();
 }
-// 臉部定位交叉核對
+// Face localization cross-check
 async function camoCrossCheck(gen) {
   if (!window.FaceCheck) return;
   try {
@@ -1134,7 +1135,7 @@ async function camoCrossCheck(gen) {
     camoRender();
   } catch (e) { camo.check = { level: 'error' }; }
 }
-// 遮瑕混色配方（美妝教學：一支對不準就兩支混）＋換算到照片後還差多少
+// Concealer mix recipe (makeup tutorial: if one shade does not match, mix two) + how large the remaining difference is once converted to the photo
 function camoMixNote(mix, cols) {
   const m = mix && mix.concealer;
   if (!m || !cols.concealerList) return '';
@@ -1171,11 +1172,11 @@ function camoStatus() {
 }
 const camoOpt = () => ({ coverage: Number($('camo-cov').value) / 100, feather: Number($('camo-feather').value),
   corrector: camoOn('camo-corr'), keepLight: camoOn('camo-light'), passes: Number($('camo-passes').value), highlight: Number($('camo-hi').value) / 100, shine: Number($('camo-shine').value) / 100 });
-// 抓留白再補一輪：
-// 遮完還看得出差異的地方 → OpenCV 抓輪廓 → 新的 SVG 區塊（換顏色、可開關可拖點）→ 用它周圍已遮好的膚色再蓋一層。最多 3 輪。
-// 示範照實測：留白 56% → 19% → 1%，色差 5.5 → 2.8 → 2.0；第 2 輪起鼻樑高光會被壓平，建議補 1 輪就好。
+// Catch the blanks and fill one more round :
+// places that still show a difference after concealing -> OpenCV catches the outline -> new SVG patch (changeable color, can be toggled and its points dragged) -> cover with another layer using the already-concealed skin tone around it. At most 3 rounds.
+// Demo photo measurement: blanks 56% -> 19% -> 1%, color difference 5.5 -> 2.8 -> 2.0; from round 2 the nose-bridge highlight gets flattened, so one round is recommended.
 async function camoRefine() {
-  if (!CamoEditor.size() || camo.busy) return;                  // 連點時不要同一輪抓兩次
+  if (!CamoEditor.size() || camo.busy) return;                  // On repeated taps, do not catch twice in the same round
   camo.busy = true;
   $('camo-status').textContent = __t('s0329', '找還看得出來的留白中…');
   let f;
@@ -1185,8 +1186,8 @@ async function camoRefine() {
   await camoDrawEditor();
   camoRender();
 }
-// 淺色遮罩（伺服器算， 採用 E4）：網頁把照片＋上妝範圍送到電腦 /api/patch-mask，拿回逐像素遮罩；
-// 上完妝的模擬圖再送一次（二次抓取），只補還看得到的地方。電腦連不上時照舊用手機上的偵測。
+// Light-patch mask (computed by the server, adopted 10-17 as E4): the web page sends the photo + makeup region to the computer's /api/patch-mask and gets back a per-pixel mask;
+// the simulated image after the makeup is sent once more (second detection) to fill only what is still visible. If the computer is unreachable, fall back to detection on the phone as before.
 const camoMask = { k1: null, m1: null, ratio: null, k2: null, m2: null, off: false, offAt: 0 };
 function camoMaskPng(arr, W, H) {
   const c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -1201,7 +1202,7 @@ async function camoMaskRead(url, W, H) {
   for (let i = 0; i < a.length; i++) a[i] = d[i * 4] / 255;
   return a;
 }
-function camoMasks(base) {                    // 同時多次重畫只送一次（ 實測：連續兩次 render 會重複送）
+function camoMasks(base) {                    // Several redraws at the same time send only once (10-17 measurement: two consecutive renders would send twice)
   const key = JSON.stringify([state.photo.length, state.photo.slice(-48), base.colors, base.strength, base.opacity, base.off]);
   if (camoMask.inflight && camoMask.inflightKey === key) return camoMask.inflight;
   camoMask.inflightKey = key;
@@ -1210,7 +1211,7 @@ function camoMasks(base) {                    // 同時多次重畫只送一次�
 }
 async function camoMasksRun(base) {
   const S = CamoEditor._debug();
-  if (camoMask.off && Date.now() - camoMask.offAt > 30000) camoMask.off = false;   // 連不上 30 秒後再試一次（不必重新整理）
+  if (camoMask.off && Date.now() - camoMask.offAt > 30000) camoMask.off = false;   // When unreachable, retry after 30 seconds (no refresh needed)
   if (!S || camoMask.off || !MakeupLayers.regionMask) return null;
   const region = camoMaskPng(MakeupLayers.regionMask(), S.W, S.H);
   const k1 = `${state.photo.length}:${state.photo.slice(-48)}:${S.W}x${S.H}`;
@@ -1261,8 +1262,8 @@ function camoRender() {
     } catch (e) { $('camo-status').textContent = e.message; }
   }, 40);
 }
-// 圖文步驟教學：
-// 每一步用本人照片在手機上算出那一步的樣子＋做法＋建議色號＋色差；文字依建議資料（base.steps，附來源）濃縮。
+// Illustrated step tutorial :
+// each step uses the user's own photo to compute, on the phone, how that step looks + how to do it + recommended shade + color difference; the text is condensed from the recommendation data (base.steps, with sources).
 async function camoGuide() {
   const base = state.recommendation && state.recommendation.base;
   const box = $('camo-guide-box'), list = $('camo-guide');
@@ -1289,7 +1290,7 @@ async function camoGuide() {
   const sw = (m) => (m && m.hex ? `<span class="shade"><i style="background:${esc(m.hex)}"></i>${esc(m.brand ? `${m.brand} ${m.code}` : m.code)}</span>` : '');
   const prods = camo.mode === 'makeup' ? camoProducts() : null;
   if (prods) {
-    // 化妝塗層模式：每一步就是畫到那一層為止（同一套 8 層），文字照美妝教學
+    // Makeup-layer mode: each step is drawing up to that layer (the same 8 layers), and the text follows the makeup tutorial
     const cols = camoColors(prods), strength = Number($('mk-strength').value) / 100;
     const msteps = [
       { t: __t('s0337', '保濕＋防曬'), d: __t('s0338', '先擦保濕，再擦防曬，等吸收再上妝；淺色區塊沒有黑色素保護，特別怕曬。照光治療當天不上妝。') },
@@ -1304,7 +1305,7 @@ async function camoGuide() {
     const mItems = [];
     for (const st of msteps) {
       const fit = camoFit();
-      const mk = camoMask.m1 && !camoMask.off ? { patchMask: camoMask.m1, patchMask2: camoMask.m2 } : {};   // 用畫面上那次算好的遮罩
+      const mk = camoMask.m1 && !camoMask.off ? { patchMask: camoMask.m1, patchMask2: camoMask.m2 } : {};   // Use the mask computed on the screen that time
       const u = st.up ? (await MakeupLayers.render(Object.assign({ colors: cols, upTo: st.up, off: camo.off, strength, opacity: fit ? fit.opacity : undefined }, mk))).image : state.photo;
       const img = st.up ? await crop(u, st.outline) : await crop((() => { const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(S.px), W, H), 0, 0); return c.toDataURL('image/jpeg', 0.9); })());
       mItems.push(__T('s0353', () => `<li><img src="${img}" alt="${esc(st.t)}示意"><div><b>${esc(st.t)}</b><p>${esc(st.d)}</p>${sw(st.m)}</div></li>`, () => `<li><img src="${img}" alt="${esc(st.t)} illustration"><div><b>${esc(st.t)}</b><p>${esc(st.d)}</p>${sw(st.m)}</div></li>`));
@@ -1392,7 +1393,7 @@ async function goAdvice() {
   speak(__T('s0372', () => `建議：${(rec.care || []).map((c) => c.text).join('，')}。妝容：${full.why}`, () => `Suggestions: ${(rec.care || []).map((c) => c.text).join(', ')}. Makeup: ${full.why}`));
 }
 
-// ---------------------------------------------------------------- 定案妝容（模擬）：/api/final-look（授權接進兩個入口）
+// ---------------------------------------------------------------- Final look (simulated): /api/final-look (10-19 owner authorized hooking it into both entrances)
 const FINAL_WHO_LABEL = { F: __t('s0373', '女生示範'), M: __t('s0374', '男生示範') };
 async function loadFinalLook(who) {
   const card = $('final-card'), msg = $('final-msg');
@@ -1428,11 +1429,12 @@ async function loadFinalLook(who) {
   }
 }
 
-// ---------------------------------------------------------------- 簡化流程：抓到色號 → 全臉底妝 → 一鍵加妝
-// ---- 翻面卡片
-// 兩張圖疊在同一個框裡，只切換哪張顯示；動畫只用 opacity（style.css .fc-stage），怕動態的人直接換。
+// ---------------------------------------------------------------- Simplified flow: get shade -> full-face foundation -> one-tap add makeup
+// ---- Flip card
+// Two images are stacked in the same frame and only which one shows is toggled; the animation uses opacity only (style.css .fc-stage), and for motion-sensitive people it just switches directly.
 const HINT_ID = { base: 'base-hint', adj: 'adj-hint-flip' };
-const FACE = { base: 'photo', adj: 'photo' };       // 目前顯示的一面：photo＝你的照片、look＝你選的樣子
+const HINT_DONE = { base: false, adj: false };     // Once flipped, the hint is no longer shown (it covers the face; once people know how, it is not needed)
+const FACE = { base: 'photo', adj: 'photo' };       // The side currently shown: photo = your photo, look = the look you chose
 function paintFace(p, face) {
   FACE[p] = face;
   $(`${p}-original`).classList.toggle('on', face === 'photo');
@@ -1442,17 +1444,19 @@ function paintFace(p, face) {
   const b = $(`btn-${p}-flip`);
   b.setAttribute('aria-pressed', String(face === 'look'));
   b.textContent = face === 'photo' ? __t('s0957', '看你選的樣子') : __t('s0061', '看你的照片');
-  $(HINT_ID[p]).textContent = face === 'photo' ? __t('s0958', '點一下看你選的樣子') : __t('s0959', '點一下回到你的照片');      // 提示可以點（靜態，不閃動）
+  const hint = $(HINT_ID[p]);
+  hint.hidden = HINT_DONE[p];
+  hint.textContent = face === 'photo' ? __t('s0958', '點一下看你選的樣子') : __t('s0959', '點一下回到你的照片');      // The hint can be tapped (static, no flashing); it sits on the top edge of the photo and is hidden after the first tap
 }
-function flipFace(p, face) { if (FACE[p] !== face) paintFace(p, face); }
+function flipFace(p, face) { if (FACE[p] !== face) { HINT_DONE[p] = true; paintFace(p, face); } }
 for (const p of ['base', 'adj']) {
   const toggle = () => flipFace(p, FACE[p] === 'photo' ? 'look' : 'photo');
   $(`btn-${p}-flip`).onclick = toggle;
   $(`${p}-stage`).onclick = toggle;
 }
 
-// ---- 輔助層：YouCam 單獨做不到（沒有區域參數、角度或眉毛太淺處理不了…）的部分，由手機上的本機填色補上
-// 本機填色＝底妝預覽（ShadePreview）＋白斑入口的局部遮瑕（Camouflage）；都是規則運算，不呼叫 YouCam、不扣點，全部標「模擬」。
+// ---- Helper layer: the parts YouCam cannot do alone (no region parameter, cannot handle extreme angles or very faint eyebrows...) are filled in by local coloring on the phone
+// Local coloring = foundation preview (ShadePreview) + local concealing for the vitiligo entrance (Camouflage); both are rule-based computation, do not call YouCam, spend no credits, and are all labeled 'simulated'.
 async function localAssistImage() {
   if (!window.ShadePreview || !state.photo) return null;
   try {
@@ -1473,9 +1477,9 @@ function sourceLine(parts) { return __t('s0962', '來源：') + parts.join(' + '
 async function goBase() {
   if (!state.recommendation && !await fetchRecommendation(__t('s0270', '找最接近你膚色的色號…'))) return;
   const rec = state.recommendation;
-  if (!rec.foundation_shade) { goQuick(); return; }            // 沒有色號時退回原本的三選
+  if (!rec.foundation_shade) { goQuick(); return; }            // With no shade, fall back to the original three choices
   state.baseLooks = {
-    // 第一步＝底妝＋打亮（白化症連修容）：白化症「讓五官立體」、白斑症「打亮 T 字」
+    // Step one = foundation + highlight (albinism also gets contour): albinism 'makes features more dimensional', vitiligo 'highlights the T-zone' (design decision, 10-16)
     foundation: { foundation: rec.looks.glow.selection.foundation, highlight: rec.looks.glow.selection.highlight || 'center',
       contour: rec.looks.glow.selection.contour || 'keep' },
     glow: rec.looks.glow.selection,
@@ -1483,7 +1487,7 @@ async function goBase() {
     full: rec.full_look ? rec.full_look.selection : rec.looks.glow.selection,
   };
   $('base-original').src = state.photo;
-  paintFace('base', 'photo');                    // 進來先看你的照片，翻開才看到效果
+  paintFace('base', 'photo');                    // On entering, show your photo first; the effect appears only when flipped
   renderBaseShades();
   await applyBase('full');
   show('view-base');
@@ -1491,7 +1495,7 @@ async function goBase() {
 }
 const BASE_TITLE = { keep: __t('s0138', '保留原樣'), full: __t('s0136', '完整妝容'), foundation: __t('s0376', '全臉底妝＋面中打亮'), glow: __t('s0377', '底妝打亮＋好氣色'), clear: __t('s0378', '底妝打亮＋好氣色＋清晰') };
 const BASE_KEYS = ['keep', 'full', 'foundation', 'glow', 'clear'];
-// 展示模式只重播錄好的幾張真實結果；換了選項照片卻一樣時要講清楚，不讓人以為按鈕壞了
+// Demo mode only replays a few recorded real results; when the photo is the same after changing options, say so clearly so people do not think the button is broken
 const MOCK_SAME = __t('s0379', '展示模式只錄了幾種組合，這個選項的變化要在正式模式（實際試妝）才看得到。');
 const BASE_FIRST = { albinism: __t('s0380', '全臉底妝＋修容打亮'), vitiligo: __t('s0381', '全臉底妝＋T 字打亮') };
 function baseTitle(which) { return which === 'foundation' ? (BASE_FIRST[state.condition] || BASE_TITLE.foundation) : BASE_TITLE[which]; }
@@ -1512,15 +1516,15 @@ async function applyBase(which) {
   for (const it of ITEMS) sel[it.key] = look[it.key] || 'keep';
   busy(true, which === 'foundation' ? __t('s0383', '全臉上底妝中…') : which === 'full' ? __t('s0384', '上完整妝容中…') : __t('s0385', '加妝中…'));
   try {
-    const local = useLocalBrow(sel);                // 本人點了眉形：官方不畫眉，結果出來後手機畫
+    const local = useLocalBrow(sel);                // The user tapped the brow shape: the official result does not draw brows, so the phone draws them after the result arrives
     const res = await api('/api/makeup', { style: state.style, undertone: state.tone, condition: state.condition,
       selection: local ? { ...sel, brow: 'keep' } : sel, ...photoPayload() });
     let image = res.image, extra = '', usedCam = false;
     const sameAsBefore = state.mode === 'mock' && which !== 'keep' && state.baseRaw === res.image && state.baseWhich !== which;
-    state.baseRaw = res.image;                       // YouCam 原始結果（局部遮瑕前），對照用
+    state.baseRaw = res.image;                       // YouCam's original result (before local concealing), for comparison
     state.baseWhich = which;
     if (state.condition === 'vitiligo' && window.Camouflage && state.skinHex && state.patchHex) {
-      // 白斑：試妝不能指定區域 → 在手機上判別白斑範圍，模擬「把周圍膚色的粉底點在白斑上」再全臉推勻
+      // Vitiligo: the try-on cannot target a region -> identify the vitiligo area on the phone, simulate 'dabbing the foundation in the surrounding skin tone onto the patches', then blend it across the whole face
       busy(true, __t('s0386', '找出淺色區塊範圍、局部遮瑕中…'));
       const cam = await window.Camouflage.apply(res.image, state.photo, state.skinHex, state.patchHex).catch(() => null);
       if (cam) {
@@ -1541,7 +1545,7 @@ async function applyBase(which) {
     busy(false);
     speak(__T('s0393', () => `${baseTitle(which)}。${describe(sel)}`, () => `${baseTitle(which)}. ${describe(sel)}`));
   } catch (e) {
-    const fb = sel.foundation !== 'keep' ? await localAssistImage() : null;     // 有要上底妝才有本機能接手的部分
+    const fb = sel.foundation !== 'keep' ? await localAssistImage() : null;     // The part local code can take over exists only when there is foundation to apply
     if (!fb) { busy(false); alert(e.message); return; }
     state.selection = sel;
     state.currentImage = fb;
@@ -1578,9 +1582,9 @@ function renderBaseShades() {
   $('base-sensitive').innerHTML = sensitiveHtml(state.recommendation.sensitive);
 }
 
-// ---------------------------------------------------------------- 快速三選
+// ---------------------------------------------------------------- Quick three choices
 async function goQuick() {
-  // 先膚色匹配（本機、不扣點）：選「不知道」時直接用照片推估的冷暖
+  // Match the skin tone first (local, no credits): when 'not sure' is chosen, use the warm/cool estimated from the photo directly
   state.toneFromSkin = null;
   if (state.skinHex) {
     try {
@@ -1621,7 +1625,7 @@ function describe(sel) {
   return parts.join(__t('s0323', '、')) || __t('s0403', '不加妝');
 }
 
-// ---------------------------------------------------------------- 微調
+// ---------------------------------------------------------------- Fine adjustment
 function goAdjust(card) {
   state.selection = {};
   for (const it of ITEMS) state.selection[it.key] = card.selection[it.key] || 'keep';
@@ -1676,7 +1680,7 @@ function foundationNote() {
   if (!f) return __t('s0407', '先在照片上取膚色，才能自動對應底妝色號。');
   const fit = f.fit ? __T('s0408', () => `，${f.fit}`, () => `, ${f.fit}`) : '';
   const o = optionOf('foundation', state.selection.foundation || 'keep');
-  const limits = o && o.limits ? ` ${o.limits}` : '';      // 例如 BB 霜：快、但色號少、遮蓋輕
+  const limits = o && o.limits ? ` ${o.limits}` : '';      // E.g. BB cream: quick, but few shades and light coverage
   return __T('s0409', () => `底妝顏色自動用最接近你膚色的色號：${f.brand} ${f.code}（膚色色卡第 ${f.level} 級${fit}）。YouCam 底妝會依皮膚範圍全臉均勻上。${limits}`, () => `Foundation color automatically uses the shade closest to your skin tone: ${f.brand} ${f.code} (skin tone card level ${f.level}${fit}). YouCam foundation is applied evenly over the whole face within the skin area. ${limits}`);
 }
 async function changeOption(item, id) {
@@ -1690,11 +1694,11 @@ async function changeOption(item, id) {
     const sameAsBefore = state.mode === 'mock' && res.image === state.currentImage;
     const image = local ? await drawBrowsOn(res.image, browColorFor(next.brow)) : res.image;
     state.selection = next;
-    $('layer-strip').hidden = true;                 // 換了選項，舊的逐層結果不再對應
+    $('layer-strip').hidden = true;                 // After options change, the old layer-by-layer results no longer correspond
     state.currentImage = image;
     $('adj-current').src = image;
     $('adj-caption').textContent = __t('s0147', '目前的妝');
-    flipFace('adj', 'look');                        // 換了選項就翻開看效果
+    flipFace('adj', 'look');                        // After options change, flip to show the effect
     const hint = [sameAsBefore ? MOCK_SAME : '', res.hint || ''].filter(Boolean).join(' ');
     $('adj-hint').hidden = !hint;
     $('adj-hint').textContent = hint;
@@ -1718,13 +1722,13 @@ async function changeOption(item, id) {
 }
 
 function catalogNote() {
-  // 示範型錄模式（錄影片、截圖用）：畫面不出現第三方品牌名稱
+  // Demo catalog mode (for recording videos and screenshots): no third-party brand names appear on screen
   return state.catalogKind === 'demo'
     ? __t('s0411', '畫面上的色號是示範型錄（虛構品牌）。實際使用時，可對應合作品牌官網現行色號：先把膚色對到膚色色卡（深淺 10 級×冷暖），再找同一格的色號。請以專櫃自然光試色為準。')
     : __t('s0412', '底妝、遮瑕：先把膚色對到膚色色卡（深淺 10 級×冷暖），再找各品牌官網現行色號裡同一格的；冷暖用品牌自己的標示。官網色票是網頁顯示色，請以專櫃自然光試色為準。');
 }
 
-// ---------------------------------------------------------------- 逐層看：底妝 → ＋腮紅 → ＋唇 → ＋眉 → ＋睫毛
+// ---------------------------------------------------------------- View layer by layer: foundation -> + blush -> + lips -> + brows -> + lashes
 function layerCount() { return ['foundation', 'blush', 'lip', 'brow', 'lash'].filter((k) => (state.selection[k] || 'keep') !== 'keep').length; }
 function layersLabel() {
   const n = layerCount();
@@ -1746,7 +1750,7 @@ async function runLayers() {
   speak(cells.map((c) => c.label).join(__t('s0418', '，')));
 }
 
-// ---------------------------------------------------------------- 依五官給建議（本人按了才跑；正式模式 10 點）
+// ---------------------------------------------------------------- Suggestions by facial feature (runs only when the user taps; official mode 10 points)
 function faceLabel(again) {
   return __T('s0419', () => `${again ? '重新分析五官' : '依五官給建議'}${state.mode === 'mock' ? '（展示模式：不扣點）' : '（多 10 點）'}`, () => `${again ? 'Re-analyze features' : 'Get suggestions by features'}${state.mode === 'mock' ? ' (Demo mode: no credits deducted)' : ' (10 extra credits)'}`);
 }
@@ -1776,14 +1780,14 @@ async function runFace() {
   speak(r.advice.tips.join(__t('s0391', '。') + __sp()));
 }
 
-// ---------------------------------------------------------------- 配色卡
+// ---------------------------------------------------------------- Palette card
 function cardRows() {
   const rows = [];
   const s = state.presets.styles[state.style];
   rows.push({ k: __t('s0121', '妝感'), v: s.label });
   rows.push({ k: __t('s0173', '膚色'), v: state.presets.undertones[state.tone].label + (state.toneFromSkin ? __sp() + __t('s0422', '（照片推估）') : '') });
   for (const it of ITEMS) {
-    if (it.key === 'foundation') continue;      // 底妝放在「對應色號」那一列
+    if (it.key === 'foundation') continue;      // Foundation goes in the row of its 'matching shade'
     const id = state.selection[it.key] || 'keep';
     rows.push({ k: it.label, v: optionOf(it.key, id).label, hex: optionColor(it.key, id) });
   }
@@ -1801,7 +1805,7 @@ function matchesFor(key) {
   return it ? it.matches : [];
 }
 function matchLine(m) {
-  // 膚色類（經膚色色卡）顯示「同深淺、同冷暖」；其他（眉唇腮紅）顯示色差
+  // Skin-tone items (via the skin-tone swatch) show 'same depth, same warm/cool'; others (brow, lip, blush) show the color difference
   return m.fit ? __T('s0429', () => `${m.brand} ${m.product}：${m.code}（${m.fit}）`, () => `${m.brand} ${m.product}: ${m.code} (${m.fit})`) : __T('s0430', () => `${m.brand} ${m.product}：${m.code}（${m.verdict}，色差 ${m.delta_e}）`, () => `${m.brand} ${m.product}: ${m.code} (${m.verdict}, color difference ${m.delta_e})`);
 }
 function cardStrip(cell) {
@@ -1837,7 +1841,7 @@ function cardRowsWithMatches() {
   return rows;
 }
 function stripesHtml(st) {
-  // 三條試色：同一條產品線的淺一階／最接近／深一階，在下顎線各試一條
+  // Three trial strips: one step lighter / closest / one step deeper from the same product line, one strip each along the jawline
   if (!st || !st.stripes || st.stripes.length < 2) return '';
   const items = st.stripes.map((x) => `<span class="stripe"><span class="stripe-sw" style="background:${esc(x.hex)}"></span>`
     + `<b>${esc(x.role)}</b> ${esc(x.code)}</span>`).join('');
@@ -1894,7 +1898,7 @@ function saveCard() {
   a.click();
 }
 
-// ---------------------------------------------------------------- 綁定與啟動
+// ---------------------------------------------------------------- Bindings and startup
 $('opt-dark').onchange = () => { applyTheme(); savePrefs(true); };
 $('btn-start').onclick = openMirror;
 $('btn-warn-dark').onclick = () => { $('opt-dark').checked = !$('opt-dark').checked; applyTheme(); savePrefs(true); syncWarnDark(true); };
@@ -1921,7 +1925,7 @@ $('file-input').onchange = async (e) => {
 };
 $('btn-retake').onclick = () => show('view-capture');
 $('btn-guide-retake').onclick = () => show('view-capture');
-$('btn-try').onclick = () => { state.recommendation = null; state.useExpected = false; state.cardPick = null; state.suggested = null; if (state.expected) goExpect(); else goShade(); };   // 結果先行：取膚色 →（預期妝容）→ 色號 → 三題 → 建議 → 試妝
+$('btn-try').onclick = () => { state.recommendation = null; state.useExpected = false; state.cardPick = null; state.suggested = null; if (state.expected) goExpect(); else goShade(); };   // Result first: skin tone -> (expected makeup) -> shade -> three questions -> suggestion -> try-on
 $('btn-expect-toggle').onclick = toggleExpect;
 $('btn-expect-back').onclick = () => show('view-check');
 $('btn-expect-next').onclick = () => { state.useExpected = true; state.cardPick = null; state.suggested = null; state.recommendation = null; goShade(); };
@@ -1931,7 +1935,7 @@ $('btn-sens-skip').onclick = () => { state.sens = null; goAdvice(); };
 $('btn-sens-next').onclick = goAdvice;
 $('btn-adv-try').onclick = goBase;
 $('btn-adv-card').onclick = goCard;
-for (const b of BASE_KEYS) $(`btn-base-${b}`).onclick = async () => { await applyBase(b); flipFace('base', b === 'keep' ? 'photo' : 'look'); };      // 選了妝就翻開；選保留原樣就翻回你的照片
+for (const b of BASE_KEYS) $(`btn-base-${b}`).onclick = async () => { await applyBase(b); flipFace('base', b === 'keep' ? 'photo' : 'look'); };      // When a makeup is chosen, flip to show it; when 'keep as is' is chosen, flip back to your photo
 $('btn-base-adjust').onclick = () => goAdjust({ selection: state.selection, image: state.currentImage, title: $('base-caption').textContent });
 $('btn-base-card').onclick = goCard;
 $('mode-patch').onclick = () => setSampleMode('patch');
@@ -1947,7 +1951,7 @@ $('camo-feather').oninput = camoRender;
 $('camo-passes').oninput = camoRender;
 $('camo-hi').oninput = camoRender;
 $('camo-shine').oninput = camoRender;
-$('camo-expand').onchange = async () => {   // 外擴會重抓輪廓（手動拖過的邊界會重設）
+$('camo-expand').onchange = async () => {   // Expanding outward re-detects the outline (manually dragged boundaries are reset)
   camoLabels();
   try { await CamoEditor.findPatches(Number($('camo-expand').value)); camo.sel = null; await camoDrawEditor(); camoRender(); }
   catch (e) { $('camo-status').textContent = e.message; }
@@ -1978,6 +1982,35 @@ $('btn-close-staff').onclick = () => { $('staff-view').hidden = true; };
 $('btn-save-card').onclick = saveCard;
 $('btn-restart').onclick = () => { state.recommendation = null; state.sens = null; renderStart(); show('view-start'); };
 
+// ---- Judge sign-in, merged into the app (the server only enables it with --judge-live; the standalone page /judge stays as a fallback)
+async function judgePost(path, body) {
+  const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+  return { status: r.status, json: await r.json().catch(() => ({})) };
+}
+function openJudgeDialog() {
+  const dlg = $('judge-dialog');
+  $('judge-msg').textContent = '';
+  $('judge-pass').value = '';
+  if (dlg.showModal) dlg.showModal(); else window.location.href = '/judge';
+  $('judge-user').focus();
+}
+async function judgeSignOut() { await judgePost('/api/judge-logout'); window.location.reload(); }
+$('judge-cancel').onclick = () => $('judge-dialog').close();
+$('judge-form').onsubmit = async (ev) => {
+  ev.preventDefault();
+  const go = $('judge-go');
+  go.disabled = true;
+  $('judge-msg').textContent = '';
+  try {
+    const { status, json } = await judgePost('/api/judge-login', { username: $('judge-user').value, password: $('judge-pass').value });
+    if (status === 200 && json.ok) { window.location.reload(); return; }
+    $('judge-msg').textContent = status === 429 ? 'Too many attempts. Please wait a minute.' : 'Wrong username or password.';
+  } catch (_) {
+    $('judge-msg').textContent = 'Could not reach the server. Please try again.';
+  }
+  go.disabled = false;
+};
+
 (async function init() {
   api('/api/skin-card').then((r) => { state.skinCard = r; }).catch(() => {});
   try {
@@ -1986,7 +2019,7 @@ $('btn-restart').onclick = () => { state.recommendation = null; state.sens = nul
     state.mode = s.mode;
     state.catalog = s.catalog || 'all';
     state.catalogKind = s.catalog_kind || (state.catalog === 'demo' ? 'demo' : 'official');
-    if (s.catalog_stats) {            // 首頁數字：實際載入的型錄（乾淨 clone 只有虛構示範型錄）
+    if (s.catalog_stats) {            // Homepage numbers: the catalog actually loaded (a clean clone has only the fictional demo catalog)
       $('stat-shades').textContent = s.catalog_stats.shades;
       $('stat-brands').textContent = s.catalog_stats.brands;
     }
@@ -1998,11 +2031,12 @@ $('btn-restart').onclick = () => { state.recommendation = null; state.sens = nul
     const b = $('mode-banner');
     b.hidden = false;
     b.textContent = s.mode === 'mock' ? __t('s0452', '展示模式：不會呼叫 YouCam、不扣點') : __T('s0453', () => `正式模式：本次已試妝 ${s.calls_used}/${s.max_calls} 次`, () => `Live mode: ${s.calls_used}/${s.max_calls} try-ons used this time`);
-    if (s.judge_login) {              // 伺服器開了評審登入（--judge-live）：橫幅加登入／登出入口，連到獨立的英文登入頁
+    if (s.judge_login) {              // The server has judge login enabled (--judge-live): the banner gets login / logout entries linking to a separate English login page
       const a = document.createElement('a');
-      a.href = '/judge';
+      a.href = '/judge';           // without JavaScript the link still reaches the standalone sign-in page
       a.className = 'banner-link';
       a.textContent = s.judge_signed_in ? 'Judge: sign out' : 'Judge sign-in';
+      a.onclick = (ev) => { ev.preventDefault(); if (s.judge_signed_in) judgeSignOut(); else openJudgeDialog(); };
       b.append(' · ', a);
     }
   } catch (e) {
@@ -2015,5 +2049,5 @@ $('btn-restart').onclick = () => { state.recommendation = null; state.sens = nul
 })();
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname))) {
-  navigator.serviceWorker.register('sw.js').catch(() => { /* 沒有 SW 也能用 */ });
+  navigator.serviceWorker.register('sw.js').catch(() => { /* Works without a SW (service worker) too */ });
 }

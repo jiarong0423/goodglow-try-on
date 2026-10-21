@@ -1,12 +1,12 @@
-"""依五官給建議（YouCam Face Attribute 的類別 → 白話建議＋選項建議）。
+"""Suggestions from facial features (YouCam Face Attribute categories -> plain-language advice + option suggestions).
 
-只「建議」不自動改：本人看完再決定要不要套。規則維度照內部知識庫（白化症妝容研究筆記）第 I 節
-（臉型→腮紅形狀與位置、眉毛濃淡→補眉強度、眼型→睫毛、唇形→唇妝質地；性別不當規則輸入），內容是一般美妝原則。
-欄位名稱照 實測回應：注意 cheekbone 的整體欄位 API 拼成 "overrall"。
+Only "suggests", never changes anything automatically: the person decides after reading whether to apply it. The rule dimensions follow section I of the internal knowledge base (albinism makeup research notes)
+(face shape -> blush shape and position, brow thickness -> brow fill strength, eye shape -> lashes, lip shape -> lip texture; gender is not a rule input); the content is general makeup principles.
+Field names follow the 10-15 measured response ; note that the API spells the overall cheekbone field "overrall".
 """
 from __future__ import annotations
 
-FEATURES = ["faceShape", "eyebrowThickness", "eyeShape", "lipShape", "cheekbones"]   # 1–5 項 = 10 點
+FEATURES = ["faceShape", "eyebrowThickness", "eyeShape", "lipShape", "cheekbones"]   # 1-5 features = 10 points
 
 _FACE = {
     "Round": "臉型偏圓：腮紅從蘋果肌斜斜往太陽穴刷（目前試妝就是斜刷）。",
@@ -43,7 +43,7 @@ def _pick(d: dict, key: str | None):
 
 
 def advise(results: dict, style: str = "natural") -> dict:
-    """results：Face Attribute 回應的 results。回傳 {"tips": [...], "suggest": {item: option_id}, "facts": {...}}。"""
+    """results: the results of the Face Attribute response. Returns {"tips": [...], "suggest": {item: option_id}, "facts": {...}}."""
     tips, suggest, facts = [], {}, {}
     face = results.get("faceshape")
     if face and face != "Unknown":

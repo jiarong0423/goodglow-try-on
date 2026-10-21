@@ -1,13 +1,13 @@
-"""由 docs/i18n/zh_en_map.csv 產生 web/i18n/en.js（英文字典）。英文逐字取自 CSV，不改寫。
+"""Generate web/i18n/en.js (the English dictionary) from docs/i18n/zh_en_map.csv. The English is taken verbatim from the CSV, not rewritten.
 
-  python3 tools/build_i18n.py            # 重新產生 web/i18n/en.js
-  python3 tools/build_i18n.py --check    # 只檢查：現有檔案與重新產生的內容逐字相同、字典與 CSV 逐筆一致
+  python3 tools/build_i18n.py            # regenerate web/i18n/en.js
+  python3 tools/build_i18n.py --check    # check only: the existing file is byte-identical to the regenerated content, and the dictionary matches the CSV entry by entry
 
-字典分三塊
-- I18N_EN       ：一般字串，鍵 sNNNN；位置專屬鍵 sNNNN@檔:行 也放在這裡（來源 docs/i18n/position_overrides.csv）。
-- I18N_EN_TPL   ：含 ${…} 的樣板字串（原樣保留，第 2 階段改成函式）。
-- 不收 NOT_UI 列出的正規表示式列（程式比對用，不是畫面文字）。
-CSV 英文欄雜湊（id<TAB>en 逐行 sha256）寫在檔頭，測試會對照。失敗路徑印 ERROR 並回非零。
+The dictionary has three parts
+- I18N_EN       : plain strings, key sNNNN; position-specific keys sNNNN@file:line also go here (source docs/i18n/position_overrides.csv).
+- I18N_EN_TPL   : template strings containing ${…} (kept as-is; turned into functions in stage 2).
+- Regular-expression rows listed in NOT_UI are excluded (used for program matching, not on-screen text).
+The CSV English-column hash (sha256 over id<TAB>en lines) is written in the file header, and the tests compare against it. Failure paths print ERROR and return non-zero.
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ MAP = ROOT / "docs" / "i18n" / "zh_en_map.csv"
 OVR = ROOT / "docs" / "i18n" / "position_overrides.csv"
 OUT = ROOT / "web" / "i18n" / "en.js"
 OUT_SRV = ROOT / "app" / "i18n_en.json"
-NOT_UI = {"s0889", "s0898", "s0899", "s0900", "s0901"}   # 程式比對用的正規表示式，不是畫面文字
+NOT_UI = {"s0889", "s0898", "s0899", "s0900", "s0901"}   # regular expressions used for program matching, not on-screen text
 
 
 def load():
@@ -41,7 +41,7 @@ def load():
 
 
 def render_server(rows):
-    """伺服器端字典：exact（句子完全相同才換）＋ templates（Python f-string 樣式）。含 ${…} 的是前端樣板，不放。"""
+    """Server-side dictionary: exact (replaced only when the sentence is identical) + templates (Python f-string patterns). Entries containing ${…} are front-end templates and are not included."""
     exact, templates = {}, []
     for r in rows:
         if r["id"] in NOT_UI or not r["en"].strip() or "${" in r["zh"]:
@@ -71,23 +71,23 @@ def main(check: bool) -> int:
     srv = render_server(rows)
     if check:
         if not OUT.exists() or OUT.read_text(encoding="utf-8") != text:
-            print("ERROR: web/i18n/en.js 與 CSV 不一致，請重跑 tools/build_i18n.py")
+            print("ERROR: web/i18n/en.js does not match the CSV; rerun tools/build_i18n.py")
             return 1
         if not OUT_SRV.exists() or OUT_SRV.read_text(encoding="utf-8") != srv:
-            print("ERROR: app/i18n_en.json 與 CSV 不一致，請重跑 tools/build_i18n.py")
+            print("ERROR: app/i18n_en.json does not match the CSV; rerun tools/build_i18n.py")
             return 1
-        # 逐筆比對：字典值＝CSV 英文欄
+        # entry-by-entry comparison: dictionary value == CSV English column
         by_id = {r["id"]: r["en"] for r in rows}
         bad = [k for k, v in {**plain, **tpl}.items() if by_id[k] != v]
         if bad:
-            print(f"ERROR: 字典與 CSV 不符 {bad[:5]}")
+            print(f"ERROR: dictionary does not match the CSV {bad[:5]}")
             return 1
-        print(f"OK：字典 {len(plain)}＋位置鍵 {len(overrides)}＋樣板 {len(tpl)}；CSV 英文欄 sha256={sha}")
+        print(f"OK: dictionary {len(plain)} + position keys {len(overrides)} + templates {len(tpl)}; CSV English column sha256={sha}")
         return 0
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(text, encoding="utf-8")
     OUT_SRV.write_text(srv, encoding="utf-8")
-    print(f"已寫入 {OUT}：字典 {len(plain)}＋位置鍵 {len(overrides)}＋樣板 {len(tpl)}；sha256={sha}")
+    print(f"Wrote {OUT}: dictionary {len(plain)} + position keys {len(overrides)} + templates {len(tpl)}; sha256={sha}")
     return 0
 
 

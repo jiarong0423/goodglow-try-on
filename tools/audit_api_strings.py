@@ -1,20 +1,20 @@
-"""稽核伺服器回傳的文字：對一台執行中的伺服器（--mock）打一組代表性請求，看英文模式還剩多少中文、中文模式有沒有變。
+"""Audit the text the server returns: send a set of representative requests to a running server (--mock) and check how much Chinese remains in English mode and whether Chinese mode changed.
 
-  python3 tools/audit_api_strings.py http://localhost:8802 --lang en     # 列出英文模式回傳裡還剩的中文字串（表外／漏譯）
-  python3 tools/audit_api_strings.py http://localhost:8802 --lang zh --hash   # 印每個請求中文回應的雜湊（拿來和改動前的伺服器比）
-  加 --strict：英文模式還有中文就 exit 1。
+  python3 tools/audit_api_strings.py http://localhost:8802 --lang en     # list the Chinese strings still left in English-mode responses (not in the table / untranslated)
+  python3 tools/audit_api_strings.py http://localhost:8802 --lang zh --hash   # print a hash of each request's Chinese response (to compare with the server before a change)
+  Add --strict: exit 1 if English mode still contains Chinese.
 
-雜湊比對時會先拿掉第 3 階段新增的代碼欄位（verdict_code、role_key），所以「只多了代碼」不算變動。
-請求涵蓋：presets、skin-card、status、catalog、demo-photo（兩個入口）、final-look（兩個入口×示範對象）、
-recommend（兩個入口×妝感×敏感度）、card、match、skin-plan（三種資料來源 all／official／partner）、looks、makeup、layers、face（示範照）。
-失敗路徑印 ERROR 並回非零。
+When comparing hashes, the code fields added in stage 3 (verdict_code, role_key) are removed first, so "only codes were added" does not count as a change.
+Requests cover: presets, skin-card, status, catalog, demo-photo (two entry points), final-look (two entry points x demo subjects),
+recommend (two entry points x makeup style x sensitivity), card, match, skin-plan (three data sources: all/official/partner), looks, makeup, layers, face (demo photo).
+Failure paths print ERROR and return non-zero.
 
---leaks（代稱模式稽核）有兩道獨立檢查：
-  1. brand_alias.leaks()：代換器自己的判定。
-  2. 獨立名單：直接讀所有品牌資料檔（官網、2018 公開色票），把品牌名、產品名正規化（去音符、大小寫、標點）後，
-     在回傳的每個字串值與每個 key 裡找（子字串）；色號全名則看兩處：欄位 code／lighter／deeper 的值整個等於色號全名，
-     或任何字串裡出現「含數字的多字色號全名」（例如 WX 64 Honeyed）。單純色名（Peach、Black Brown）出現在一般文字裡是一般用語，不算。
-     圖片（data: 與很長的編碼字串）略過。兩道任何一道有東西就 exit 1。
+--leaks (alias-mode audit) runs two independent checks:
+  1. brand_alias.leaks(): the substituter's own verdict.
+  2. Independent list: read all brand data files directly (official site, 2018 public swatch list) and normalize brand and product names (strip diacritics, case, punctuation),
+     then search for them (as substrings) in every string value and every key of the response; full shade names are checked in two places: a code/lighter/deeper field whose whole value equals the full shade name,
+     or any string containing a multi-word full shade name that includes a digit (e.g. WX 64 Honeyed). Plain color names (Peach, Black Brown) are ordinary words in running text and do not count.
+     Images (data: URIs and very long encoded strings) are skipped. If either check finds anything, exit 1.
 """
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ def is_opaque(s: str) -> bool:
 
 
 def independent_names(app_dir: Path):
-    """直接讀品牌資料檔（不經代換器），回傳 [(正規化後, 原名, 種類)]。"""
+    """Read the brand data files directly (bypassing the substituter) and return [(normalized, original name, kind)]."""
     names = {}
     for fn in ("partner_shades_official.json", "partner_shades.json"):
         f = app_dir / fn
@@ -91,7 +91,7 @@ def independent_names(app_dir: Path):
 
 
 def independent_leaks(resp, names) -> set:
-    """回傳物件（含 key）裡出現的名單項目。色號全名若只是「代碼」本身（例如 X-004）不算，因為代碼是檯面保留的部分。"""
+    """Return the list entries that appear in the response object (keys included). A full shade name that is only the code itself (e.g. X-004) does not count, because the code is the part kept visible."""
     found = set()
 
     def check(text, field=False):
@@ -101,7 +101,7 @@ def independent_leaks(resp, names) -> set:
         for k, (orig, kind) in names.items():
             if kind in ("brand", "product"):
                 hit = k in t
-            else:                                                   # 色號全名
+            else:                                                   # full shade name
                 hit = (field and t == k) or (k in t and any(c.isdigit() for c in orig))
             if hit:
                 found.add(f"{kind}:{orig}")
@@ -147,7 +147,7 @@ def requests_plan(base, lang):
             plan.append((f"POST makeup {cond} {style}", "/api/makeup", {**demo, "selection": {}}))
             plan.append((f"POST layers {cond} {style}", "/api/layers", {**demo, "selection": {}}))
             plan.append((f"POST face {cond} {style}", "/api/face", {"style": style, "demo": True, "condition": cond}))
-    for src in ("all", "official", "partner"):         # source 由用戶端決定：代稱模式三種都不能外洩
+    for src in ("all", "official", "partner"):         # source is chosen by the client: alias mode must not leak in any of the three
         for cat in ("foundation", "concealer", "blush", "lip", "corrector", "brow"):
             plan.append((f"POST match {cat} {src}", "/api/match", {"hex": "#E1CDC6", "category": cat, "source": src, "top": 80}))
         plan.append((f"POST card albinism {src}", "/api/card", {"undertone": "neutral", "undertone_unsure": False, "selection": {},
@@ -166,7 +166,7 @@ def main() -> int:
     ap.add_argument("--lang", default="en", choices=("en", "zh"))
     ap.add_argument("--hash", action="store_true")
     ap.add_argument("--strict", action="store_true")
-    ap.add_argument("--leaks", action="store_true", help="代稱模式稽核：回傳裡還看得到真實品牌名／產品名就列出（需 app/brand_alias.json 與品牌資料）")
+    ap.add_argument("--leaks", action="store_true", help="alias-mode audit: list any real brand/product names still visible in the responses (needs app/brand_alias.json and the brand data)")
     args = ap.parse_args()
     ba = None
     if args.leaks:
@@ -192,7 +192,7 @@ def main() -> int:
                 total += 1
     if args.leaks:
         leaks = {k: v for k, v in left.items() if k.startswith("LEAK:")}
-        print(f"請求 {len(hashes)} 個；真實品牌／產品名外洩 {len(leaks)} 種")
+        print(f"{len(hashes)} requests; {len(leaks)} kinds of real brand/product names leaked")
         for k, v in sorted(leaks.items()):
             print(f"  [{len(v)}×] {k[5:]}   ← {v[0]}")
         return 1 if leaks else 0
@@ -200,7 +200,7 @@ def main() -> int:
         for k, v in hashes.items():
             print(f"{v}  {k}")
         return 0
-    print(f"請求 {len(hashes)} 個；英文模式剩餘中文字串 {len(left)} 種／{total} 處")
+    print(f"{len(hashes)} requests; {len(left)} kinds / {total} occurrences of Chinese strings remain in English mode")
     for s, names in sorted(left.items(), key=lambda kv: -len(kv[1]))[:80]:
         print(f"  [{len(names)}×] {s[:110]}   ← {names[0]}")
     return 1 if (args.strict and left) else 0

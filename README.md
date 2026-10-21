@@ -1,115 +1,136 @@
-# 好氣色試妝（Good Glow Try-On）
+# Good Glow Try-On
 
-YouCam API Skin AI & eCommerce VTO 黑客松作品，**eCommerce VTO 賽道**（截止頁面顯示 2026-11-03 00:45，時區未確認）。
-English: [README.en.md](README.en.md)。
+Independent hackathon entry, not affiliated with Perfect Corp.; general information only, not medical advice (see [NOTICE.md](NOTICE.md)).
 
-為**白化症、白斑症**設計的試妝 PWA，同一個 App 兩個入口：拍一張像照鏡子的自拍 → 自動取膚色（白斑症另取白斑）→
-**先對到自己的膚色色卡，再依色卡深淺與冷暖排出專櫃色號** → 整臉試妝（底妝、眉、睫毛、腮紅、唇、修容）→ 存成配色卡帶去專櫃。
-**只加妝（YouCam 磨皮固定 0；其中一個定案另有標明的本機柔焦）；保留原樣永遠是第一個選項；妝感分「理容／自然／精緻」，不問性別；紅唇只在「精緻」。**
-大字、暗色模式；自動拍照用 YouCam Camera Kit，即時鏡頭預覽需要 HTTPS、尚未實測；短邊不足 1080 px 的照片會被退回。光太亮時可以改成暗色畫面。
+A try-on web app (PWA) built for the **YouCam API Skin AI & eCommerce VTO hackathon, eCommerce VTO track**. It is designed
+for two groups who rarely see themselves in beauty tech (people with albinism and people with vitiligo; the app screens use neutral descriptions of needs instead of condition names):
 
-設計依據、研究筆記與實測紀錄是內部資料，不在公開 repo。
+- people with **very light skin, brows and lashes** (albinism; many are also light-sensitive), and
+- people whose skin has **lighter patches and uneven tone** (vitiligo).
 
-## 流程
+The project has **not yet been tested with the people it is for**. Thank you to the people and photographers who make photos of themselves publicly available under open licences. Clear photos of people with albinism or vitiligo are scarce, and frontal ones scarcer. For one example the only suitable photo was a side view, so we used an AI-generated frontal illustration made from it, to demonstrate the method. It is not the person's original photo and is labelled Simulated on screen. The people in these photos did not take part in this project and do not endorse it. Demo photos are public stock photos of models; they are not users and do not endorse it. All images are simulated; sources and limits are in [`demo/SOURCES.md`](demo/SOURCES.md) and [`evidence/README.md`](evidence/README.md).
 
-| 步驟 | 白化症 | 白斑症 |
-|---|---|---|
-| 取色 | 臉部定位自動取受光側臉頰、眉色 | 臉部定位自動分「原本膚色／白斑」兩群、取眉色；都能手動點選修正 |
-| 膚色色卡 | 深淺 10 級 × 冷暖 3 種；極淺膚色彩度太低時冷暖判中性、請本人確認 | 原本膚色、白斑交界色各對一格 |
-| 專櫃色號 | 底妝：依色卡排序的色號；同深淺沒有時給一淺一深 1:1 混合 | 底妝、遮瑕打底、修邊色、（偏粉時）修色＋遮瑕步驟（點壓不搓、照光日不上妝） |
-| 試妝（Makeup VTO） | 眉（照原眉色補一點／略深加立體）、睫毛、腮紅、唇 | 整臉底妝、眉、唇、睫毛、修容／打亮（試妝做不到只在白斑上補色，所以只在淺色區塊上的遮瑕由本機程式模擬並標「模擬」，另附色號與步驟說明） |
-| 配色卡 | 先保養、再保護、最後才上妝的步驟＋各項色號，給櫃姐看、存圖 | 同左（白斑版步驟） |
+## At a glance: what is real and what is replayed
 
-## 為什麼先對膚色色卡
+- **Live mode** (`python3 -B app/server.py`, needs your own YouCam key) calls the YouCam S2S REST API for real: file upload, Makeup VTO task, polling, result download, all behind a credit ledger. Request and response details: [`docs/YOUCAM_API_EXAMPLES.md`](docs/YOUCAM_API_EXAMPLES.md).
+- **Demo mode** (`--mock`, what a public demo runs) needs no key and no credits. It shows pictures saved from **80 real YouCam Makeup VTO calls** made on the demo photos (their options, times and checksums are in `demo/replay/*/exact/index.json`), exact for the recorded combinations and the closest otherwise. Every screen says it is a demo.
+- **Local code** does what YouCam's try-on cannot: the lighter-patch mask and patch concealing (it has no region parameter), the skin tone card and shade ranking, and the evidence you can rerun.
 
-照片裡的皮膚受光線、相機影響，比產品色票灰、偏粉（在一張實測照片上，膚色彩度 19、色相 43°；同亮度的產品色票彩度 33–49、
-色相 58–70°），直接比色差會全部「沒有接近色」。所以兩邊各自分級：照片膚色看亮度與色相；專櫃色號看色票亮度與
-**色號本身的冷暖標示**（色號字母或官網說明裡的冷／暖／中性），再依色卡深淺與冷暖、色差排序（是軟排序，不是只限同一格）。程式：`app/skin_card.py`。
+```mermaid
+flowchart LR
+  subgraph Phone["Phone browser (PWA)"]
+    CK["YouCam Camera Kit: capture"] --> LM["MediaPipe landmarks and color picking (local)"]
+    LM --> UI["Skin tone card, shades, try-on card, color card"]
+    LAY["Local concealing layers (patch only, labelled simulated)"] --> UI
+  end
+  subgraph Server["App server (Python)"]
+    CARD["Skin tone card and shade ranking (CIEDE2000)"]
+    MASK["Lighter-patch mask (rule-based, in memory)"]
+    LED["Credit ledger"]
+  end
+  subgraph YouCam["YouCam S2S API"]
+    VTO["Makeup VTO: whole-face try-on"]
+    FA["Face Attribute: optional tips"]
+  end
+  REPLAY[("Demo mode: 80 saved real VTO results")]
+  UI -- "color, options" --> CARD
+  UI -- "photo, region" --> MASK --> LAY
+  UI -- "options, photo" --> LED --> VTO
+  UI -- "only when tapped" --> FA
+  VTO -. "mock mode" .-> REPLAY
+```
 
-## 證據頁：一套妝是怎麼一層一層做出來的
+One app, two entry points. Take a mirror-like selfie, and the app:
 
-[`evidence/`](evidence/README.md)（只放在 GitHub，App 裡不連過去、Docker 映像也不含）：四位示範對象各一條漸進式滑桿（本機逐層 11、4、17 層與階段圖，加上 YouCam 試妝步驟），可切換「這一層改了哪裡」熱圖，每步附做法、用到的技術與交叉驗證；每張圖標「模擬」。資料 `evidence/process.json` 由 `tools/export_process_demo.py` 從本機 runs 匯出（runs 不進版控）。
+1. picks your skin tone on your phone; for the second entry point, the lighter-patch mask is computed by the app server from your photo, held in memory only and not stored (the browser has a fallback when the server is unreachable);
+2. **matches the tone to a 10-level × cool/neutral/warm skin tone card first, then ranks shades** of a catalog by card level and undertone, then by color difference;
+3. tries on the whole face through **YouCam Makeup VTO** (base, brows, lashes, blush, lips, contour; YouCam smoothing is fixed at 0; keeping your look as it is is always the first option). Makeup VTO has no region parameter, so concealing only on a patch is done by our local code and labelled *simulated*;
+4. gives a care card (moisturize, protect, then makeup) with the shades, which you can show to a beauty advisor or save as an image.
 
-## 色號資料
+It only adds makeup and does not smooth the skin through YouCam (smoothing 0); one demo final (very-light-skin Example B) also has a local soft-focus pass that is labelled on the page. Looks are labelled *simulated*, and the app never shows a before/after
+"improvement". Large type and a dark theme are built in; if the light is too bright, the screen can be switched to dark. Auto-capture uses the YouCam Camera Kit and the live camera preview needs HTTPS; it was not tested yet. Photos under 640 px on the short side are rejected (the Camera Kit returns about 680 x 1080 on a phone).
 
-公開版只附**虛構示範型錄**（`app/catalog.json`：品牌與色號全部虛構、色碼是示意值）。
-程式可匯入品牌提供的色號資料（每列：品牌、產品、類別、色號、色碼、說明），放在 `app/partner_shades_official.json` 就會優先使用；
-開發時用來驗證流程的真實品牌資料不放進公開 repo（比賽規則不得含未經許可的第三方商標）。色碼是網頁顯示色，不等於實際產品顏色，畫面一律提醒以專櫃自然光試色為準。
+## Architecture
 
-## 隱私
+Thirteen diagrams (context and deployment, components, operating modes, try-on request, skin tone to shade, uneven-tone pipeline, capture checks, credit ledger, mapping tables, real technique vs simulation, local tools, evidence pipeline, translation pipeline) are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). How it was built (tools, methods, review rounds, and a friction log of what we hit in the YouCam APIs) is in [`docs/PROCESS.md`](docs/PROCESS.md); what we protect and how is in [`THREAT_MODEL.md`](THREAT_MODEL.md); every number in this README is checked against the code and data in CI (`tools/check_claims.py`). The layer-by-layer comparison between real application technique and our simulation is in [`docs/LAYERS_TECHNIQUE_VS_SIMULATION.md`](docs/LAYERS_TECHNIQUE_VS_SIMULATION.md); the local tools are in [`docs/TOOLS_AND_USAGE.md`](docs/TOOLS_AND_USAGE.md).
 
-- 照片只在記憶體內處理（轉正方向、縮圖、重新編碼去掉 EXIF），試妝後就丟；結果圖直接回瀏覽器，伺服器不留。
-- 臉部定位（MediaPipe Face Landmarker，從 jsDelivr／Google 載入模型；拍照用 YouCam Camera Kit，從 YouCam CDN 載入）在手機瀏覽器裡跑，這一步照片不上傳；載入失敗就改手動點選。
-- 淺色區塊遮罩由伺服器計算（照片只放記憶體、不存檔）；真實模式下試妝會把照片送到 YouCam。
-- 膚色色卡、色號比對都在本機算，不扣點、不外送。
-- 妝感、冷暖調、光線指紋（只有亮度與色溫數字）存在手機瀏覽器。
-- API key 只在伺服器端讀，不會進瀏覽器。`photos/`、`runs/`、`.env` 都不進版控。
+![System architecture](docs/assets/diagrams/00-system-architecture.png)
 
-## 結構
+## Quick start (no API key needed)
 
-| 路徑 | 用途 |
-|---|---|
-| `web/` | PWA：開始（入口、妝感、冷暖調）、取景（Camera Kit＋光線指紋＋拒收低解析度）、確認照片（自動取色 `face_auto.js`）、白斑膚色分析、快速三選、逐項微調、配色卡 |
-| `app/server.py` | 本機伺服器：提供 `web/`，代理 YouCam Makeup VTO；`--mock` 不扣點；`--budget-cap` 點數總預算 |
-| `app/skin_card.py` | 膚色色卡：照片膚色 → 色卡格子 → 依色卡與色差排序的色號、兩色混合 |
-| `app/color_engine.py` | Lab／CIEDE2000、型錄載入、白化症底妝與白斑兩色方案、眉色依原眉色、保養保護步驟 |
-| `app/recommend.py` | 膚色匹配 → 整套推薦（色卡、底妝、兩款妝、步驟） |
-| `app/face_rules.py` | 依五官（YouCam Face Attribute）給腮紅、補眉、睫毛、唇妝建議；只建議不自動改 |
-| `app/presets.json`、`app/looks.py` | 妝感、冷暖調、各項選項；依「妝感＋選項 id」組 Makeup VTO 參數並檢查允許範圍 |
-| `app/budget.py` | 點數帳本：先預留、YouCam 回成功才記帳，跨次啟動累計 |
-| `tools/` | YouCam 客戶端與探測工具、翻譯表建置、重現檢查、示範資料匯出（用法見 `docs/TOOLS_AND_USAGE.md`） |
-| `tests/` | 離線測試（假 YouCam，不連網、不扣點） |
-
-## API key
-
-二選一，不要貼到對話或程式碼裡：環境變數 `YOUCAM_API_KEY`，或專案根目錄 `.env` 寫一行 `YOUCAM_API_KEY=...`（只放 API Key，不放 Secret）。
-
-## 執行
-
-展示模式（不扣點；示範照片顯示預先存好的真實 YouCam 結果，選項剛好有錄過（共 80 組）就是那一組的結果，否則用最接近的一張，畫面會註明；自己的照片會回原圖並標示展示模式）：
+Requirements: Python 3.10+ and a modern mobile or desktop browser.
 
 ```bash
 python3 -m pip install -r requirements.txt
 python3 -B app/server.py --mock
 ```
 
-正式模式（每次試妝 1 點；本次啟動最多 20 次；帳本總預算 60 點）：
+Open <http://127.0.0.1:8787>. In `--mock` mode **no YouCam call is made and no credits are used**: the demo photos show pictures saved earlier from real
+YouCam calls (stored under `demo/`), the picture saved for exactly your choices when one was recorded (80 combinations on the demo photos; re-recorded against the
+current presets), otherwise the closest saved picture (the screen says so), or a pre-computed final look; your own photos come back unchanged with a "Demo mode | simulated" strip. The in-app
+layer-by-layer view is not meaningful in demo mode (most layers show the original photo). Tests: `python3 -B -m unittest discover -s tests` (or `python3 -m pytest tests`).
+
+**Language.** The app follows the browser language (Chinese or English). Force English with `http://127.0.0.1:8787/?lang=en`, or use the
+language button on the start page. All server messages are translated too.
+
+**Phone.** Same Wi-Fi, then `python3 -B app/server.py --mock --host 0.0.0.0` and open `http://<computer-LAN-IP>:8787`.
+Browsers need HTTPS for the live camera preview; without it use the album button, which runs the whole flow.
+
+## Live mode (your own YouCam key)
 
 ```bash
+export YOUCAM_API_KEY=...        # or put one line YOUCAM_API_KEY=... in .env (API Key only; never commit it)
 python3 -B app/server.py --max-calls 20 --budget-cap 60
 ```
 
-打開 http://127.0.0.1:8787 。
+The key stays on the server and never reaches the browser. A credit ledger reserves credits first and records them only when YouCam reports
+success; `--max-calls` limits the number of Makeup VTO try-ons in one run, and `--budget-cap` limits the total credits across runs (Face Attribute calls, 10 credits each, count against the budget cap only). Makeup VTO costs 1 credit per try-on.
 
-**用手機錄示範影片**（不需要公開部署）：電腦和手機連同一個 Wi-Fi，伺服器改聽區網：
+## Evidence page: how a look is built
 
-```bash
-python3 -B app/server.py --mock --host 0.0.0.0
-```
+[`evidence/`](evidence/README.md) shows how a look is built, layer by layer, and what the online app can and cannot do: four examples, each as a cumulative
+slider (11, 4, 17 local layers and stage images only, plus the YouCam try-on steps), a heat map of what each layer changed, the technique used per layer, the
+technology list, and the cross-checks. It lives in the repository only; the app does not link to it and the container image does not include it. Every image is labelled Simulated. Data: `evidence/process.json`, regenerated from local run folders by
+`tools/export_process_demo.py` (the run folders are not in the repository).
 
-手機開 `http://<電腦的區網 IP>:8787`（英文介面加 `?lang=en`）。錄影片、截圖一律加 `--catalog demo`：只顯示虛構品牌的示範型錄，畫面不出現任何第三方品牌名稱或品牌色號。`--brand-alias`（需要本機品牌資料與 `app/brand_alias.json`）只給自己在本機檢查用，不用於對外素材。沒有 HTTPS 時手機瀏覽器不能開相機預覽，**按「相簿」選照片**即可走完整個流程；
-「先用示範照片看看」會重播 `demo/` 裡錄好的真實試妝結果。
+## Shade data
 
-## 示範素材
+This repository ships a **fictional demo catalog** (`app/catalog.json`: brands, shades and colors are all made up). The home page numbers
+and the shade page notes come from the catalog that is actually loaded (`/api/status`), so a fresh clone shows the demo catalog.
+The code can load an authorized brand shade file (`app/partner_shades_official.json`) and prefers it when present; such data is not
+part of this repository. Recordings and screenshots for the public (video, Devpost) always use `--catalog demo`, the fictional catalog, so no third-party brand name or brand shade code
+appears. `--brand-alias` (letter aliases such as Brand M, product names turned into categories, shade names dropped, codes kept) is for local
+checks only and is not used for public material.
 
-`demo/`：Pexels 公開照片與用它們實跑的 YouCam 結果，展示模式重播用；`demo/photos/standard4/` 是四人標準組（白化症男女、白斑症男女）；來源與授權見 `demo/SOURCES.md`。
-`photos/`、`runs/` 是實測用的本機資料，不進版控。
+## How the pieces fit
 
-## 點數
+| Where | What | Notes |
+|---|---|---|
+| Phone browser | Face landmarks (MediaPipe), capture checks, color picking, local concealer layers (OpenCV.js), fallback patch detection | the photo is not uploaded for these; the primary lighter-patch mask is computed on the app server (in memory, not stored) |
+| `app/server.py` | serves `web/`, proxies YouCam Makeup VTO / Face Attribute, local color matching, lighter-patch mask (`app/patch_detect.py`) | `--mock` has no YouCam client |
+| `app/skin_card.py`, `app/color_engine.py` | skin tone card, CIEDE2000 matching, shade plans | all local, no credits |
+| `app/i18n_srv.py`, `web/i18n/en.js` | English for server messages and for the UI, built from `docs/i18n/zh_en_map.csv` | Chinese output is unchanged |
+| `demo/` | public demo photos, saved results of real YouCam calls, and an AI-generated expected-look image (labelled Simulated) | sources and licences in `demo/SOURCES.md` |
 
-官方價目（`GET /s2s/v2.0/credit/feature-cost` 實查）：Makeup VTO 1 點、Face Attribute 1–5 項 10 點、Skin Analysis HD 1–4 項 12 點、Facial Color Tones 20 點。
-一次完整體驗約 2（快速三選）＋每次微調 1（Makeup VTO；「逐層看」每層各打一次，最多 7 點）；「依五官給建議」是本人按了才跑的 Face Attribute（5 項＝10 點）；取色、色卡、色號比對都不扣點。查餘額：
+## Where YouCam is called
 
-```bash
-python3 -I -B tools/noise_test.py credit
-```
+The YouCam REST client is `tools/noise_test.py` (class `Client`: bearer key from the `YOUCAM_API_KEY` environment variable, file upload, task polling, retries); `app/server.py` calls it and wraps every call in the credit ledger (`app/budget.py`).
 
-## 測試
+| Feature | Endpoints (YouCam S2S API) | Code | Credits |
+|---|---|---|---|
+| Makeup VTO (try-on) | `POST /s2s/v2.0/file` then `POST /s2s/v2.0/task/makeup-vto`, poll `GET /s2s/v2.0/task/makeup-vto/{id}` | `app/server.py` (`_render_live`), request bodies from `app/looks.py` | 1 per call |
+| Face Attribute (optional tips, only when the user taps) | `POST /s2s/v2.0/task/face-attr-analysis`, poll `GET …/{id}` | `app/server.py`, rules in `app/face_rules.py` | 10 per call |
+| Camera Kit (capture, auto-capture) | browser SDK loaded from the YouCam CDN | `web/app.js` | none |
+| Skin Analysis HD, Skin Tone Analysis | used offline during development only | `tools/noise_test.py` | 12 / 20 |
 
-```bash
-python3 -B -m unittest discover -s tests -v
-```
+In `--mock` mode none of these are called: pictures saved from real calls in `demo/replay/` are shown: the one recorded for your exact choices when it exists, otherwise the closest.
 
-## 授權
+## Privacy
 
-程式碼：MIT（見 `LICENSE`）。`demo/` 的照片不適用 MIT，依各自來源授權（見 `demo/SOURCES.md`）。本專案使用 YouCam API（Perfect Corp.），需自備 API key。
+Photos are processed in memory (orientation fix, resize, re-encode without EXIF) and dropped after the try-on; results go straight back to the
+browser. Face landmarks run in the browser (the MediaPipe models and scripts are fetched from public CDNs at run time, and the YouCam Camera Kit script from the YouCam CDN, so a visit loads third-party code from those hosts); the lighter-patch mask is computed on the app server, in memory. In live mode the photo is sent to YouCam for the try-on; in demo mode it is not. Tone, shade matching and the care card are computed locally. Only light fingerprints (brightness and
+colour-temperature numbers) and preferences are kept in the browser.
+
+## Licence
+
+Code: MIT (see `LICENSE`). Photos in `demo/` follow their own licences (`demo/SOURCES.md`). The app uses the YouCam API by Perfect Corp.; bring your own key.

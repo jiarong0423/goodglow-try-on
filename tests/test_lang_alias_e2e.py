@@ -1,11 +1,11 @@
-"""英文模式與品牌代稱的端到端測試（真的起一台 --mock 伺服器、走 HTTP）。
+"""End-to-end tests for English mode and brand aliases (really starts a --mock server and goes over HTTP).
 
-紅隊 F5：之前英文／代稱路徑只有單元測試，沒有任何測試走過 HTTP。這裡的每一條，只要有人把 server.py 的
-`_json` 裡的代稱或英文化拿掉、或讓某個回傳繞過它，就會失敗：
-- 英文：稽核計畫（tools/audit_api_strings.py 的請求）的每個回應，都不能還剩中文。
-- 中文：同一批請求不帶語言時，回傳要和以前一樣（有中文、沒有被英文化）。
-- 代稱：用虛構示範型錄當「真實品牌資料」建代稱（乾淨 clone 也跑得起來），回傳不能出現品牌名、產品名、色號色名；
-  色號代碼與色碼要留著。有本機真實品牌資料時，再用真資料跑一次完整稽核。
+Red team 10-21 F5: previously the English / alias paths had unit tests only, and no test went through HTTP. Each case here fails if anyone removes the aliasing or English localization in server.py's
+`_json`, or lets some response bypass it:
+- English: every response in the audit plan (requests from tools/audit_api_strings.py) must have no Chinese left.
+- Chinese: the same requests without a language must return what they did before (Chinese present, not English-localized).
+- Aliases: build aliases using the fictional demo catalog as "real brand data" (also runs in a clean clone); responses must not contain brand names, product names, or shade names;
+  shade codes and color hex codes must remain. When real local brand data exists, run the full audit again with it.
 """
 import json
 import sys
@@ -39,7 +39,7 @@ def start(alias=None, catalog="all"):
 
 
 def fetch(base, lang, path, body=None):
-    """audit.call 的版本：lang 可為 None（不帶語言標頭）。"""
+    """Version of audit.call: lang may be None (no language header)."""
     headers = {"Content-Type": "application/json"}
     if lang:
         headers["X-App-Lang"] = lang
@@ -91,7 +91,7 @@ class EnglishAndChineseTests(unittest.TestCase):
         self.assertTrue([x for _p, x in audit.strings(zh)])
 
     def test_status_reports_the_catalog_that_is_really_loaded(self):
-        """首頁數字不能寫死：用狀態回傳的實際型錄（乾淨 clone 只有虛構示範型錄）。"""
+        """Homepage numbers must not be hard-coded: use the actual catalog from the status response (a clean clone only has the fictional demo catalog)."""
         _s, st = fetch(self.base, "zh", "/api/status")
         self.assertIn(st["catalog_kind"], ("demo", "official"))
         cat = json.loads((ROOT / "app" / ("catalog.json" if st["catalog_kind"] == "demo" else "partner_shades_official.json")).read_text(encoding="utf-8"))
@@ -101,7 +101,7 @@ class EnglishAndChineseTests(unittest.TestCase):
         self.assertNotIn("<b>661</b>", html)
 
     def test_hostile_echo_does_not_stall_the_server(self):
-        """安全審查：回波進回應的使用者字串很長又惡意時，英文化不能把伺服器拖垮。"""
+        """Red team F1: when a very long malicious user string is echoed into a response, English localization must not bog down the server."""
         import time
         evil = "http://" + (":" + " 模式：") * 1500
         t = time.time()
@@ -110,7 +110,7 @@ class EnglishAndChineseTests(unittest.TestCase):
 
 
 class AliasWithDemoCatalogTests(unittest.TestCase):
-    """用虛構示範型錄當成「真實品牌資料」，驗證代稱流程走過 HTTP；不需要本機品牌檔。"""
+    """Use the fictional demo catalog as "real brand data" to verify the alias flow over HTTP; no local brand file needed."""
 
     @classmethod
     def setUpClass(cls):
@@ -120,7 +120,7 @@ class AliasWithDemoCatalogTests(unittest.TestCase):
         alias_file = Path(cls.td_alias.name) / "alias.json"
         alias_file.write_text(json.dumps({b: chr(ord("S") + i) for i, b in enumerate(cls.brands)}), encoding="utf-8")
         cls.ba = brand_alias.load(alias_file, [ROOT / "app" / "catalog.json"])
-        cls.td, cls.httpd, cls.base = start(cls.ba, catalog="demo")      # 只用虛構型錄，本機有沒有真實品牌檔都一樣
+        cls.td, cls.httpd, cls.base = start(cls.ba, catalog="demo")      # fictional catalog only, same result whether or not a local real brand file exists
 
     @classmethod
     def tearDownClass(cls):
@@ -139,10 +139,10 @@ class AliasWithDemoCatalogTests(unittest.TestCase):
             self.assertEqual(self.ba.leaks(resp), [], lang)
             for m in resp["matches"]:
                 self.assertRegex(m["hex"], r"^#[0-9A-F]{6}$")
-                self.assertNotRegex(m["code"], r"[㐀-鿿]")            # 色名（中文）已去掉，只剩代碼
+                self.assertNotRegex(m["code"], r"[㐀-鿿]")            # shade name (Chinese) removed, only the code remains
 
     def test_alias_is_applied_to_the_whole_audit_plan(self):
-        names = audit.independent_names(ROOT / "app")      # 乾淨 clone 沒有真實品牌檔 → 名單可能是空的，所以另外用 ba.leaks
+        names = audit.independent_names(ROOT / "app")      # a clean clone has no real brand file -> the name list may be empty, so ba.leaks is used as well
         for lang in ("zh", "en"):
             for name, path, body in audit.requests_plan(self.base, lang):
                 status, resp = fetch(self.base, lang, path, body)
@@ -151,12 +151,12 @@ class AliasWithDemoCatalogTests(unittest.TestCase):
                 self.assertEqual(audit.independent_leaks(resp, names), set(), (lang, name))
 
     def real_leaks(self, resp):
-        """示範型錄的產品名是「唇彩」「粉底」這類一般詞，和代稱後的品類名一樣，不算外洩。"""
+        """Demo catalog product names are generic words like "lip gloss" and "foundation", the same as the category names after aliasing, so they are not a leak."""
         generic = {w for labels in brand_alias.CATEGORY_LABEL.values() for w in labels.values()} | {"粉底液", "遮瑕", "腮紅", "眉筆"}
         return [x for x in self.ba.leaks(resp) if x not in generic]
 
     def test_without_alias_the_same_request_does_show_names(self):
-        """反向確認：這個測試是有效的，不是永遠通過（沒代稱時會看到品牌名）。"""
+        """Reverse check: this test is effective and does not always pass (brand names show up when there is no alias)."""
         td, httpd, base = start(None)
         try:
             resp = fetch(base, "zh", "/api/match", {"hex": "#E1CDC6", "category": "foundation", "source": "demo", "top": 5})[1]
@@ -173,12 +173,12 @@ class AliasWithDemoCatalogTests(unittest.TestCase):
         self.assertTrue(resp["image"].startswith("data:image"))
         import base64
         raw = base64.b64decode(resp["image"].split(",", 1)[1])
-        self.assertEqual(raw[:2], b"\xff\xd8")            # 仍是完整的 JPEG
+        self.assertEqual(raw[:2], b"\xff\xd8")            # still a complete JPEG
 
 
 @unittest.skipUnless(REAL_DATA, "沒有本機真實品牌資料與代稱對照表（app/partner_shades_official.json、app/brand_alias.json）")
 class AliasWithRealDataTests(unittest.TestCase):
-    """有本機品牌資料時，用真資料跑完整稽核：品牌名、產品名、色號全名都不能出現，三種資料來源都一樣。"""
+    """With local brand data, run the full audit on the real data: brand names, product names and full shade names must not appear, for all three data sources."""
 
     @classmethod
     def setUpClass(cls):

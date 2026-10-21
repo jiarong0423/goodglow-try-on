@@ -1,4 +1,4 @@
-"""淺色區塊入口的膚質分析配方卡規則。"""
+"""Skin-analysis recipe-card rules for the light-patch entry."""
 
 import math
 

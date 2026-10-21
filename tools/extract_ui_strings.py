@@ -1,11 +1,11 @@
-"""抽出使用者看得到的中文字串，做成中英文映射表（docs/i18n/zh_en_map.csv）。不改任何程式。
+"""Extract the Chinese strings users can see and build a Chinese-English map (docs/i18n/zh_en_map.csv). Changes no program code.
 
-新字串的英文欄先留空，由作者定稿後再逐字填入、套回（tools/build_i18n.py 等）。
-來源：web/index.html（文字、alt、aria-label、title）、web/app.js（字串常值，略過註解）、
-app/presets.json（label、description）、app/full_looks.json（why、title、tip、source）、
-app/*.py（非 docstring 的字串常值；只收含中文的）。同一句只列一次，位置全部列出。
+The English column of new strings is left blank; the author finalizes it, and it is then filled in verbatim and applied back (tools/build_i18n.py etc.).
+Sources: web/index.html (text, alt, aria-label, title), web/app.js (string literals, comments skipped),
+app/presets.json (label, description), app/full_looks.json (why, title, tip, source),
+app/*.py (string literals that are not docstrings; only those containing Chinese). Each sentence is listed once, with all of its locations.
 
-  python3 tools/extract_ui_strings.py            # 寫出 CSV，已有英文的列會保留英文
+  python3 tools/extract_ui_strings.py            # write the CSV; rows that already have English keep it
 """
 from __future__ import annotations
 
@@ -25,10 +25,10 @@ from jslex import tokens  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs" / "i18n" / "zh_en_map.csv"
 CJK = re.compile(r"[㐀-鿿＀-￯　-〿]")
-WEB_JS_EXTRA = ["web/camo_editor.js", "web/capture_guide.js", "web/makeup_layers.js", "web/shade_preview.js"]   # 第 2 階段補掃
+WEB_JS_EXTRA = ["web/camo_editor.js", "web/capture_guide.js", "web/makeup_layers.js", "web/shade_preview.js"]   # added by the stage 2 extra scan, 10-21
 PY_FILES = ["app/color_engine.py", "app/recommend.py", "app/full_look.py", "app/looks.py", "app/skin_card.py",
             "app/server.py", "app/face_rules.py", "app/brow_card.py", "app/care_rules_albinism.py",
-            "app/care_rules_vitiligo.py", "app/patch_detect.py"]       # 第 3 階段補掃
+            "app/care_rules_vitiligo.py", "app/patch_detect.py"]       # added by the stage 3 extra scan
 
 
 def has_cjk(s: str) -> bool:
@@ -69,7 +69,7 @@ JS_TOKEN = re.compile(r"//[^\n]*|/\*.*?\*/|'(?:\\.|[^'\\\n])*'|\"(?:\\.|[^\"\\\n
 def from_js(rel):
     src = (ROOT / rel).read_text(encoding="utf-8")
     out = []
-    for a_, b_, kind in tokens(src):          # tools/jslex.py：正確處理樣板字串裡巢狀的樣板
+    for a_, b_, kind in tokens(src):          # tools/jslex.py: correctly handles templates nested inside template strings
         if kind not in ("str", "tpl"):
             continue
         body = src[a_ + 1:b_ - 1]
@@ -92,7 +92,7 @@ def from_py(rel):
         while k < len(toks) and toks[k].type in (tokenize.NL, tokenize.COMMENT):
             k += 1
         if (j < 0 or toks[j].type in (tokenize.INDENT, tokenize.NEWLINE, tokenize.DEDENT, tokenize.ENCODING)) and toks[k].type == tokenize.NEWLINE:
-            continue                                   # docstring：內部說明，不是畫面文字
+            continue                                   # docstring: internal documentation, not on-screen text
         s = tk.string
         s = re.sub(r"^[rbuRBUfF]*('''|\"\"\"|'|\")", "", s)
         s = re.sub(r"('''|\"\"\"|'|\")$", "", s)
@@ -101,8 +101,8 @@ def from_py(rel):
 
 
 def from_py_ast(rel):
-    """第 3 階段補：用 AST 再掃一次 —— 含 f-string（tokenize 在 3.12 會把 f-string 拆成片段而漏掉）與
-    隱性相接的字串（"a" "b" 會變一整句）。f-string 以原始碼樣子記錄，例如 色卡第 {level} 級。"""
+    """Stage 3 addition: scan again with the AST, covering f-strings (tokenize splits f-strings into fragments on 3.12 and misses them) and
+    implicitly concatenated strings ("a" "b" becomes one sentence). f-strings are recorded as they appear in the source, e.g. the swatch-level sentence containing {level}."""
     src = (ROOT / rel).read_text(encoding="utf-8")
     tree = ast.parse(src)
     parent = {}
@@ -157,10 +157,10 @@ def main() -> int:
     for f in WEB_JS_EXTRA:
         rows += from_js(f)
     rows += from_json("app/presets.json", {"label", "description", "limits"})
-    rows += from_json("app/catalog.json", {"brand", "name", "code"})            # 示範型錄（虛構品牌）；第 3 階段補掃
-    rows += from_json("demo/final/recipes.json", {"title", "credit", "item", "where"})   # 定案妝容配方卡；第 3 階段補掃
+    rows += from_json("app/catalog.json", {"brand", "name", "code"})            # demo catalog (fictional brands); added by the stage 3 extra scan
+    rows += from_json("demo/final/recipes.json", {"title", "credit", "item", "where"})   # finalized makeup recipe cards; added by the stage 3 extra scan
     rows += from_json("app/full_looks.json", {"why", "title", "tip", "source"})
-    rows += from_json("demo/expected/vitiligo_20551205.json", {"how", "code"})      # 白斑示範照的預期妝容說明與塗層色名（/api/demo-photo 回傳）
+    rows += from_json("demo/expected/vitiligo_20551205.json", {"how", "code"})      # expected makeup description and layer shade names for the vitiligo demo photo (returned by /api/demo-photo)
     for f in PY_FILES:
         rows += from_py(f)
         rows += from_py_ast(f)
@@ -170,7 +170,7 @@ def main() -> int:
             for r in csv.DictReader(fh):
                 old[r["zh"]] = r.get("en", "")
                 old_id[r["zh"]] = r["id"]
-    en_echo = {" ".join(v.split()) for z, v in old.items() if v.strip() and v != z}   # 英文欄的內容若出現在原始碼（工具插入的英文樣板），不是中文原文；英文＝中文的列（程式用的比對字串）不算
+    en_echo = {" ".join(v.split()) for z, v in old.items() if v.strip() and v != z}   # If the English column's content appears in the source (English templates inserted by the tools), it is not Chinese original text; rows where English == Chinese (match strings used by the program) do not count
     rows = [r for r in rows if r[3] not in en_echo]
     merged: dict[str, dict] = {}
     for rel, ln, ctx, zh in rows:
@@ -189,7 +189,7 @@ def main() -> int:
             r["id"] = rid
         for r in sorted(merged.values(), key=lambda x: int(x["id"][1:])):
             w.writerow([r["id"], r["zh"], old.get(r["zh"], ""), r["context"], " ".join(r["where"][:6])])
-    print(f"{len(merged)} 句（{len(rows)} 處）→ {OUT.relative_to(ROOT)}")
+    print(f"{len(merged)} sentences ({len(rows)} locations) → {OUT.relative_to(ROOT)}")
     return 0
 
 

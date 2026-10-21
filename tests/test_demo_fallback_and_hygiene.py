@@ -1,4 +1,4 @@
-"""手機實測後的修正：示範圖不再燒英文黑條、API 不回內部備註、畫面文字不點名真人與病名。"""
+"""Fixes after phone testing: demo images no longer burn in English black bars, the API does not return internal notes, and on-screen text names neither real people nor conditions."""
 import io
 import json
 import re
@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "app"))
 
-# 不得出現在畫面或對照表的真人姓名：測試檔本身不放人名，只放詞的 sha256 前 16 碼（拉丁字母小寫單字；中文取相鄰兩字）。
+# Real names must not appear on screen or in the mapping table: this test file itself holds no names, only the first 16 hex digits of the sha256 of each word (lowercase single Latin words; for Chinese, two adjacent characters).
 BLOCKED_NAME_HASHES = {
     "3308991c8f095800", "3a847c66e9d50e3c", "3fab6afd3e550b43", "569fd0b29e0157a9", "5f48a7270984523a", "72ca296a4d08bb1b",
     "a30b3219f40f0ec7", "a314e3ef281f0cf2", "c5422c052bfbd7bb", "cada5e764bd9d5cf", "d37c5e7961d0ed50", "e1838f6fc2593a0a",
@@ -68,11 +68,11 @@ class NearestReplayTests(unittest.TestCase):
             try:
                 server.DEMOS = {"albinism": {"replay": td}}
                 server.FINAL_DIR = td / "final"
-                self.assertEqual(server.nearest_replay("albinism"), b"EXACT")           # 只有精確錄影
+                self.assertEqual(server.nearest_replay("albinism"), b"EXACT")           # exact recording only
                 (td / "final").mkdir()
                 (td / "final" / "f.jpg").write_bytes(b"FINAL")
                 (td / "final" / "recipes.json").write_text(json.dumps({"albinism_F": {"images": {"final": "f.jpg"}}}), encoding="utf-8")
-                self.assertEqual(server.nearest_replay("albinism"), b"FINAL")           # 有定案圖就用定案圖
+                self.assertEqual(server.nearest_replay("albinism"), b"FINAL")           # use the final image if there is one
             finally:
                 server.DEMOS, server.FINAL_DIR = old_demos, old_final
 
@@ -98,7 +98,7 @@ class TrackedDataHygiene(unittest.TestCase):
     def test_user_facing_text_names_no_real_people_or_condition(self):
         import ast
         parts = []
-        for f in ("color_engine.py", "full_look.py"):           # 只看會進到畫面的字串；docstring 與註解是內部說明，不算
+        for f in ("color_engine.py", "full_look.py"):           # only strings that reach the screen; docstrings and comments are internal notes and do not count
             tree = ast.parse((ROOT / "app" / f).read_text(encoding="utf-8"))
             docs = {id(n.value) for n in ast.walk(tree) if isinstance(n, ast.Expr) and isinstance(n.value, ast.Constant)}
             parts += [n.value for n in ast.walk(tree) if isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs]
@@ -115,26 +115,26 @@ class TrackedDataHygiene(unittest.TestCase):
             self.assertNotIn("albinism skin", r["en"], r["id"])
 
     def test_screen_text_has_no_disease_names_or_ghostly_wording(self):
-        """ 裁示：畫面不出現病名（光化性角化、黑色素瘤、Koebner、伍氏燈）、標題不用「死白」。成分名與就醫提醒保留。"""
+        """Owner's ruling: no condition names on screen (actinic keratosis, melanoma, Koebner, Wood's lamp) and no "dead white" in headings. Ingredient names and the see-a-doctor reminder stay."""
         import csv
         rows = list(csv.DictReader(open(ROOT / "docs/i18n/zh_en_map.csv", encoding="utf-8")))
         bad = re.compile(r"光化性角化|黑色素瘤|Koebner|同形反應|伍氏燈|死白|melanoma|keratosis|Wood's lamp|Ghostly|isomorphic", re.I)
         hits = [(r["id"], m.group(0)) for r in rows for m in [bad.search(r["zh"] + " " + r["en"])] if m]
         self.assertEqual(hits, [])
-        self.assertTrue(any("dermatologist" in r["en"] for r in rows))      # 就醫提醒還在
+        self.assertTrue(any("dermatologist" in r["en"] for r in rows))      # the see-a-doctor reminder is still there
 
     def test_no_eyes_closed_capture_wording(self):
-        """多數人用前鏡頭、生活上和一般人沒有差異 → 不提供「閉眼拍」；畫面與文件都不再出現。"""
+        """Owner: most people use the front camera and are no different from anyone else in daily life -> do not offer "eyes-closed shots"; they no longer appear on screen or in documents."""
         import csv
         rows = list(csv.DictReader(open(ROOT / "docs/i18n/zh_en_map.csv", encoding="utf-8")))
         bad = re.compile(r"閉眼|閉著眼|閉上眼|eyes closed|closed eyes|eyes-closed", re.I)
         self.assertEqual([r["id"] for r in rows if bad.search(r["zh"] + " " + r["en"])], [])
         for f in ("README.md", "README.en.md", "docs/submission/devpost_draft_en.md", "docs/submission/video_script_v3.md"):
-            if (ROOT / f).is_file():                      # 對外版不含投稿草稿，檔案不在就略過
+            if (ROOT / f).is_file():                      # the public build has no submission drafts; skip if the file is absent
                 self.assertIsNone(bad.search((ROOT / f).read_text(encoding="utf-8")), f)
 
     def test_screen_text_names_no_organizations(self):
-        """ 裁示 1a-B：畫面不點名機構（NHS、MSD、WHO、Mayo Clinic、PMC、CMAJ、DermNet…），出處用通用說法。照片授權標示（Pexels、Unsplash）除外。"""
+        """Owner's ruling 10-21 (1a-B): on-screen text names no institutions (NHS, MSD, WHO, Mayo Clinic, PMC, CMAJ, DermNet...); sources use generic wording. Photo license credits (Pexels, Unsplash) are excepted."""
         import csv
         rows = list(csv.DictReader(open(ROOT / "docs/i18n/zh_en_map.csv", encoding="utf-8")))
         bad = re.compile(r"\bNHS\b|\bMSD\b|\bWHO\b|Mayo|\bPMC\b|CMAJ|DermNet|IJDVL|Lavedo|VR Foundation|British Association|\bBAD\b")
@@ -142,7 +142,7 @@ class TrackedDataHygiene(unittest.TestCase):
         self.assertEqual(hits, [])
 
     def test_tracked_text_files_name_no_real_people(self):
-        """追蹤中的程式、文件、對照表都不點名真人（紅隊 #8）。"""
+        """Tracked code, documents and mapping tables name no real people (red team 10-21 #8)."""
         import subprocess
         files = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True).stdout.split()
         if not files:

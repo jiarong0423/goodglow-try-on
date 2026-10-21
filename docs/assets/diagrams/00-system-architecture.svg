@@ -1,0 +1,110 @@
+<svg viewBox="0 0 1260 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="system-architecture-title system-architecture-desc" width="1260" height="560">
+<title id="system-architecture-title">System architecture</title>
+<desc id="system-architecture-desc">The phone browser talks to one app server; a mode gate sends anonymous requests to saved real results and signed-in requests through the credit ledger to the YouCam API.</desc>
+<defs>
+  <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#5f4d53"/></marker>
+  <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#b83a5d"/></marker>
+  <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#fbf3f1"/>
+<text x="24" y="28" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" letter-spacing="0.18em">ARCHITECTURE · GOOD GLOW TRY-ON</text>
+<text x="24" y="52" fill="#2a1f22" font-size="22" font-family="'Instrument Serif',Georgia,serif" letter-spacing="-0.02em">Demo mode for everyone, live mode behind a sign-in</text>
+<rect x="24" y="64" width="260" height="328" rx="8" fill="rgba(42,31,34,0.02)" stroke="rgba(42,31,34,0.12)" stroke-width="0.8"/>
+<rect x="36" y="68" width="76" height="12" rx="2" fill="#fbf3f1"/>
+<text x="74.0" y="77" fill="#6e5c62" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.14em">PHONE BROWSER</text>
+<rect x="328" y="64" width="344" height="376" rx="8" fill="rgba(42,31,34,0.02)" stroke="rgba(42,31,34,0.12)" stroke-width="0.8"/>
+<rect x="340" y="68" width="104" height="12" rx="2" fill="#fbf3f1"/>
+<text x="392.0" y="77" fill="#6e5c62" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.14em">APP SERVER (PYTHON)</text>
+<rect x="712" y="248" width="240" height="220" rx="8" fill="rgba(42,31,34,0.02)" stroke="rgba(42,31,34,0.12)" stroke-width="0.8"/>
+<rect x="724" y="252" width="48" height="12" rx="2" fill="#fbf3f1"/>
+<text x="748.0" y="261" fill="#6e5c62" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.14em">STORES</text>
+<rect x="1000" y="320" width="236" height="152" rx="8" fill="rgba(42,31,34,0.02)" stroke="rgba(42,31,34,0.12)" stroke-width="0.8"/>
+<rect x="1012" y="324" width="56" height="12" rx="2" fill="#fbf3f1"/>
+<text x="1040.0" y="333" fill="#6e5c62" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.14em">EXTERNAL</text>
+<line x1="264" y1="132" x2="347" y2="132" stroke="#5f4d53" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="287.0" y="110" width="38" height="12" rx="2" fill="#fbf3f1"/>
+<text x="306.0" y="119" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">COLORS</text>
+<line x1="264" y1="232" x2="347" y2="232" stroke="#5f4d53" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="289.0" y="210" width="34" height="12" rx="2" fill="#fbf3f1"/>
+<text x="306.0" y="219" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">PHOTO</text>
+<line x1="264" y1="348" x2="347" y2="348" stroke="#5f4d53" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="284.0" y="326" width="44" height="12" rx="2" fill="#fbf3f1"/>
+<text x="306.0" y="335" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">REQUEST</text>
+<line x1="652" y1="332" x2="731" y2="332" stroke="#5f4d53" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="665.0" y="310" width="54" height="12" rx="2" fill="#fbf3f1"/>
+<text x="692.0" y="319" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">ANONYMOUS</text>
+<line x1="652" y1="400" x2="731" y2="400" stroke="#b83a5d" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+<rect x="665.0" y="378" width="54" height="12" rx="2" fill="#fbf3f1"/>
+<text x="692.0" y="387" fill="#b83a5d" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">SIGNED IN</text>
+<line x1="932" y1="412" x2="1019" y2="412" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+<rect x="939.0" y="390" width="74" height="12" rx="2" fill="#fbf3f1"/>
+<text x="976.0" y="399" fill="#2e5aa8" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">RESERVE, CALL</text>
+<line x1="154" y1="428" x2="154" y2="361" stroke="#5f4d53" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<rect x="164" y="388.0" width="44" height="12" rx="2" fill="#fbf3f1"/>
+<text x="186.0" y="397.0" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">SCRIPTS</text>
+<rect x="44" y="96" width="220" height="264" rx="6" fill="#fbf3f1"/>
+<rect x="44" y="96" width="220" height="264" rx="6" fill="#fbf3f1" stroke="#2a1f22" stroke-width="1"/>
+<rect x="52" y="104" width="28" height="12" rx="2" fill="transparent" stroke="#2a1f22" stroke-opacity="0.45" stroke-width="0.8"/>
+<text x="66.0" y="113" fill="#2a1f22" fill-opacity="0.85" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.08em">WEB</text>
+<text x="154.0" y="136" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Phone browser (PWA)</text>
+<text x="154.0" y="152" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">Camera Kit: auto-capture</text>
+<text x="154.0" y="168" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">MediaPipe: landmarks</text>
+<text x="154.0" y="184" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">OpenCV.js: local layers</text>
+<text x="154.0" y="200" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">color picking, flip card</text>
+<rect x="348" y="96" width="304" height="72" rx="6" fill="#fbf3f1"/>
+<rect x="348" y="96" width="304" height="72" rx="6" fill="#fbf3f1" stroke="#2a1f22" stroke-width="1"/>
+<rect x="356" y="104" width="36" height="12" rx="2" fill="transparent" stroke="#2a1f22" stroke-opacity="0.45" stroke-width="0.8"/>
+<text x="374.0" y="113" fill="#2a1f22" fill-opacity="0.85" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.08em">LOCAL</text>
+<text x="500.0" y="136" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Skin tone card + shade ranking</text>
+<text x="500.0" y="152" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">color_engine · skin_card · CIEDE2000</text>
+<rect x="348" y="196" width="304" height="72" rx="6" fill="#fbf3f1"/>
+<rect x="348" y="196" width="304" height="72" rx="6" fill="#fbf3f1" stroke="#2a1f22" stroke-width="1"/>
+<rect x="356" y="204" width="36" height="12" rx="2" fill="transparent" stroke="#2a1f22" stroke-opacity="0.45" stroke-width="0.8"/>
+<text x="374.0" y="213" fill="#2a1f22" fill-opacity="0.85" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.08em">LOCAL</text>
+<text x="500.0" y="236" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Lighter-patch mask</text>
+<text x="500.0" y="252" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">patch_detect · in memory, not stored</text>
+<rect x="348" y="300" width="304" height="112" rx="6" fill="#fbf3f1"/>
+<rect x="348" y="300" width="304" height="112" rx="6" fill="rgba(184,58,93,0.08)" stroke="#b83a5d" stroke-width="1.4"/>
+<rect x="356" y="308" width="32" height="12" rx="2" fill="transparent" stroke="#b83a5d" stroke-opacity="0.45" stroke-width="0.8"/>
+<text x="372.0" y="317" fill="#b83a5d" fill-opacity="0.85" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.08em">GATE</text>
+<text x="500.0" y="340" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Mode gate</text>
+<text x="500.0" y="356" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">judge_auth · signed HttpOnly cookie</text>
+<text x="500.0" y="372" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">anonymous: demo · signed in: live</text>
+<rect x="732" y="280" width="200" height="72" rx="6" fill="#fbf3f1"/>
+<rect x="732" y="280" width="200" height="72" rx="6" fill="#f6e8e5" stroke="#2a1f22" stroke-width="1"/>
+<rect x="740" y="288" width="32" height="12" rx="2" fill="transparent" stroke="#2a1f22" stroke-opacity="0.45" stroke-width="0.8"/>
+<text x="756.0" y="297" fill="#2a1f22" fill-opacity="0.85" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.08em">DEMO</text>
+<text x="832.0" y="320" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Replay store</text>
+<text x="832.0" y="336" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">80 saved real VTO results</text>
+<rect x="732" y="372" width="200" height="72" rx="6" fill="#fbf3f1"/>
+<rect x="732" y="372" width="200" height="72" rx="6" fill="#f6e8e5" stroke="#2a1f22" stroke-width="1"/>
+<rect x="740" y="380" width="32" height="12" rx="2" fill="transparent" stroke="#2a1f22" stroke-opacity="0.45" stroke-width="0.8"/>
+<text x="756.0" y="389" fill="#2a1f22" fill-opacity="0.85" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.08em">LIVE</text>
+<text x="832.0" y="412" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Credit ledger</text>
+<text x="832.0" y="428" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">reserve · settle · caps</text>
+<rect x="1020" y="352" width="196" height="88" rx="6" fill="#fbf3f1"/>
+<rect x="1020" y="352" width="196" height="88" rx="6" fill="#fbf3f1" stroke="#5f4d53" stroke-width="1" stroke-dasharray="4,3"/>
+<rect x="1028" y="360" width="28" height="12" rx="2" fill="transparent" stroke="#5f4d53" stroke-opacity="0.45" stroke-width="0.8"/>
+<text x="1042.0" y="369" fill="#5f4d53" fill-opacity="0.85" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+<text x="1118.0" y="392" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">YouCam S2S API</text>
+<text x="1118.0" y="408" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">Makeup VTO</text>
+<text x="1118.0" y="424" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">Face Attribute</text>
+<rect x="44" y="428" width="220" height="72" rx="6" fill="#fbf3f1"/>
+<rect x="44" y="428" width="220" height="72" rx="6" fill="#fbf3f1" stroke="#5f4d53" stroke-width="1" stroke-dasharray="4,3"/>
+<rect x="52" y="436" width="28" height="12" rx="2" fill="transparent" stroke="#5f4d53" stroke-opacity="0.45" stroke-width="0.8"/>
+<text x="66.0" y="445" fill="#5f4d53" fill-opacity="0.85" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+<text x="154.0" y="468" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Public CDNs</text>
+<text x="154.0" y="484" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">Camera Kit · MediaPipe</text>
+<line x1="24" y1="516" x2="1236" y2="516" stroke="rgba(42,31,34,0.12)" stroke-width="0.8"/>
+<text x="24" y="540" fill="#5f4d53" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" letter-spacing="0.14em">LEGEND</text>
+<rect x="110" y="531" width="20" height="12" rx="3" fill="rgba(184,58,93,0.08)" stroke="#b83a5d" stroke-width="1"/>
+<text x="138" y="540" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace">Focal: the one decision</text>
+<rect x="302" y="531" width="20" height="12" rx="3" fill="#fbf3f1" stroke="#2a1f22" stroke-width="1"/>
+<text x="330" y="540" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace">Server logic</text>
+<rect x="432" y="531" width="20" height="12" rx="3" fill="#f6e8e5" stroke="#2a1f22" stroke-width="1"/>
+<text x="460" y="540" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace">Store</text>
+<rect x="523" y="531" width="20" height="12" rx="3" fill="#fbf3f1" stroke="#5f4d53" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="551" y="540" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace">External</text>
+<line x1="631" y1="537" x2="659" y2="537" stroke="#b83a5d" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+<text x="667" y="540" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace">Live path</text>
+</svg>

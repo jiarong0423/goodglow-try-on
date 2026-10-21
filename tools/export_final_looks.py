@@ -1,12 +1,12 @@
-"""把各入口的定案妝容（模擬）從 runs/ 匯出到 demo/final/，給 App「定案妝容」卡片用。
-10-19 。
- → 加白斑女 U（S48），每款分三段：
-本地逐層底妝 → 官方 makeup-vto 這一步（有錄好的才放；沒有就註明）→ 配方卡。
-- 成品統一轉成 JPEG，長邊上限 1600。來源 sha256 不符就停（印 ERROR）。
-- 配方（recipes.json）只放品項、位置、色塊 hex，不放品牌名或官方色號（App 對外畫面規則）。
-- 每個檔都寫進 SHA256SUMS.txt。
-runs/ 不進版控；在 worktree 裡跑時用 --runs 指到主工作樹的 runs/：
-  python3 -B tools/export_final_looks.py --runs <runs dir>
+"""Export each entry point's final makeup looks (simulated) from runs/ to demo/final/, for the App's "final look" cards.
+Design decision,: direct edits to the production files are authorized, to wire the albinism male/female final looks and the vitiligo final look into the App's two entry points.
+Design decision,: wiring in is now approved, and the YouCam service is brought in actively → add vitiligo female U (S48); each look has three stages:
+local layer-by-layer base → the official makeup-vto step (included only if a recording exists; otherwise noted) → recipe card.
+- Final images are all converted to JPEG, long side capped at 1600. If a source sha256 does not match, stop (print ERROR).
+- The recipe (recipes.json) holds only items, positions and swatch hex values, never brand names or official shade codes (App public-screen rule).
+- Every file is written to SHA256SUMS.txt.
+runs/ is not under version control; when running inside a worktree, use --runs to point at the main worktree's runs/:
+  python3 -B tools/export_final_looks.py --runs <path-to-main-worktree>/runs
 """
 from __future__ import annotations
 import argparse
@@ -26,34 +26,34 @@ CREDIT = {
     "uCt9uA9r1Rw_frontal": "照片：模擬・由 AI 生成的轉向示意圖，非本人原照（原照來源：Unsplash，可修改授權）https://unsplash.com/photos/uCt9uA9r1Rw",
 }
 
-# 來源與盲評依據見 logs/decisions/log_20261016_foundation_layers.md（、）
-# base＝本地逐層底妝（官方那一步之前）；official＝官方 makeup-vto 回傳圖（沒有就 None）；final＝最後成品
+# Sources and blind-review basis: see logs/decisions/log_20261016_foundation_layers.md (, 10-20)
+# base = local layer-by-layer base (before the official step); official = official makeup-vto returned image (None if there is none); final = the finished result
 FINALS = {
-    # 10-21
-    # 三段同一個標準臉框（官方圖座標）：base＝本地逐層底妝（腮紅前一層，裁標準框左移 3px）；
-    # official＝官方 makeup-vto（Oblique43 #DF9299 強度 100、磨皮 0；輸入已含 ⑤B 官方眼妝）；final＝官方底＋顴骨帶官方腮紅層 ×1.796
+    # 10-21 design decision: wire the new female final look (official base + cheekbone-band boost) and the male smoothed version into albinism/final-looks; retitle the female look with a soft-pink healthy-glow wording
+    # All three stages use the same standard face frame (official-image coordinates): base = local layered base (the layer before blush, cropped to the standard frame shifted 3px left);
+    # official = official makeup-vto (Oblique43 #DF9299, intensity 100, smoothing 0; the input already includes the 5B official eye makeup); final = official base + cheekbone-band official blush layer ×1.796
     "albinism_F": {"title": "粉嫩好氣色", "credit": CREDIT["5273693"],
                    "base": ("albinism_20261018/official_plan_FM_20261020/export/F_base_crop.jpg", "dff68e1dd1535032bd094c862a4a66c1059e02182281b5429238393469e0341b"),
                    "official": ("albinism_20261018/official_plan_FM_20261020/step9_oblique/F_Oblique43_i100_DF9299_raw.png", "5717debc030c487752212f4808bee63caa131647c6cd6d70679b6b04ae43de61"),
                    "final": ("albinism_20261018/official_plan_FM_20261020/results/F_final_crop.jpg", "fe1026c44555cbedfabcc51fa7b2c6862ba5978e901d9ff8a7fbd71e0bc6d220"),
                    "report": "albinism_20261018/approx_r14f/F_warm_apricot/report.json",
                    "hex_override": {"腮紅": "#DF9299"}},
-    #：男生 base＝步 1 本地細修（標準框）；official＝官方唇試妝；final＝官方唇層 ×2＋磨皮強＋淡斑
+    #: male base = step 1 local fine-tune (standard frame); official = official lip try-on; final = official lip layer ×2 + strong smoothing + spot fading (design decision,: use strong smoothing plus spot fading, and do the male look)
     "albinism_M": {"title": "柔和・極簡", "credit": CREDIT["5273693"],
                    "base": ("albinism_20261018/official_plan_FM_20261020/M_C4_send.jpg", "ac181cd661fd31a490969568c722b206fd0d4af3c4b4b15373b8d730e0b2fa8c"),
                    "official": ("albinism_20261018/official_plan_FM_20261020/results/M_vtoA_raw.png", "d5966ab066e1b178341c360699241a10edeb615d510c9de22d5bccfe147a80f7"),
                    "final": ("albinism_20261018/official_plan_FM_20261020/results/M_final_crop.jpg", "c2ce9994c8ca516e68f6ef7535d1bfddb6b728cc0ed7c6a5626fd83ee8392eed"),
                    "report": "albinism_20261018/approx_r14f/M_v11_minimal/report.json",
                    "extra_steps": [{"item": "妝前柔焦", "where": "兩頰毛孔與痘疤處薄拍，鬍子區不碰", "hex": None}]},
-    # 白斑症線 回覆：示範照男生（使用者「上次那個男生可以了」「示範照維持現狀」）；官方那一步＝官方試妝回傳圖
+    # Vitiligo line, 10-19 reply: male demo photo (design decision: last time's male look is fine, keep the demo photo as is); official step = the official try-on returned image
     "vitiligo_M": {"title": "膚色均勻・自然", "credit": CREDIT["20551205"],
                    "base": ("layer_rule_20261018/demo20551205_ai/layer_rule_full.png", "c9064386c8e71565102d7724a9001517ae507d33ac10c977f3570d261fc91072"),
                    "official": ("layer_rule_20261018/vto_male_natural/vto_male_natural_v2_raw.png", "a819ecd2164fbc10bb44b6ac1d9681aae496778d252886528425cc8afccf717c"),
                    "final": ("layer_rule_20261018/vto_male_natural/vto_male_natural_v2_raw.png", "a819ecd2164fbc10bb44b6ac1d9681aae496778d252886528425cc8afccf717c"),
                    "report": None},
-    # → 選 A：
-    # base＝本地逐層 C4；official＝C4 → 官方腮紅 → 官方眼影 2colors2（磨皮 0）回傳圖，也就是成品（跟白斑男一樣）
-    # 回覆「模擬」：AI 轉向圖可沿用，畫面一律標模擬，並註明「由 AI 生成的轉向示意圖，非本人原照」
+    # 10-21 design decision: for the vitiligo entry's female demo, drop the side-view photo and use the final look of the frontal version (frontal_F_20261020) → option A:
+    # base = local layered C4; official = the returned image of C4 → official blush → official eyeshadow 2colors2 (smoothing 0), which is also the final (same as the vitiligo male)
+    # 10-21 owner's reply "simulated": the AI turned-view image may be reused, always labelled as simulated on screen, with the note that it is an AI-generated turned-view illustration, not the person's original photo
     "vitiligo_F": {"title": "局部輕遮瑕", "credit": CREDIT["uCt9uA9r1Rw_frontal"],
                    "source_note": "原照 Unsplash uCt9uA9r1Rw（側臉）→ AI 影像工具（AI）轉成正面示意圖（非本人原照，輪廓未驗證）→ 本地逐層 F_C4 → 官方腮紅＋眼影（磨皮 0）；畫面標「模擬」",
                    "base": ("layer_rule_20261018/F_compose/F_C4.png", "e6085ea0de4b0ab782771844c1a87306d97386347ad18aa25b38909aab0a9884"),
@@ -62,7 +62,7 @@ FINALS = {
                    "report": None},
 }
 
-# 步驟名稱（runs 報告的步驟前綴）→ 對外品項與位置；不含品牌與色號
+# step name (step prefix in the runs report) → public-facing item and position; contains no brand or shade code
 STEP_TEXT = [
     ("1 薄底妝", "粉底", "全臉薄薄一層，保留雀斑與毛孔"),
     ("2b 痘印", "遮瑕", "只點在泛紅的小點上，拍開邊緣"),
@@ -86,7 +86,7 @@ VITILIGO_STEPS = {
 
 
 def steps_from_report(report: Path, hex_override: dict | None = None) -> list[dict]:
-    """hex_override：成品某品項換了色（例如 女生腮紅改官方粉色），用品項名覆寫色塊 hex。"""
+    """hex_override: an item of the final look changed color (e.g. on 10-21 the female blush switched to the official pink); overrides the swatch hex by item name."""
     hex_override = hex_override or {}
     rep = json.loads(report.read_text(encoding="utf-8"))
     out = []
@@ -127,7 +127,7 @@ def main() -> None:
                 imgs[stage] = None
                 continue
             same = next((st for st in ("base", "official") if st != stage and f[st] == f[stage] and imgs.get(st)), None)
-            if same:                                   # 同一張來源不重複存（例如官方回傳圖就是成品）
+            if same:                                   # the same source is not saved twice (e.g. the official returned image is the final)
                 imgs[stage] = imgs[same]
                 continue
             name = f"{key}_{stage}.jpg"

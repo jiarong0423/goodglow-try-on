@@ -1,7 +1,7 @@
-"""膚色匹配 → 整套推薦：保養保護流程＋底妝色號＋快速兩款妝容與色號。全部本機計算，不扣點。
+"""Skin-tone match -> full recommendation: skincare/protection routine + foundation shades + two quick makeup looks with shades. All computed locally, no points spent.
 
-流程：取色（白化症一點、白斑症兩點）→ 判冷暖與深淺 → 對色卡 → 依妝感給好氣色／清晰兩款 → 每項附最近色號 →
-接上依症狀的保養保護步驟。冷暖只是推估，畫面要讓本人確認或改。
+Flow: sample colors (one point for albinism, two for vitiligo) -> judge undertone and depth -> match the shade card -> two looks by style (healthy glow / defined) -> nearest shade for each item ->
+append the condition-specific skincare/protection steps. Undertone is only an estimate, and the screen should let the person confirm or change it.
 """
 from __future__ import annotations
 
@@ -12,14 +12,14 @@ import skin_card as sc
 
 TONE_ID = {"cool": "pink_cool", "neutral": "neutral", "warm": "warm_ivory"}
 ENGINE_TONE = {v: k for k, v in TONE_ID.items()}
-CARD_ORDER = ("brow", "lash", "blush", "lip")   # 配色卡由上到下的順序
+CARD_ORDER = ("brow", "lash", "blush", "lip")   # order of the shade card, top to bottom
 ITEM_LABEL = {"brow": "眉毛", "lash": "睫毛", "blush": "腮紅", "lip": "唇"}
 
 
 def shades_for(selection: dict, tone_id: str, presets: dict, source: str = "all") -> list[dict]:
-    """把一組妝容選項換成每項的色碼＋最近型錄色號（保留原樣的項目不列）。"""
+    """Turn a set of makeup options into a color code + nearest catalog shade per item (items kept as is are not listed)."""
     tone = presets["undertones"].get(tone_id, presets["undertones"]["neutral"])
-    dc = looks.depth_colors(selection, tone_id, presets)        # 腮紅、唇色依膚色深淺帶×冷暖
+    dc = looks.depth_colors(selection, tone_id, presets)        # blush and lip colors depend on skin depth band x undertone
     items = []
     for item in CARD_ORDER:
         opt_id = selection.get(item, "keep")
@@ -51,14 +51,14 @@ def recommend(condition: str, style: str, skin_hex: str | None = None, normal_he
             raise ValueError("要先取膚色：點一下臉頰或下顎")
         prof = ce.skin_profile(skin_hex)
     tone_id = undertone_override or TONE_ID[prof["undertone"]]
-    # 本人自己選了冷暖（含「中性」）就照本人的；沒選才讓色卡用照片推估
+    # if the person chose an undertone themselves (including "neutral"), use theirs; only if not chosen does the shade card use the photo estimate
     engine_tone = ENGINE_TONE.get(tone_id) if undertone_override else None
     if condition == "vitiligo":
         base = ce.vitiligo_plan(normal_hex, patch_hex, engine_tone, source, patch_ratio)
     else:
         base = ce.albinism_base_plan(skin_hex, engine_tone, source)
     found = base.get("foundation") or []
-    foundation_hex = found[0]["hex"] if found else None          # 最接近膚色的色號，做好氣色覆蓋
+    foundation_hex = found[0]["hex"] if found else None          # the shade closest to the skin tone, used for the healthy-glow coverage
     looks_out = {}
     for which in ("glow", "clear"):
         sel = looks.quick_selection(style, which, tone_id, p, brow_hex, skin_hex or normal_hex, foundation_hex,
@@ -73,7 +73,7 @@ def recommend(condition: str, style: str, skin_hex: str | None = None, normal_he
     brow_visible = bool(brow_hex) and (ce.hex_to_lab(skin_hex or normal_hex)[0] - ce.hex_to_lab(brow_hex)[0]) >= ce.BROW_VISIBLE_DL
     full = fl.full_look(condition, style, level, tone_id, sensitivity, bool(brow_hex), p, brow_visible=brow_visible)
     color_ctx = {"skin_hex": skin_hex or normal_hex, **({"brow_hex": brow_hex} if brow_hex else {})}
-    full["shades"] = shades_for({**full["selection"], **color_ctx}, tone_id, p, source)   # 照原眉色要眉色＋膚色才算得出顏色
+    full["shades"] = shades_for({**full["selection"], **color_ctx}, tone_id, p, source)   # natural-brow options need the brow color + skin color to compute a color
     return {"condition": condition, "style": style, "profile": prof, "undertone_id": tone_id, "brow": brow,
             "skin_level": level, "full_look": full,
             "depth_colors": looks.depth_colors({"skin_hex": skin_hex or normal_hex}, tone_id, p),

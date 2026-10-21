@@ -1,4 +1,4 @@
-"""證據頁（evidence/index.html，放在 GitHub，不在 App 裡）：資料完整、圖都在、不含品牌／人名／病名；App 與 Docker 映像不含它。"""
+"""Evidence page (evidence/index.html, hosted on GitHub, not inside the app): data is complete, images are all present, no brands / person names / condition names; the app and Docker image do not include it."""
 import json
 import re
 import sys
@@ -25,16 +25,16 @@ class ProcessDataTests(unittest.TestCase):
         ids = [s["id"] for s in DATA["subjects"]]
         self.assertEqual(ids, ["light_a", "light_b", "uneven_a", "uneven_b"])
         counts = {s["id"]: len(s["steps"]) - 1 for s in DATA["subjects"]}
-        self.assertEqual(counts["light_a"], 14)           # 11 層本機＋裁框＋YouCam＋定案
+        self.assertEqual(counts["light_a"], 14)           # 11 local layers + crop + YouCam + final
         for s in DATA["subjects"]:
-            self.assertEqual(s["steps"][0]["kind"], "start")          # 第一格一定是「起點」，不是憑空出現的原圖
+            self.assertEqual(s["steps"][0]["kind"], "start")          # the first cell is always the "start", not an original image appearing from nowhere
             self.assertEqual(s["steps"][-1]["kind"], "final")
 
     def test_layer_counts_match_the_recipes(self):
         recipes = json.loads((ROOT / "demo" / "final" / "recipes.json").read_text(encoding="utf-8"))
         by = {s["id"]: s for s in DATA["subjects"]}
         self.assertEqual(by["light_a"]["local_layers"], len(recipes["albinism_F"]["steps"]))      # 11
-        self.assertEqual(by["light_b"]["local_layers"], len(recipes["albinism_M"]["steps"]) - 1)  # 4（第 5 項柔焦是定案時加的）
+        self.assertEqual(by["light_b"]["local_layers"], len(recipes["albinism_M"]["steps"]) - 1)  # 4 (the 5th item, soft focus, was added at finalization)
 
     def test_every_image_exists_and_every_text_is_bilingual(self):
         for s in DATA["subjects"]:
@@ -52,13 +52,13 @@ class ProcessDataTests(unittest.TestCase):
         text = json.dumps(DATA, ensure_ascii=False)
         self.assertEqual(hyg.blocked_names(text), [])
         self.assertIsNone(BAD.search(text), BAD.search(text))
-        names = audit.independent_names(ROOT / "app")                     # 有本機品牌資料時，真實品牌／產品名也不能出現
+        names = audit.independent_names(ROOT / "app")                     # with local brand data, real brand / product names must not appear either
         self.assertEqual(audit.independent_leaks(DATA, names), set())
 
 
 class ProcessScriptSyntax(unittest.TestCase):
     def test_all_page_scripts_parse(self):
-        """process.js 等前端檔案語法要能過（曾因英文句子裡的單引號整頁空白）。沒有 node 就略過。"""
+        """Frontend files such as process.js must pass a syntax check (a single quote inside an English sentence once blanked the whole page). Skipped without node."""
         import shutil
         import subprocess
         node = shutil.which("node")
@@ -71,7 +71,7 @@ class ProcessScriptSyntax(unittest.TestCase):
 
 class ProcessPageTests(unittest.TestCase):
     def test_evidence_is_not_part_of_the_app(self):
-        """證據頁只在 GitHub：App 不連過去、不由伺服器提供、不進離線快取、不進 Docker 映像。"""
+        """The evidence page lives only on GitHub: the app does not link to it, the server does not serve it, it is not in the offline cache, and not in the Docker image."""
         td = tempfile.TemporaryDirectory()
         state = server.State(True, 3, "http://127.0.0.1:9", 50, Path(td.name) / "l.json", catalog="demo")
         httpd = server.make_server("127.0.0.1", 0, state)

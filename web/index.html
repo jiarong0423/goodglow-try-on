@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="google" content="notranslate">   <!-- 本身有中英兩版，不讓瀏覽器再跳「要翻譯網頁嗎」 -->
+  <meta name="google" content="notranslate">   <!-- The page itself has both Chinese and English versions; keep the browser from popping up "translate this page?" -->
   <meta name="theme-color" content="#fbf3f1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title data-i18n="s0001">好氣色試妝</title>
@@ -15,7 +15,24 @@
 <body>
   <div id="mode-banner" class="banner" hidden></div>
 
-  <!-- 0 封面：直接點照片選入口 -->
+  <!-- Judge sign-in (only reachable when the server runs with --judge-live; English only, for the people testing the site) -->
+  <dialog id="judge-dialog" class="judge-dialog" aria-labelledby="judge-title">
+    <form id="judge-form">
+      <h2 id="judge-title">Judge sign-in</h2>
+      <p class="judge-note">Signing in switches this browser to live mode: your photo is sent to the YouCam API and the result is real. Live calls are capped. Without signing in, the app stays in demo mode.</p>
+      <label for="judge-user">Username</label>
+      <input id="judge-user" name="username" autocomplete="username" required>
+      <label for="judge-pass">Password</label>
+      <input id="judge-pass" name="password" type="password" autocomplete="current-password" required>
+      <p id="judge-msg" class="judge-msg" role="status"></p>
+      <div class="judge-actions">
+        <button type="button" class="btn ghost" id="judge-cancel">Cancel</button>
+        <button type="submit" class="btn primary" id="judge-go">Sign in</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 0 Cover: tap a photo to choose an entry -->
   <main id="view-start" class="view start">
     <header class="brandbar">
       <div class="logo"><img src="icon.svg" alt=""><span data-i18n="s0001">好氣色試妝</span></div>
@@ -24,12 +41,12 @@
         <label class="icon-toggle" title="怕光模式" data-i18n-attr="title:s0002"><input type="checkbox" id="opt-dark"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><span class="sr" data-i18n="s0003">怕光模式（暗色畫面）</span></label>
       </div>
     </header>
-    <!-- 官網風格第 2 步：手機上下堆疊（標題→說明→大數字→入口→步驟）；≥768px 左欄入口封面、右欄文字 -->
+    <!-- 10-21 official-site style, step 2: stacked vertically on mobile (title -> description -> large numbers -> entries -> steps); at >=768px, left column = entry cover, right column = text -->
     <div class="start-grid">
       <section class="hero">
         <h1><span data-i18n="s0005">先找到你的膚色，</span><br><span data-i18n="s0006">再談妝容</span></h1>
         <p class="sub" data-i18n="s0007">每一種膚色都有自己的好氣色：拍一張照片，取膚色、對色號，再給保養、防曬和一套完整妝容。只加妝；YouCam 的磨皮固定為 0。</p>
-        <!-- 數字由 /api/status 的 catalog_stats 填入（實際載入的型錄）；色號頁 1–10 級色卡 -->
+        <!-- The numbers are filled in from catalog_stats of /api/status (the catalog actually loaded); shade page levels 1-10 swatches -->
         <dl class="stats">
           <div><dt><b id="stat-shades">–</b><small data-i18n="s0008">個</small></dt><dd id="stat-shades-label" data-i18n="s0009">專櫃現行色號可對照</dd></div>
           <div><dt><b id="stat-brands">–</b><small data-i18n="s0008">個</small></dt><dd id="stat-brands-label" data-i18n="s0010">品牌</dd></div>
@@ -46,7 +63,7 @@
     </div>
   </main>
 
-  <!-- 開場提醒（彈窗，簡短） -->
+  <!-- Intro reminder (dialog, short) -->
   <div id="warn-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="warn-title">
     <div class="modal-card">
       <h2 id="warn-title" data-i18n="s0020">開始前提醒</h2>
@@ -61,7 +78,7 @@
     </div>
   </div>
 
-  <!-- 1 拍照或上傳 -->
+  <!-- 1 Take or upload a photo -->
   <section id="view-capture" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0027">拍一張，或上傳一張</h2>
@@ -79,7 +96,7 @@
     <div class="dock"><button class="btn ghost" id="btn-capture-back" data-i18n="s0036">返回</button></div>
   </section>
 
-  <!-- 1b 取景 -->
+  <!-- 1b Viewfinder -->
   <section id="view-mirror" class="view mirror" hidden>
     <div class="mirror-top">
       <div id="hint" class="hint" aria-live="polite" data-i18n="s0037">準備鏡頭中…</div>
@@ -102,11 +119,11 @@
     </div>
   </section>
 
-  <!-- 2 取膚色 -->
+  <!-- 2 Pick skin color -->
   <section id="view-check" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0016">取膚色</h2>
-    <!-- 拍攝小幫手：選照片或拍照後檢查這張照片能不能用（web/capture_guide.js；依據 docs/EVIDENCE_LIMITS.md） -->
+    <!-- 10-21 capture helper: after choosing or taking a photo, check whether this photo is usable (web/capture_guide.js; based on docs/EVIDENCE_LIMITS.md) -->
     <div id="guide-card" class="card guide" hidden aria-live="polite">
       <div class="guide-head"><h3 data-i18n="s0044">拍攝小幫手</h3><span id="guide-chip" class="guide-chip"></span></div>
       <p id="guide-sum" class="guide-sum"></p>
@@ -142,7 +159,7 @@
     </div>
   </section>
 
-  <!-- 2b 預期妝容（模擬）：有的話先看目標，再從它取色號 -->
+  <!-- 2b Expected look (simulated): if available, see the target first, then pick the shade from it -->
   <section id="view-expect" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0058">預期妝容</h2>
@@ -160,7 +177,7 @@
     </div>
   </section>
 
-  <!-- 3 色卡與色號 -->
+  <!-- 3 Swatches and shade numbers -->
   <section id="view-shade" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0065">你的色卡與色號</h2>
@@ -242,7 +259,7 @@
     </div>
   </section>
 
-  <!-- 4 敏感三題 -->
+  <!-- 4 Three sensitive questions -->
   <section id="view-sens" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0105">三個小問題</h2>
@@ -259,7 +276,7 @@
     </div>
   </section>
 
-  <!-- 5 保養與底妝建議 -->
+  <!-- 5 Skincare and foundation suggestions -->
   <section id="view-advice" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0118">你的保養與上妝建議</h2>
@@ -277,11 +294,11 @@
       <ul id="adv-look-adj" class="adj-list"></ul>
       <p class="muted small" id="adv-look-src"></p>
     </section>
-    <!-- 定案妝容（模擬）：/api/final-look，只讀 demo/final/（授權） -->
+    <!-- Final look (simulated): /api/final-look, reads only demo/final/  -->
     <section class="card final-card" id="final-card" hidden>
       <h3 data-i18n="s0122">定案妝容</h3>
       <div class="chips" id="final-who" role="radiogroup" aria-label="選擇示範" data-i18n-attr="aria-label:s0123"></div>
-      <!-- 流程：本地逐層底妝 → 官方 makeup-vto 這一步 → 成品與配方卡；展示模式只放錄好的官方結果、不扣點 -->
+      <!-- Flow (10-20): local layer-by-layer foundation -> official makeup-vto at this step -> finished look and recipe card; demo mode shows only recorded official results and deducts no points -->
       <div class="final-flow">
         <div class="final-stage"><p class="stage-h" data-i18n="s0124">① 本地逐層底妝</p>
           <figure class="final-fig"><span class="sim-tag" data-i18n="s0060">模擬</span><img id="final-base" alt="本地逐層底妝（模擬）" data-i18n-attr="alt:s0125"></figure></div>
@@ -301,7 +318,7 @@
     </div>
   </section>
 
-  <!-- 6 試試看（YouCam 試妝） -->
+  <!-- 6 Try it (YouCam try-on) -->
   <section id="view-base" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0133">試試看</h2>
@@ -337,7 +354,7 @@
     </div>
   </section>
 
-  <!-- 快速三選（沒有色號時的退路） -->
+  <!-- Quick three-way choice (fallback when there is no shade number) -->
   <section id="view-quick" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0145">先看三種</h2>
@@ -345,7 +362,7 @@
     <div id="quick-cards" class="quick-cards"></div>
   </section>
 
-  <!-- 逐項調整 -->
+  <!-- Item-by-item adjustment -->
   <section id="view-adjust" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0143">逐項調整</h2>
@@ -378,7 +395,7 @@
     </div>
   </section>
 
-  <!-- 7 配色卡 -->
+  <!-- 7 Palette card -->
   <section id="view-card" class="view sheet" hidden>
     <div class="stepper"></div>
     <h2 data-i18n="s0151">我的配色卡</h2>

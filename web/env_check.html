@@ -18,7 +18,7 @@
 <script>
   const out = document.getElementById('out');
   const report = (name, ok, msg) => { const li = document.createElement('li'); li.className = ok ? 'ok' : 'ng'; li.textContent = `${ok ? '✓' : '✗'} ${name}：${msg}`; out.appendChild(li); (window.__env = window.__env || {})[name] = { ok, msg }; };
-  // 1. Konva：SVG 路徑畫到畫布上
+  // 1. Konva: draw an SVG path onto the canvas
   try {
     const stage = new Konva.Stage({ container: 'stage', width: 240, height: 160 });
     const layer = new Konva.Layer(); stage.add(layer);
@@ -26,17 +26,17 @@
     layer.add(path); layer.draw();
     report('Konva', path.getClientRect().width > 100, `版本 ${Konva.version}，SVG 路徑可拖曳`);
   } catch (e) { report('Konva', false, e.message); }
-  // 2. ONNX Runtime Web：最小模型 y = 2x
+  // 2. ONNX Runtime Web: minimal model y = 2x
   (async () => {
     try {
-      ort.env.wasm.wasmPaths = new URL('vendor/onnxruntime/', location.href).href;   // 要完整網址，相對路徑會被當成模組名稱 ort.env.wasm.numThreads = 1;
+      ort.env.wasm.wasmPaths = new URL('vendor/onnxruntime/', location.href).href;   // a full URL is required, a relative path is treated as a module name ort.env.wasm.numThreads = 1;
       const s = await ort.InferenceSession.create('vendor/selftest/mul2.onnx');
       const r = await s.run({ x: new ort.Tensor('float32', Float32Array.from([1, 2, 3]), [1, 3]) });
       const y = Array.from(r.y.data);
       report('ONNX Runtime Web', y.join(',') === '2,4,6', `推論結果 [${y}]（應為 2,4,6）`);
     } catch (e) { report('ONNX Runtime Web', false, e.message); }
   })();
-  // 3. OpenCV.js：畫一個白色橢圓 → 找輪廓 → 化簡成向量點
+  // 3. OpenCV.js: draw a white ellipse -> find contours -> simplify into vector points
   window.Module = { onRuntimeInitialized() { window.__cvReady = true; } };
   const s = document.createElement('script'); s.src = 'vendor/opencv/opencv.js'; s.async = true;
   s.onload = async () => {

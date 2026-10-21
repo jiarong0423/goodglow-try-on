@@ -1,4 +1,4 @@
-"""伺服器測試：mock 模式與假 YouCam（不連網、不扣點）。"""
+"""Server tests: mock mode and a fake YouCam (no network, no units spent)."""
 import base64
 import io
 import json
@@ -133,6 +133,11 @@ class MockModeTests(ServerTestBase):
         self.assertEqual(self.get("/api/status")["mode"], "mock")
         self.assertIn("styles", self.get("/api/presets"))
 
+    def test_camera_kit_sized_photo_is_accepted(self):
+        """Camera Kit on phones outputs about 680×1080 (short side < 1080): it must not be blocked, otherwise photos taken by the camera cannot proceed."""
+        code, res = self.post("/api/looks", {"style": "natural", "undertone": "pink_cool", "image": jpeg_data_url((680, 1080))})
+        self.assertEqual(code, 200, res)
+
     def test_looks_with_own_photo_returns_two_labelled_images(self):
         code, res = self.post("/api/looks", {"style": "natural", "undertone": "pink_cool", "image": jpeg_data_url((1200, 1600))})
         self.assertEqual(code, 200, res)
@@ -141,7 +146,7 @@ class MockModeTests(ServerTestBase):
         self.assertNotIn("red1", json.dumps(res["looks"]))
 
     def test_low_resolution_rejected(self):
-        code, res = self.post("/api/looks", {"style": "natural", "image": jpeg_data_url((800, 1000))})
+        code, res = self.post("/api/looks", {"style": "natural", "image": jpeg_data_url((500, 700))})
         self.assertEqual(code, 400)
         self.assertEqual(res["error_code"], "low_resolution")
 
@@ -153,7 +158,7 @@ class MockModeTests(ServerTestBase):
         code, res = self.post("/api/makeup", {"style": "polished", "selection": {"lip": "red3"},
                                               "image": jpeg_data_url((1200, 1600))})
         self.assertEqual(code, 200, res)
-        self.assertIsNotNone(res["hint"])  # 深紅唇建議平衡
+        self.assertIsNotNone(res["hint"])  # dark red lip: suggest balancing
 
     def test_color_endpoints(self):
         code, res = self.post("/api/match", {"hex": "#F5E2DC", "category": "foundation", "source": "demo"})
@@ -165,18 +170,18 @@ class MockModeTests(ServerTestBase):
         code, res = self.post("/api/card", {"undertone": "pink_cool", "selection": {"brow": "taupe", "lip": "natural_gloss"},
                                             "skin_hex": "#F2DDD5"})
         self.assertEqual(code, 200)
-        self.assertEqual([i["item"] for i in res["items"]], ["foundation", "brow", "lip", "concealer"])   # 白化症加遮瑕
+        self.assertEqual([i["item"] for i in res["items"]], ["foundation", "brow", "lip", "concealer"])   # 10-16 albinism adds concealer
         self.assertTrue(all(i["matches"] for i in res["items"]))
         found = res["items"][0]
-        self.assertEqual(found["card"]["tone"], "cool")                        #
-        base_src = "official" if server.ce.OFFICIAL_CATALOG.exists() else "demo"      # 品牌資料只在本機版
+        self.assertEqual(found["card"]["tone"], "cool")                        # the undertone chosen by the user is carried into the color card
+        base_src = "official" if server.ce.OFFICIAL_CATALOG.exists() else "demo"      # brand data is local only
         self.assertTrue(all(m["source"] == base_src and "fit" in m for m in found["matches"]))
         self.assertEqual(self.post("/api/match", {"hex": "zz", "category": "foundation"})[0], 400)
         cells = self.get("/api/skin-card")["cells"]
         self.assertEqual(len(cells), 30)
 
     def test_card_face_shades_follow_style_and_expected_zones(self):
-        #「臉部色號」：有上打亮／修容才給；有預期妝容就用它的分區色，沒有就依膚色推算
+        # 10-16 "face shade codes": given only when highlight / contour is applied; use the zone colors of the expected look if present, otherwise infer from skin tone
         body = {"undertone": "pink_cool", "skin_hex": "#DDC9C0", "condition": "albinism",
                 "selection": {"highlight": "lift", "contour": "soft", "lip": "red2"}}
         code, res = self.post("/api/card", body)
@@ -189,11 +194,11 @@ class MockModeTests(ServerTestBase):
         hl = next(i for i in res["items"] if i["item"] == "highlight")
         self.assertEqual((hl["hex"], hl["basis"]), ("#EEDFD8", "預期妝容的打亮／修容區取色"))
         code, res = self.post("/api/card", dict(body, zones={"highlight": {"hex": "bad"}, "contour": {"hex": "#B9A9A2"}}))
-        self.assertEqual(next(i for i in res["items"] if i["item"] == "highlight")["basis"], "依膚色推算")   # 壞色碼不採用
+        self.assertEqual(next(i for i in res["items"] if i["item"] == "highlight")["basis"], "依膚色推算")   # invalid color codes are not used
         code, res = self.post("/api/card", dict(body, selection={"lip": "nude_balm"}))
         self.assertEqual([i["item"] for i in res["items"] if i["item"] in ("highlight", "contour")], [])
         code, res = self.post("/api/card", dict(body, condition="vitiligo"))
-        self.assertNotIn("concealer", [i["item"] for i in res["items"]])     # 白斑的遮瑕由 /api/recommend 給
+        self.assertNotIn("concealer", [i["item"] for i in res["items"]])     # vitiligo concealer is provided by /api/recommend
 
     def test_simplified_flow_foundation_only_replays_real_result(self):
         code, res = self.post("/api/makeup", {"demo": True, "condition": "vitiligo", "style": "grooming",
@@ -212,13 +217,13 @@ class MockModeTests(ServerTestBase):
         self.assertEqual(code, 200, res)
         self.assertEqual([l["item"] for l in res["layers"]], ["foundation", "blush", "lip"])
         rec_layer = (server.DEMO_DIR / "replay" / "vitiligo" / "grooming_layer1_foundation.jpg").read_bytes()
-        self.assertEqual(base64.b64decode(res["layers"][0]["image"].split(",", 1)[1]), rec_layer)   # 第一層用實跑的底妝結果
+        self.assertEqual(base64.b64decode(res["layers"][0]["image"].split(",", 1)[1]), rec_layer)   # the first layer uses the real-run foundation result
 
     def test_face_advice_mock_replays_recorded_result(self):
         code, res = self.post("/api/face", {"demo": True, "condition": "vitiligo", "style": "grooming"})
         self.assertEqual(code, 200)
         self.assertTrue(res["available"])
-        self.assertTrue(any("方" in t for t in res["advice"]["tips"]))       # 實測 Square
+        self.assertTrue(any("方" in t for t in res["advice"]["tips"]))       # measured Square
         code, res = self.post("/api/face", {"demo": True, "condition": "albinism"})
         self.assertFalse(res["available"])
 
@@ -230,10 +235,10 @@ class MockModeTests(ServerTestBase):
             imgs[style] = res["looks"]["glow"]["image"]
         self.assertNotEqual(imgs["grooming"], imgs["natural"])
         src = (ROOT / "app" / "server.py").read_text(encoding="utf-8")
-        self.assertNotIn('"runs/', src)                                     # 執行期不依賴不進版控的 runs/
+        self.assertNotIn('"runs/', src)                                     # runtime does not depend on runs/, which is not under version control
 
     def test_exact_replay_used_when_recorded(self):
-        # tools/record_demo_replays.py 錄的「完全同一組選項」優先；沒錄到的組合退回舊規則
+        # the "exactly the same set of options" recorded by tools/record_demo_replays.py takes priority; combinations not recorded fall back to the old rule
         import tempfile
         sel = {"foundation": "light", "highlight": "center", "lip": "natural_gloss"}
         with tempfile.TemporaryDirectory() as td:
@@ -241,7 +246,7 @@ class MockModeTests(ServerTestBase):
             try:
                 server.DEMOS["vitiligo"]["replay"] = Path(td)
                 key = server.exact_key("vitiligo", "natural", dict(sel, undertone="neutral", skin_hex="#946D60",
-                                                                   foundation_hex="#946D60"))   # 代號含實際試妝參數（顏色）
+                                                                   foundation_hex="#946D60"))   # the code includes the actual try-on parameters (color)
                 (Path(td) / "exact").mkdir()
                 fake = io.BytesIO()
                 Image.new("RGB", (8, 8), (10, 200, 30)).save(fake, "JPEG")
@@ -268,7 +273,7 @@ class MockModeTests(ServerTestBase):
         self.assertNotIn("expected", self.get("/api/demo-photo?condition=albinism"))
 
     def test_patch_mask_on_demo_photo(self):
-        # 採用 E4：網頁送照片＋上妝範圍，伺服器回遮罩（大小＝範圍圖大小）
+        # 10-17 adopt E4: the web sends the photo + makeup area, the server returns a mask (size = size of the area image)
         photo = self.get("/api/demo-photo?condition=vitiligo")["image"]
         reg = Image.new("L", (180, 240), 0)
         from PIL import ImageDraw
@@ -280,7 +285,7 @@ class MockModeTests(ServerTestBase):
         self.assertTrue(res["mask"].startswith("data:image/png;base64,"))
         mask = Image.open(io.BytesIO(base64.b64decode(res["mask"].split(",", 1)[1])))
         self.assertEqual(mask.size, (180, 240))
-        self.assertGreater(res["ratio"], 0.05)          # 示範照臉中間有大片淺色區塊
+        self.assertGreater(res["ratio"], 0.05)          # the demo photo has a large light patch in the middle of the face
         self.assertLess(res["ratio"], 0.95)
 
     def test_patch_mask_bad_input(self):
@@ -289,7 +294,7 @@ class MockModeTests(ServerTestBase):
         self.assertEqual(res["error_code"], "bad_photo")
 
     def test_vitiligo_demo_layer_fit_shades_and_opacity(self):
-        # B：化妝塗層用擬合對到的色號顏色＋不透明度；只送顏色與數字，不送內部說明；不放品牌名稱
+        # 10-17 B: the makeup layer uses the fitted shade color + opacity; sends only color and numbers, no internal notes; no brand names
         lf = self.get("/api/demo-photo?condition=vitiligo")["expected"]["layer_fit"]
         self.assertEqual(set(lf), {"shades", "opacity"})
         self.assertEqual(set(lf["shades"]), {"concealer", "foundation", "contour"})
@@ -305,7 +310,7 @@ class MockModeTests(ServerTestBase):
         self.assertEqual(set(res["points"]), {"normal", "brow"})
 
     def test_final_look_both_entries_and_albinism_who(self):
-        # 定案妝容（模擬）：只讀 demo/final/，兩個入口都有；白化症有女／男
+        # 10-19 final look (simulated): reads only demo/final/, both entries have it; albinism has female / male
         import color_engine as ce
         official = {p["brand"] for p in ce.load_catalogs("official")}
         seen = []
@@ -315,18 +320,18 @@ class MockModeTests(ServerTestBase):
             self.assertEqual((res["condition"], res["who"], res["label"]), (cond, who, "模擬"))
             self.assertTrue(res["image"].startswith("data:image/jpeg"))
             self.assertTrue(res["steps"] and all(s["item"] and s["where"] for s in res["steps"]))
-            # 三段流程：本地底妝一定有；官方這一步沒錄好就註明、不呼叫 YouCam
+            # 10-20 three-stage flow: the local foundation is always there; if the official step was not recorded, say so and do not call YouCam
             self.assertTrue(res["base"]["image"].startswith("data:image/jpeg"))
             self.assertIn(res["official"]["status"], ("replay", "not_recorded"))
             self.assertEqual(res["official"]["image"] is None, res["official"]["status"] == "not_recorded")
             self.assertTrue(res["credit"].startswith("照片："))
             seen.append(res["image"])
-            strip = lambda v: {k: strip(x) for k, x in v.items() if k != "image"} if isinstance(v, dict) else v   # 圖片 base64 可能碰巧含字母組合
+            strip = lambda v: {k: strip(x) for k, x in v.items() if k != "image"} if isinstance(v, dict) else v   # image base64 may happen to contain letter combinations
             text = json.dumps(strip(res), ensure_ascii=False)
             for brand in official:
                 self.assertNotIn(brand, text)
         self.assertEqual(len(set(seen)), 4)
-        self.assertEqual(self.get("/api/final-look?condition=vitiligo")["official"]["status"], "replay")   # 示範照男生有錄好的官方結果
+        self.assertEqual(self.get("/api/final-look?condition=vitiligo")["official"]["status"], "replay")   # the demo male photo has an official result recorded
         self.assertEqual(self.get("/api/final-look?condition=albinism")["who_options"], ["F", "M"])
         self.assertEqual(self.get("/api/final-look?condition=vitiligo")["who_options"], ["F", "M"])
         src = (ROOT / "app" / "server.py").read_text(encoding="utf-8")
@@ -357,7 +362,7 @@ class MockModeTests(ServerTestBase):
 
 
 class DemoCatalogTests(ServerTestBase):
-    """--catalog demo：錄影片用，畫面不出現第三方品牌（比賽規則：影片不得含第三方商標）。"""
+    """--catalog demo: for video recording, no third-party brands on screen (contest rule: videos must not contain third-party trademarks)."""
 
     def setUp(self):
         super().setUp()
@@ -410,7 +415,7 @@ class LiveModeTests(ServerTestBase):
         self.assertEqual(code, 200, res)
         self.assertEqual([l["item"] for l in res["layers"]], ["foundation", "blush"])
         sent = FakeYouCam.tasks[before:]
-        self.assertEqual(len(sent), 2)                                          # 每層 1 次
+        self.assertEqual(len(sent), 2)                                          # 1 call per layer
         self.assertEqual([e["category"] for e in sent[0]["effects"]], ["skin_smooth", "foundation"])
         self.assertEqual([e["category"] for e in sent[1]["effects"]], ["skin_smooth", "foundation", "blush"])
 
@@ -419,7 +424,7 @@ class LiveModeTests(ServerTestBase):
         code, res = self.post("/api/face", {"style": "natural", "image": jpeg_data_url((1200, 1600))})
         self.assertEqual(code, 200, res)
         sent = FakeYouCam.tasks[-1]
-        self.assertLessEqual(len(sent["features"]), 5)                       # 1–5 項才是 10 點
+        self.assertLessEqual(len(sent["features"]), 5)                       # 1-5 items cost 10 units
         self.assertEqual(self.get("/api/status")["budget"]["spent"] - before, 10)
         adv = res["advice"]
         self.assertEqual(adv["suggest"], {"brow": "photo_soft", "lip": "natural_gloss"})

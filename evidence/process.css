@@ -1,4 +1,4 @@
-/* 示範頁「一套妝是怎麼做出來的」：沿用 style.css 的色彩變數（亮／暗色都跟著走） */
+/* Demo page "how a makeup look is made": reuses the color variables of style.css (follows both light and dark themes) */
 .pr { max-width: 640px; margin: 0 auto; padding: 12px 16px 48px; }
 .pr-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
 .pr-back { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--card);

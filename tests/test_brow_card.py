@@ -10,16 +10,16 @@ import recommend as rec  # noqa: E402
 
 class BrowTagTests(unittest.TestCase):
     def test_brand_words_win_over_color(self):
-        # 品牌說明寫 warm 就算暖（即使同時寫 ash）；只寫 ash／grey 才算冷灰
+        # if the brand description says warm it counts as warm (even if it also says ash); only ash/grey alone counts as cool grey
         self.assertEqual(bc.tag("#9E755C", "Sample Warm Blonde, warm ash-blonde tone")["family"], "金")
         self.assertEqual(bc.tag("#998477", "Sample Grey Blonde, yellowy ashy grey")["family"], "冷灰褐")
         self.assertEqual(bc.tag("#151515", "Onyx")["family"], "黑")
         self.assertEqual(bc.tag("#151515")["level"], 6)
 
     def test_pale_ok_excludes_black_and_deep(self):
-        self.assertTrue(bc.tag("#998B86")["pale_ok"])          # 淺灰褐（taupe）可以
-        self.assertFalse(bc.tag("#2D2A2A")["pale_ok"])         # 黑不行
-        self.assertFalse(bc.tag("#584A43", "Taupe")["pale_ok"])  # 第 4 級深灰褐不行
+        self.assertTrue(bc.tag("#998B86")["pale_ok"])          # light grey-brown (taupe) is OK
+        self.assertFalse(bc.tag("#2D2A2A")["pale_ok"])         # black is not OK
+        self.assertFalse(bc.tag("#584A43", "Taupe")["pale_ok"])  # level 4 dark grey-brown is not OK
 
 
 class BrowTargetTests(unittest.TestCase):
@@ -45,14 +45,14 @@ class BrowTargetTests(unittest.TestCase):
 
 class FullLookBrowTests(unittest.TestCase):
     def test_full_look_never_lightens_dark_brows(self):
-        # ：黑眉毛不能被完整妝容換成淺金棕／灰褐
+        # 10-16 owner feedback "brow shade has a problem": black brows must not be swapped by the full look into light gold-brown / grey-brown
         for style in ("grooming", "natural", "polished"):
             r = rec.recommend("vitiligo", style, normal_hex="#B38071", patch_hex="#B49B96", brow_hex="#1B1B1B")
             b = r["full_look"]["selection"]["brow"]
             self.assertIn(b, ("keep", "photo_soft", "photo_defined"), style)
 
     def test_albinism_full_look_brows_stay_light(self):
-        # ：完整妝容不上眉（官方抓不準白眉位置）；眉色卡參考色仍不給黑
+        # 10-16 owner feedback "do not draw white brows": the full look skips brows (the official engine cannot locate white brows accurately); the brow card reference shade still never gives black
         for style in ("natural", "polished"):
             r = rec.recommend("albinism", style, skin_hex="#E1CDC6", brow_hex="#CBB4A8")
             self.assertEqual(r["full_look"]["selection"]["brow"], "keep", style)

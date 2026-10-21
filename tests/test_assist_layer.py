@@ -1,5 +1,5 @@
-"""輔助層：YouCam 單獨做不到或處理不了的部分，由手機上的本機填色補上。
-重現指令見 demo/repro/README.md：`app/server.py --mock --simulate-youcam-error`，走到試妝頁。"""
+"""Assist layer: parts YouCam cannot do or handle on its own are filled in by local coloring on the phone .
+Reproduction steps are in demo/repro/README.md: `app/server.py --mock --simulate-youcam-error`, go to the try-on page."""
 import json
 import tempfile
 import threading
@@ -43,9 +43,9 @@ class SimulatedYouCamError(unittest.TestCase):
                 st, r = post(base, path, body)
                 self.assertEqual((st, r["error_code"]), (422, "error_face_angle_invalid"), path)
             st, r = post(base, "/api/makeup", body, lang="en")
-            self.assertRegex(r["hint"], r"^[\x00-\x7f]+$")                      # 英文模式提示沒有中文
+            self.assertRegex(r["hint"], r"^[\x00-\x7f]+$")                      # English mode hint contains no Chinese
             st, r = post(base, "/api/match", {"hex": "#E1CDC6", "category": "foundation", "source": "demo", "top": 2})
-            self.assertEqual(st, 200)                                           # 本機比對不受影響
+            self.assertEqual(st, 200)                                           # local matching is unaffected
         finally:
             httpd.shutdown(); httpd.server_close(); td.cleanup()
 
@@ -73,11 +73,11 @@ class EstimatedUnits(unittest.TestCase):
             body = {"style": "natural", "undertone": "neutral", "condition": "albinism", "demo": True, "selection": {}}
             self.assertEqual(post(base, "/api/makeup", body)[0], 200)
             self.assertEqual(post(base, "/api/makeup", body)[0], 200)
-            self.assertEqual(status()["est_units"], 2)                      # Makeup VTO 每次 1 點
+            self.assertEqual(status()["est_units"], 2)                      # Makeup VTO costs 1 unit per call
             post(base, "/api/face", {"style": "natural", "demo": True, "condition": "albinism"})
             st = status()
-            self.assertEqual((st["est_units"], st["est_calls"]["face-attr-analysis(1-5)"]), (12, 1))   # Face Attribute 10 點
-            self.assertEqual(st["calls_used"], 0)                           # 沒有真的呼叫、沒有扣點
+            self.assertEqual((st["est_units"], st["est_calls"]["face-attr-analysis(1-5)"]), (12, 1))   # Face Attribute costs 10 units
+            self.assertEqual(st["calls_used"], 0)                           # no real call made, no units charged
         finally:
             httpd.shutdown(); httpd.server_close(); td.cleanup()
 
@@ -85,11 +85,11 @@ class EstimatedUnits(unittest.TestCase):
 class ClientFallbackWiring(unittest.TestCase):
     def test_try_on_and_adjust_pages_fall_back_to_local_simulation(self):
         self.assertIn("async function localAssistImage()", JS)
-        self.assertEqual(JS.count("await localAssistImage()"), 2)                 # 試妝頁與逐項調整頁
+        self.assertEqual(JS.count("await localAssistImage()"), 2)                 # try-on page and per-item adjustment page
         self.assertIn("window.ShadePreview.render(", JS[JS.index("async function localAssistImage()"):JS.index("function sourceLine")])
-        self.assertIn("window.Camouflage.apply(", JS[JS.index("async function localAssistImage()"):JS.index("function sourceLine")])  # 白斑入口加局部遮瑕
+        self.assertIn("window.Camouflage.apply(", JS[JS.index("async function localAssistImage()"):JS.index("function sourceLine")])  # vitiligo entry adds local concealer patching
         self.assertNotIn("simulate_error", JS)
-        self.assertNotIn("simulate-youcam", JS)                                  # 前端不認識模擬旗標：照真實錯誤走，沒有後門
+        self.assertNotIn("simulate-youcam", JS)                                  # the frontend does not recognize the simulation flag: follows the real error path, no back door
 
     def test_source_is_labelled_on_the_try_on_page(self):
         self.assertIn('id="base-source"', HTML)

@@ -1,0 +1,84 @@
+<svg viewBox="0 0 1260 780" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tryon-request-title tryon-request-desc" width="1260" height="780">
+<title id="tryon-request-title">Try-on request</title>
+<desc id="tryon-request-desc">A browser asks the server for a try-on; in demo mode the server answers from saved real results, and in live mode it reserves a credit, calls YouCam, polls, and settles the ledger.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#5f4d53"/></marker><marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#b83a5d"/></marker><marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker></defs>
+<rect width="100%" height="100%" fill="#fbf3f1"/>
+<text x="24" y="28" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" letter-spacing="0.18em">SEQUENCE · GOOD GLOW TRY-ON</text>
+<text x="24" y="52" fill="#2a1f22" font-size="22" font-family="'Instrument Serif',Georgia,serif" letter-spacing="-0.02em">One request, two ways to answer</text>
+<rect x="24" y="232" width="1212" height="148" rx="8" fill="rgba(42,31,34,0.02)" stroke="rgba(42,31,34,0.12)" stroke-width="0.8"/>
+<rect x="36" y="236" width="112" height="12" rx="2" fill="#fbf3f1"/>
+<text x="92.0" y="245" fill="#6e5c62" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.14em">DEMO MODE · ANONYMOUS</text>
+<rect x="24" y="396" width="1212" height="280" rx="8" fill="rgba(42,31,34,0.02)" stroke="rgba(42,31,34,0.12)" stroke-width="0.8"/>
+<rect x="36" y="400" width="136" height="12" rx="2" fill="#fbf3f1"/>
+<text x="104.0" y="409" fill="#6e5c62" font-size="7" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.14em">LIVE MODE · SIGNED-IN JUDGE</text>
+<line x1="120" y1="112" x2="120" y2="704" stroke="rgba(42,31,34,0.35)" stroke-width="1" stroke-dasharray="3,4"/>
+<line x1="380" y1="112" x2="380" y2="704" stroke="rgba(42,31,34,0.35)" stroke-width="1" stroke-dasharray="3,4"/>
+<line x1="640" y1="112" x2="640" y2="704" stroke="rgba(42,31,34,0.35)" stroke-width="1" stroke-dasharray="3,4"/>
+<line x1="880" y1="112" x2="880" y2="704" stroke="rgba(42,31,34,0.35)" stroke-width="1" stroke-dasharray="3,4"/>
+<line x1="1120" y1="112" x2="1120" y2="704" stroke="rgba(42,31,34,0.35)" stroke-width="1" stroke-dasharray="3,4"/>
+<line x1="120" y1="152" x2="379" y2="152" stroke="#5f4d53" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="216.0" y="130" width="68" height="12" rx="2" fill="#fbf3f1"/>
+<text x="250.0" y="139" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">POST /MAKEUP</text>
+<line x1="380" y1="276" x2="639" y2="276" stroke="#5f4d53" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="483.0" y="254" width="54" height="12" rx="2" fill="#fbf3f1"/>
+<text x="510.0" y="263" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">EXACT KEY</text>
+<line x1="640" y1="316" x2="381" y2="316" stroke="#5f4d53" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<rect x="476.0" y="294" width="68" height="12" rx="2" fill="#fbf3f1"/>
+<text x="510.0" y="303" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">SAVED RESULT</text>
+<line x1="380" y1="356" x2="121" y2="356" stroke="#5f4d53" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<rect x="213.0" y="334" width="74" height="12" rx="2" fill="#fbf3f1"/>
+<text x="250.0" y="343" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">LABELLED DEMO</text>
+<line x1="380" y1="440" x2="879" y2="440" stroke="#b83a5d" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+<rect x="603.0" y="418" width="54" height="12" rx="2" fill="#fbf3f1"/>
+<text x="630.0" y="427" fill="#b83a5d" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">RESERVE 1</text>
+<line x1="380" y1="480" x2="1119" y2="480" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+<rect x="713.0" y="458" width="74" height="12" rx="2" fill="#fbf3f1"/>
+<text x="750.0" y="467" fill="#2e5aa8" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">UPLOAD + TASK</text>
+<line x1="380" y1="520" x2="1119" y2="520" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+<rect x="716.0" y="498" width="68" height="12" rx="2" fill="#fbf3f1"/>
+<text x="750.0" y="507" fill="#2e5aa8" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">POLL, REPEAT</text>
+<line x1="1120" y1="560" x2="381" y2="560" stroke="#2e5aa8" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-link)"/>
+<rect x="716.0" y="538" width="68" height="12" rx="2" fill="#fbf3f1"/>
+<text x="750.0" y="547" fill="#2e5aa8" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">RESULT IMAGE</text>
+<line x1="380" y1="600" x2="879" y2="600" stroke="#b83a5d" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+<rect x="596.0" y="578" width="68" height="12" rx="2" fill="#fbf3f1"/>
+<text x="630.0" y="587" fill="#b83a5d" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">SETTLE ON OK</text>
+<line x1="380" y1="640" x2="121" y2="640" stroke="#5f4d53" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<rect x="213.0" y="618" width="74" height="12" rx="2" fill="#fbf3f1"/>
+<text x="250.0" y="627" fill="#6e5c62" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle" letter-spacing="0.06em">LABELLED LIVE</text>
+<rect x="230" y="176" width="300" height="32" rx="4" fill="#fbf3f1"/>
+<rect x="230" y="176" width="300" height="32" rx="4" fill="#f6e8e5" stroke="#2a1f22" stroke-opacity="0.45" stroke-width="0.8"/>
+<text x="380" y="190" fill="#2a1f22" font-size="9" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Slot, size and format limits</text>
+<text x="380" y="202" fill="#5f4d53" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">option ids to a Makeup VTO body, smoothing 0</text>
+<rect x="40" y="68" width="160" height="44" rx="6" fill="#fbf3f1"/>
+<rect x="40" y="68" width="160" height="44" rx="6" fill="#fbf3f1" stroke="#2a1f22" stroke-width="1"/>
+<text x="120" y="88" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Browser</text>
+<text x="120" y="102" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">phone PWA</text>
+<rect x="300" y="68" width="160" height="44" rx="6" fill="#fbf3f1"/>
+<rect x="300" y="68" width="160" height="44" rx="6" fill="rgba(184,58,93,0.08)" stroke="#b83a5d" stroke-width="1"/>
+<text x="380" y="88" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Server</text>
+<text x="380" y="102" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">app/server.py</text>
+<rect x="560" y="68" width="160" height="44" rx="6" fill="#fbf3f1"/>
+<rect x="560" y="68" width="160" height="44" rx="6" fill="#fbf3f1" stroke="#2a1f22" stroke-width="1"/>
+<text x="640" y="88" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Replay</text>
+<text x="640" y="102" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">demo/replay</text>
+<rect x="800" y="68" width="160" height="44" rx="6" fill="#fbf3f1"/>
+<rect x="800" y="68" width="160" height="44" rx="6" fill="#fbf3f1" stroke="#2a1f22" stroke-width="1"/>
+<text x="880" y="88" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">Ledger</text>
+<text x="880" y="102" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">budget.py</text>
+<rect x="1040" y="68" width="160" height="44" rx="6" fill="#fbf3f1"/>
+<rect x="1040" y="68" width="160" height="44" rx="6" fill="#fbf3f1" stroke="#5f4d53" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="1120" y="88" fill="#2a1f22" font-size="12" font-weight="600" font-family="'Geist','Helvetica Neue',Arial,sans-serif" text-anchor="middle">YouCam</text>
+<text x="1120" y="102" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace" text-anchor="middle">S2S API</text>
+<text x="24" y="724" fill="#5f4d53" font-size="14" font-style="italic" font-family="'Instrument Serif',Georgia,serif">If YouCam cannot process a step, the app says so and shows a local simulation with its source labelled.</text>
+<line x1="24" y1="740" x2="1236" y2="740" stroke="rgba(42,31,34,0.12)" stroke-width="0.8"/>
+<text x="24" y="764" fill="#5f4d53" font-size="8" font-family="'Geist Mono',ui-monospace,Menlo,monospace" letter-spacing="0.14em">LEGEND</text>
+<rect x="110" y="755" width="20" height="12" rx="3" fill="rgba(184,58,93,0.08)" stroke="#b83a5d" stroke-width="1"/>
+<text x="138" y="764" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace">Focal: the gatekeeper</text>
+<rect x="291" y="755" width="20" height="12" rx="3" fill="#fbf3f1" stroke="#2a1f22" stroke-width="1"/>
+<text x="319" y="764" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace">Participant</text>
+<rect x="416" y="755" width="20" height="12" rx="3" fill="#fbf3f1" stroke="#5f4d53" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="444" y="764" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace">External</text>
+<line x1="524" y1="761" x2="552" y2="761" stroke="#b83a5d" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+<text x="560" y="764" fill="#5f4d53" font-size="9" font-family="'Geist Mono',ui-monospace,Menlo,monospace">Credit ledger call</text>
+</svg>

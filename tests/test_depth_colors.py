@@ -17,7 +17,7 @@ def blush_of(skin_hex, level="soft", tone="pink_cool"):
 
 class DepthColorTests(unittest.TestCase):
     def test_deep_skin_blush_deeper_and_stronger_than_pale(self):
-        #：深膚色上淺粉腮紅三個強度回傳同一張圖 → 腮紅依膚色深淺帶×冷暖
+        #: on deep skin the three intensities of light pink blush returned the same image -> blush is now banded by skin depth x undertone
         pale, deep = blush_of("#F0E0DA"), blush_of("#5E3A2E")
         self.assertGreater(ce.hex_to_lab(pale["color"])[0], ce.hex_to_lab(deep["color"])[0] + 20)
         self.assertGreater(deep["colorIntensity"], pale["colorIntensity"])
@@ -41,7 +41,7 @@ class DepthColorTests(unittest.TestCase):
 class RednessTests(unittest.TestCase):
     def test_pink_skin_shifts_foundation_hue_toward_yellow(self):
         f = "#E8C4B8"
-        out = looks.neutralize_redness(f, "#E3CDC6")      # 白化症男生臉頰，色相約 25°
+        out = looks.neutralize_redness(f, "#E3CDC6")      # albinism male cheek, hue about 25°
         h = lambda x: math.degrees(math.atan2(ce.hex_to_lab(x)[2], ce.hex_to_lab(x)[1]))  # noqa: E731
         self.assertGreater(h(out), h(f) + 2)
 

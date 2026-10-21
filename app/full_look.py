@@ -1,7 +1,7 @@
-"""完整妝容：入口×妝感的基本表（full_looks.json）→ 依色卡級數與冷暖調整 → 敏感程度高時降級。全部本機計算，不扣點。
+"""Full makeup look: base table of entry x look style (full_looks.json) -> adjust by shade-card level and undertone -> downgrade when sensitivity is high. All computed locally, no points spent.
 
-規則來自 外部建議構想（來源待查證），只用 presets.json 已有的選項；每條調整都回傳一句白話理由，畫面照列。
-順序：基本表 → 色卡規則 → 敏感降級（安全優先，最後套）→ 不在該妝感允許清單的選項退回「保留原樣」。
+The rules come from an AI-suggested idea (, source to be verified) and use only options already in presets.json; every adjustment returns a plain-language reason, which the screen lists as is.
+Order: base table -> shade-card rules -> sensitivity downgrade (safety first, applied last) -> options not in the look's allowed list fall back to "keep as is".
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ def load_full_looks(path: Path = FULL_LOOKS_PATH) -> dict:
 
 
 def is_high_sensitivity(sens: dict | None) -> bool:
-    """敏感三題：會刺痛發紅「常常」，或對香料／成分過敏「有」，算高敏感。"""
+    """Three sensitivity questions: stinging/redness "often", or allergy to fragrance/ingredients "yes", counts as high sensitivity."""
     s = sens or {}
     return s.get("irritation") == "often" or s.get("fragrance") == "yes"
 
@@ -41,9 +41,9 @@ def full_look(condition: str, style: str, level: int, tone_id: str, sensitivity:
         notes.append(why)
 
     alb, vit = condition == "albinism", condition == "vitiligo"
-    on = lambda item: sel[item] != "keep"     # noqa: E731  只調整有上的項目，不替本人多加一項
+    on = lambda item: sel[item] != "keep"     # noqa: E731  only adjust items that are applied; never add an item on the person's behalf
 
-    # ---- 色卡級數與冷暖
+    # ---- shade-card level and undertone
     if level <= 2:
         if sel["contour"] == "defined":
             setv("contour", "soft", "膚色很淺：修容只用極淡灰階，避免髒感")
@@ -75,7 +75,7 @@ def full_look(condition: str, style: str, level: int, tone_id: str, sensitivity:
     if vit and 4 <= level <= 7 and tone_id == "warm_ivory" and on("blush"):
         setv("blush", "apricot", "暖調膚色：腮紅用暖杏")
 
-    # ---- 敏感程度高：減少摩擦、粉體與色素刺激（最後套，安全優先）
+    # ---- high sensitivity: reduce friction, powder and pigment irritation (applied last, safety first)
     high = is_high_sensitivity(sensitivity)
     if high:
         if sel["foundation"] in ("max", "full"):
@@ -98,23 +98,23 @@ def full_look(condition: str, style: str, level: int, tone_id: str, sensitivity:
         if sel["lip"] == "red3":
             setv("lip", "natural_gloss", "容易敏感：霧面唇容易乾，改水光自然色")
 
-    # ---- 眉毛本來就看得見（例如黑眉毛）：固定色都比原眉淺，一律改照原眉色（眉毛色號有問題）
+    # ---- brow already visible (e.g. black brows): the fixed colors are all lighter than the natural brow, so always switch to the natural brow color (, owner: the brow shades looked wrong)
     if brow_visible and has_brow_sample and sel["brow"] in ("fill_light", "light_brown", "taupe", "taupe_deep", "greige"):
         new = "photo_defined" if sel["brow"] == "taupe_deep" else "photo_soft"
         if new in allowed["brow"]:
             sel["brow"] = new
             notes.append("眉毛本來就看得見：照原眉色補，不換成較淺的顏色")
 
-    # ---- 眉毛很淡（白眉）：官方試妝抓不到白眉位置，三人實測都把眉畫到原眉上方
+    # ---- very faint brow (white brow): the official try-on cannot locate a white brow, and in three people's tests the brow was drawn above the natural brow (, owner: do not draw white brows)
     brow_pale = has_brow_sample and brow_visible is False
     if brow_pale and sel["brow"] != "keep":
         sel["brow"] = "keep"
         notes.append("眉毛顏色很淡：自動試妝抓不準眉毛位置，眉毛保留原樣")
 
-    # ---- 照原眉色的選項需要眉色取樣；沒有就改「只補一點」
+    # ---- options that follow the natural brow color need a brow color sample; without one, switch to "fill a little only"
     if sel["brow"] in ("photo_soft", "photo_defined") and not has_brow_sample:
         sel["brow"] = "fill_light"
-    for item in ITEMS:                       # 保險：任何不在允許清單的選項退回保留原樣
+    for item in ITEMS:                       # safeguard: any option not in the allowed list falls back to keep as is
         if sel[item] not in allowed[item]:
             sel[item] = "keep"
     looks.check_style_selection(style, sel, p)

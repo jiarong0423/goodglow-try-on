@@ -1,32 +1,32 @@
 'use strict';
-// 淺色區塊局部遮瑕：AI 找邊界 → SVG 向量路徑（可編輯）→ Canvas 分層渲染（手機上算、不上傳、不扣點）。
-// 貼了「AI 影像分析＋SVG 向量路徑＋Canvas 像素級渲染」的架構與 PoC，「你把程式寫好」。
-// 1. 找邊界：沿用 camouflage.js 的淺色區塊判斷（彩度÷亮度分群），OpenCV.js findContours＋approxPolyDP 抓每一塊輪廓。
-// 2. SVG 路徑：輪廓點用二次貝茲曲線（取相鄰點中點）平滑成 path 字串；使用者可開關每一塊、拖拉節點調整邊界。
-// 3. Canvas 分層（Lab）：校色層（暖橘中和，避免遮完發灰）→ 遮瑕層（取「每一塊周圍」的正常膚色）→ 紋理層（高頻細節照原圖）。
-//    羽化用方框模糊（iPhone Safari 不支援 ctx.filter）；白眉、眼睛、內口另做保護區，永遠不改。
-// 畫面一律標明「手機上模擬的局部遮瑕」。
+// Local concealer for light patches: AI finds boundaries -> SVG vector paths (editable) -> layered Canvas rendering (computed on the phone, no upload, no points deducted).
+// Owner's request (10-16): supplied an architecture and PoC of "AI image analysis + SVG vector paths + pixel-level Canvas rendering" and asked for it to be implemented.
+// 1. Boundary finding: reuses the light-patch detection in camouflage.js (chroma/lightness clustering); OpenCV.js findContours + approxPolyDP extract each patch's outline.
+// 2. SVG paths: outline points are smoothed into a path string with quadratic Beziers (using midpoints of adjacent points); each patch can be toggled and its nodes dragged to adjust the boundary.
+// 3. Layered Canvas (Lab): color-correction layer (warm-orange neutralization, so the result does not look gray) -> concealer layer (normal skin color sampled around each patch) -> texture layer (high-frequency detail from the original image).
+//    Feathering uses a box blur (iPhone Safari does not support ctx.filter); white brows, eyes and the inner mouth have separate protected zones that are never modified.
+// The UI always labels this as "local concealer simulated on the phone".
 
 (function () {
   const FACE_OVAL = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148,
     176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109];
   const PROTECT = [
-    [70, 63, 105, 66, 107, 55, 65, 52, 53, 46], [300, 293, 334, 296, 336, 285, 295, 282, 283, 276],           // 眉
-    [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246],                               // 眼
+    [70, 63, 105, 66, 107, 55, 65, 52, 53, 46], [300, 293, 334, 296, 336, 285, 295, 282, 283, 276],           // brows
+    [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246],                               // eyes
     [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398],
-    [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185],                // 整個嘴唇（外唇線； 原本只保護內口，大塊區塊會把嘴唇遮淡）
+    [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185],                // whole lips (outer lip line; on 10-17 only the inner mouth was protected, and large patches lightened the lips)
   ];
-  const BROW_TOP = [70, 63, 105, 66, 107, 336, 296, 334, 293, 300];   // 眉毛上緣（額頭分區的下界）
-  const ALPHA_CORE = 80, ALPHA_WIDE = 24, SIDE_W = 0.6;   // 高光集中度（皮膚常用 10–60）、側燈強度
+  const BROW_TOP = [70, 63, 105, 66, 107, 336, 296, 334, 293, 300];   // upper edge of the brows (lower bound of the forehead zone)
+  const ALPHA_CORE = 80, ALPHA_WIDE = 24, SIDE_W = 0.6;   // highlight concentration (skin typically 10-60), side-light strength
   const LIPS_OUTER = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185];
   const RENDER_W = 720;
-  const RING_L_PCT = 0.7;                // 目標亮度取外圍膚色的第幾百分位（受光側）
-  const HI_L = 10;                       // 打亮 100% 時臉中央最多提亮多少 L*（ 審查建議亮度 +10–15%、飽和 −5%；原 8）
-  const HI_WIDE = 1.3;                   // 光斑放寬倍數（審查：打亮羽化要很高、往外自然淡出）
-  // 打亮（化妝的 highlight）：額頭中央、鼻樑、眼下顴骨（C 字區）、下巴，各一個高斯光斑 [網格點, 寬(臉寬倍), 高(臉寬倍), 強度]
+  const RING_L_PCT = 0.7;                // which percentile of the surrounding skin lightness is the target (the lit side)
+  const HI_L = 10;                       // at 100% highlight, max L* raised at the face center (10-17 review suggested lightness +10-15%, saturation -5%; was 8)
+  const HI_WIDE = 1.3;                   // light-spot widening factor (review: highlight feathering must be very soft, fading out naturally)
+  // Highlight (makeup highlighter): one Gaussian light spot each for forehead center, nose bridge, under-eye cheekbone (C-shaped area) and chin: [grid point, width (x face width), height (x face width), strength]
   const HI_SPOTS = [[151, 0.13, 0.07, 1], [9, 0.05, 0.05, 0.7], [6, 0.03, 0.06, 0.9], [195, 0.025, 0.05, 0.9], [4, 0.025, 0.025, 0.6],
     [117, 0.07, 0.04, 0.8], [346, 0.07, 0.04, 0.8], [199, 0.05, 0.035, 0.7]];
-  const WARM = [3.0, 2.8];               // 校色層：蜜桃／暖橘 Δa*、Δb*
+  const WARM = [3.0, 2.8];               // color-correction layer: peach/warm-orange delta a*, delta b*
 
   function srgbToLab(r, g, b) {
     const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
@@ -45,10 +45,10 @@
     return lin.map((c) => 255 * Math.max(0, Math.min(1, c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)));
   }
   const hexToLab = (hex) => { const n = parseInt(hex.slice(1), 16); return srgbToLab(n >> 16, (n >> 8) & 255, n & 255); };
-  // 區塊內外分開模糊：淺色區塊裡只和區塊裡平均、外面只和外面平均，
-  // 交界（色素的邊）因此歸在低頻，化妝塗層蓋得到；整片一起模糊的話，交界留在紋理裡，怎麼疊都看得到輪廓。
-  // tools/fit_layers_to_target.py 量：交界歸低頻後逼近誤差 1.62 → 1.59（顏色也擬合時）。
-  // 回傳 blur(src)：遮罩的模糊只算一次，之後每個通道多一次模糊。
+  // Blur inside and outside the patch separately : inside a light patch average only with the patch interior, outside only with the exterior,
+  // so the border (the pigment edge) falls into the low frequency and the makeup layer can cover it; if everything is blurred together, the border stays in the texture and the outline remains visible no matter how it is layered.
+  // Measured with tools/fit_layers_to_target.py: with the border in the low frequency, the fitting error drops 1.62 -> 1.59 (when color is fitted too).
+  // Returns blur(src): the mask blur is computed only once, then each channel needs one more blur.
   function makeSplitBlur(inside, w, h, r) {
     const n = w * h, mIn = new Float32Array(n), mOut = new Float32Array(n);
     for (let i = 0; i < n; i++) { const m = inside[i] > 0.5 ? 1 : 0; mIn[i] = m; mOut[i] = 1 - m; }
@@ -59,7 +59,7 @@
       const ba = boxBlur(a, w, h, r), bb = boxBlur(b, w, h, r), out = new Float32Array(n);
       for (let i = 0; i < n; i++) {
         const own = mIn[i] ? (bIn[i] > 1e-3 ? ba[i] / bIn[i] : NaN) : (bOut[i] > 1e-3 ? bb[i] / bOut[i] : NaN);
-        out[i] = Number.isFinite(own) ? own : (ba[i] + bb[i]);       // 自己那邊沒有像素（不會發生在正常大小的區塊）：退回整片平均
+        out[i] = Number.isFinite(own) ? own : (ba[i] + bb[i]);       // own side has no pixels (does not happen for normal-sized patches): fall back to the whole-area average
       }
       return out;
     };
@@ -84,7 +84,7 @@
   }
   const loadImg = (src) => new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = src; });
 
-  // 二次貝茲平滑（PoC 做法）：每段以原點為控制點、走到相鄰兩點的中點 → 輪廓平滑、沒有鋸齒
+  // Quadratic Bezier smoothing (PoC approach): each segment uses the original point as control point and goes to the midpoint of the two neighbors -> smooth outline, no jaggies
   function pathD(pts) {
     if (pts.length < 3) return '';
     const f = (v) => v.toFixed(1), n = pts.length;
@@ -95,7 +95,7 @@
     return d + ' Z';
   }
 
-  // Delaunay 三角剖分（Bowyer-Watson；本版 OpenCV.js 沒有 Subdiv2D）。點數 468，O(n²) 夠快
+  // Delaunay triangulation (Bowyer-Watson; this OpenCV.js build has no Subdiv2D). 468 points, O(n^2) is fast enough
   function delaunay(pts) {
     const n = pts.length, xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
     const minX = Math.min(...xs), minY = Math.min(...ys), d = Math.max(Math.max(...xs) - minX, Math.max(...ys) - minY) * 20;
@@ -122,10 +122,10 @@
     return tris.filter((t) => t[0] < n && t[1] < n && t[2] < n).map((t) => [t[0], t[1], t[2]]);
   }
 
-  // 3D 打亮：MediaPipe 網格 468 點有深度 z，
-  // 三角剖分 → 頂點法向量（相鄰三角面平均）→ 逐像素內插成法向量圖 → Blinn-Phong 鏡面高光（光源在正前上方）。
-  // 額頭、鼻樑、顴骨依骨骼形狀亮起來，臉側一點高光也跟著移動。不用灰階梯度推法向量：白斑邊緣會被當成凸起而亮起來。
-  // 回傳 core（集中高光，α=24）、wide（擴散，α=8，邊緣混一點暖色模擬透光）
+  // 3D highlight : the 468 MediaPipe mesh points have depth z,
+  // triangulate -> vertex normals (average of adjacent triangle faces) -> per-pixel interpolation into a normal map -> Blinn-Phong specular highlight (light source in front and above).
+  // Forehead, nose bridge and cheekbones light up following the bone shape, and the faint highlight on the face sides moves with them. Normals are not derived from a grayscale gradient: vitiligo edges would be treated as bumps and light up.
+  // Returns core (concentrated highlight, alpha=24) and wide (diffuse, alpha=8, with a bit of warm color mixed at the edge to simulate translucency)
   function meshSpecular(det, W, H, skin, protect) {
     const N = 468, P3 = det.face.slice(0, N).map((p) => [p.x * W, p.y * H, p.z * W]);
     const tris = delaunay(P3.map((p) => [p[0], p[1]]));
@@ -134,14 +134,14 @@
     for (const [a, b, c] of tris) {
       const u = [P3[b][0] - P3[a][0], P3[b][1] - P3[a][1], P3[b][2] - P3[a][2]], v = [P3[c][0] - P3[a][0], P3[c][1] - P3[a][1], P3[c][2] - P3[a][2]];
       let nx = u[1] * v[2] - u[2] * v[1], ny = u[2] * v[0] - u[0] * v[2], nz = u[0] * v[1] - u[1] * v[0];
-      if (nz > 0) { nx = -nx; ny = -ny; nz = -nz; }                 // 朝向鏡頭（MediaPipe z 越小越靠近鏡頭）
+      if (nz > 0) { nx = -nx; ny = -ny; nz = -nz; }                 // face the camera (in MediaPipe a smaller z is closer to the camera)
       for (const k of [a, b, c]) { vn[k][0] += nx; vn[k][1] += ny; vn[k][2] += nz; }
     }
     for (const v of vn) { const l = Math.hypot(...v) || 1; v[0] /= l; v[1] /= l; v[2] /= l; }
-    // 三盞燈：正前上方＋左右斜上方（化妝打光常用；只有正前一盞時鼻樑側面、顴骨接不到光）
+    // Three lights: front-above plus left and right obliquely above (common in makeup lighting; with only one front light the sides of the nose bridge and the cheekbones get no light)
     const half = (L) => { const l = Math.hypot(...L), h = [L[0] / l, L[1] / l, L[2] / l - 1], hl = Math.hypot(...h); return h.map((v) => v / hl); };
     const HS = [half([0, -0.6, -1]), half([-0.55, -0.45, -1]), half([0.55, -0.45, -1])], HW = [1, SIDE_W, SIDE_W];
-    // 嘴唇不打亮（外唇線多邊形）
+    // No highlight on the lips (outer lip line polygon)
     const lip = document.createElement('canvas'); lip.width = W; lip.height = H;
     const lg = lip.getContext('2d', { willReadFrequently: true }); lg.fillStyle = '#fff'; lg.beginPath();
     LIPS_OUTER.forEach((k, j) => (j ? lg.lineTo(P3[k][0], P3[k][1]) : lg.moveTo(P3[k][0], P3[k][1]))); lg.closePath(); lg.fill();
@@ -149,7 +149,7 @@
     for (let i = 0; i < W * H; i++) lipM[i] = ld[i * 4 + 3] / 255;
     const lipB = boxBlur(lipM, W, H, Math.max(3, Math.round(W * 0.008)));
     const core = new Float32Array(W * H), wide = new Float32Array(W * H), diffuse = new Float32Array(W * H), cover = new Float32Array(W * H);
-    const LF = [0, -0.6, -1].map((v, _, a) => v / Math.hypot(...a));   // 漫射光：正前上方（化妝塗層補立體感用）
+    const LF = [0, -0.6, -1].map((v, _, a) => v / Math.hypot(...a));   // diffuse light: front-above (adds volume to the makeup layer)
     for (const [a, b, c] of tris) {
       const [ax, ay] = P3[a], [bx, by] = P3[b], [cx, cy] = P3[c];
       const den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
@@ -179,7 +179,7 @@
 
   let S = null;
 
-  // 準備：照片 Lab、低頻、臉部皮膚範圍、保護區、淺色區塊核心遮罩（camouflage.js）
+  // Prepare: photo Lab, low frequency, face skin region, protected zones, core mask of light patches (camouflage.js)
   async function prepare(src, normalHex, patchHex) {
     if (S && S.src === src && S.normalHex === normalHex && S.patchHex === patchHex) return S;
     if (!window.Camouflage) throw new Error(__t('s0710', '沒有載入 camouflage.js'));
@@ -205,17 +205,17 @@
     };
     const poly = (ids) => { const p = new Path2D(); ids.forEach((i, k) => (k ? p.lineTo(...P(i)) : p.moveTo(...P(i)))); p.closePath(); return p; };
     const skinRaw = raster((cg) => cg.fill(poly(FACE_OVAL)));
-    // 額頭、下巴分區：
-    // 臉部網格外框只到額頭中段（第 10 點），額頭上半到髮際線、下巴邊緣用 MediaPipe 多類別分割的「臉部皮膚」補進來。
+    // Forehead and chin zones :
+    // the face-mesh outline only reaches the middle of the forehead (point 10); the upper forehead up to the hairline and the chin edge are added from MediaPipe's multi-class segmentation "face skin".
     const xs0 = Math.min(...xs), xs1 = Math.max(...xs);
     const browPts = BROW_TOP.map(P).sort((u, v) => v[0] - u[0]);
-    const zoneF = raster((cg) => {                                  // 額頭：眉毛上緣以上、臉寬範圍內
+    const zoneF = raster((cg) => {                                  // forehead: above the upper brow edge, within the face width
       cg.beginPath(); cg.moveTo(xs0, 0); cg.lineTo(xs1, 0); cg.lineTo(xs1, browPts[0][1]);
       browPts.forEach((q) => cg.lineTo(q[0], q[1])); cg.lineTo(xs0, browPts[browPts.length - 1][1]); cg.closePath(); cg.fill();
     });
     const chinY = P(17)[1] + fw * 0.02, jx0 = P(172)[0], jx1 = P(397)[0];
-    const zoneC = raster((cg) => cg.fillRect(Math.min(jx0, jx1), chinY, Math.abs(jx1 - jx0), H - chinY));   // 下巴：下唇以下、兩側下顎角之間
-    // 分割用另一張一般畫布（willReadFrequently 的畫布送進 MediaPipe 實測慢 6 倍：1.4 秒 vs 0.2 秒）
+    const zoneC = raster((cg) => cg.fillRect(Math.min(jx0, jx1), chinY, Math.abs(jx1 - jx0), H - chinY));   // chin: below the lower lip, between the jaw angles on both sides
+    // Segmentation uses a separate regular canvas (a willReadFrequently canvas sent to MediaPipe was measured 6x slower: 1.4 s vs 0.2 s)
     const segCv = document.createElement('canvas'); segCv.width = W; segCv.height = H; segCv.getContext('2d').drawImage(img, 0, 0, W, H);
     const S0normalL = hexToLab(normalHex)[0];
     const seg = window.FaceAuto && window.FaceAuto.segmentCached ? await window.FaceAuto.segmentCached(src, segCv) : null;
@@ -223,18 +223,18 @@
     if (seg) {
       const sx = seg.w / W, sy = seg.h / H, colIdx = new Int32Array(W);
       for (let x = 0; x < W; x++) colIdx[x] = Math.min(seg.w - 1, Math.floor(x * sx));
-      hairBg = new Float32Array(W * H); segCls = new Uint8Array(W * H);   // segCls：化妝塗層要知道脖子、耳朵（粉底推開）
+      hairBg = new Float32Array(W * H); segCls = new Uint8Array(W * H);   // segCls: the makeup layer needs to know neck and ears (foundation is pushed away)
       for (let y = 0, i = 0; y < H; y++) for (let x = 0, row = Math.min(seg.h - 1, Math.floor(y * sy)) * seg.w; x < W; x++, i++) {
         const k = seg.arr[row + colIdx[x]];
         segCls[i] = k;
-        // 頭髮、背景：遮瑕羽化不要蓋上去。頭髮只排除「暗的」像素（髮絲）：髮際被分成頭髮的區域裡，
-        // 髮絲之間的淺色皮膚照樣可以遮（ 診斷：右上捲髮旁那塊淺色整塊被當頭髮排除）
+        // Hair and background: the concealer feathering must not cover them. For hair only exclude "dark" pixels (hair strands): in areas of the hairline classed as hair,
+        // light skin between the strands can still be concealed (10-17 diagnosis: the whole light patch next to the upper-right curly hair was excluded as hair)
         if (k === 0 || (k === 1 && L[i] < S0normalL - 8)) hairBg[i] = 1;
         if (k === 3 && (zoneF[i] > 0.5 || zoneC[i] > 0.5) && skinRaw[i] < 0.5) { skinRaw[i] = 1; segAdded++; }
       }
       hairBg = boxBlur(hairBg, W, H, Math.max(2, Math.round(fw * 0.01)));
     }
-    const sb = boxBlur(skinRaw, W, H, Math.max(3, Math.round(fw * 0.04)));     // 臉部範圍邊緣柔化，額頭上緣不要一條硬線
+    const sb = boxBlur(skinRaw, W, H, Math.max(3, Math.round(fw * 0.04)));     // soften the face-region edge so the upper forehead edge is not a hard line
     const skin = new Float32Array(W * H);
     for (let i = 0; i < W * H; i++) {
       skin[i] = Math.max(skinRaw[i] * 0.999, Math.min(1, sb[i] * 1.6));
@@ -247,7 +247,7 @@
     const pb = boxBlur(protRaw, W, H, Math.max(2, Math.round(fw * 0.015)));
     const protect = new Float32Array(W * H);
     for (let i = 0; i < W * H; i++) protect[i] = Math.max(protRaw[i], Math.min(1, pb[i] * 1.5));
-    // 低頻：淺色區塊（偵測核心，換到這個解析度）內外分開模糊
+    // Low frequency: blur inside and outside the light patches (detection core, converted to this resolution) separately
     const coreW = new Float32Array(W * H), csx = det.w / W, csy = det.h / H;
     for (let y = 0, i = 0; y < H; y++) for (let x = 0; x < W; x++, i++) coreW[i] = det.core[Math.min(det.h - 1, Math.floor(y * csy)) * det.w + Math.min(det.w - 1, Math.floor(x * csx))];
     const split = makeSplitBlur(coreW, W, H, r);
@@ -255,7 +255,7 @@
       skin, protect, fw, det, normal: hexToLab(normalHex), patches: [] };
     S.core = Float32Array.from(det.core);
     S.segCls = segCls; S.hairBg = hairBg;
-    const hi = new Float32Array(W * H);                              // 打亮權重圖（0–1），只算一次
+    const hi = new Float32Array(W * H);                              // highlight weight map (0-1), computed only once
     for (const [id, sx, sy, amp] of HI_SPOTS) {
       const [cx, cy] = P(id), ax = sx * fw * HI_WIDE, ay = sy * fw * HI_WIDE;
       const x0 = Math.max(0, Math.floor(cx - 3 * ax)), x1 = Math.min(W, Math.ceil(cx + 3 * ax));
@@ -266,17 +266,17 @@
       }
     }
     for (let i = 0; i < W * H; i++) hi[i] *= skin[i] * (1 - protect[i]);
-    S.hi = hi;                                                       // 舊版高斯光斑（3D 打亮失敗時退回）
+    S.hi = hi;                                                       // old Gaussian light spots (fallback when the 3D highlight fails)
     try { S.spec = meshSpecular(det, W, H, skin, protect); } catch (e) { S.spec = null; }
     const rr = Math.max(1, Math.round(fw * 0.006));
-    const sm = { L: boxBlur(L, W, H, rr), A: boxBlur(A, W, H, rr), B: boxBlur(B, W, H, rr) };   // 兩區共用
-    const zoneAll = Float32Array.from(skin, (v) => (v > 0.9 ? 1 : 0));   // 全臉也跑一次局部參考（臉頰、下顎的細碎淺點）
+    const sm = { L: boxBlur(L, W, H, rr), A: boxBlur(A, W, H, rr), B: boxBlur(B, W, H, rr) };   // shared by both zones
+    const zoneAll = Float32Array.from(skin, (v) => (v > 0.9 ? 1 : 0));   // also run a local reference on the whole face (fine light dots on cheeks and jaw)
     S.zones = { seg: !!seg, segAdded, forehead: zoneDetect(__t('s0712', '額頭'), zoneF, sm), chin: zoneDetect(__t('s0713', '下巴'), zoneC, sm), face: zoneDetect(__t('s0714', '全臉'), zoneAll, sm) };
     return S;
   }
 
-  // 分區判別：額頭常有油光、受光比臉頰亮，下巴常在陰影、有鬍渣——整臉同一個亮度門檻會漏抓或亂抓。
-  // 每區各自算「有色素皮膚」的亮度當參考（受光差異抵掉），再用彩度÷亮度（淺色區塊彩度低）判斷，結果併進淺色區塊核心。
+  // Zone detection: the forehead is often oily and brighter than the cheeks, the chin is often in shadow with stubble -- a single lightness threshold for the whole face would miss or misdetect.
+  // Each zone computes its own "pigmented skin" lightness as reference (cancelling lighting differences), then judges by chroma/lightness (light patches have low chroma); the result is merged into the light-patch core.
   function zoneDetect(name, zone, sm) {
     const { W, H, skin, protect, fw, det } = S;
     const sL = sm.L, sA = sm.A, sB = sm.B;
@@ -289,8 +289,8 @@
     const pig = idx.filter((i) => qOf(sL[i], sA[i], sB[i]) >= mid).map((i) => sL[i]).sort((a, b) => a - b);
     const refL = pig.length >= Math.max(200, idx.length * 0.05) ? pig[pig.length >> 1] : nLab[0];
     const step = Math.max(4, 0.3 * (pLab[0] - nLab[0]));
-    // 局部參考（ 殘留點診斷：額頭中央受光 57.6、太陽穴較暗，整區一個參考會漏掉太陽穴、髮際兩角的淺色區塊）：
-    // 每個像素跟「附近 6% 臉寬內的有色素皮膚」比；附近沒有有色素皮膚時退回整區參考
+    // Local reference (10-17 residual-dot diagnosis: forehead center lightness was 57.6 and the temples darker; one reference per zone would miss light patches at the temples and the two hairline corners):
+    // each pixel is compared with the "pigmented skin within 6% of the face width nearby"; when there is no pigmented skin nearby, fall back to the whole-zone reference
     const pigM = new Float32Array(W * H);
     for (const i of idx) if (qOf(sL[i], sA[i], sB[i]) >= mid) pigM[i] = 1;
     const rad = Math.max(6, Math.round(fw * 0.06));
@@ -301,7 +301,7 @@
       const q = qOf(sL[i], sA[i], sB[i]), ref = den[i] > 0.15 ? num[i] / den[i] : refL;
       if ((q < mid && sL[i] > ref + 1) || sL[i] > ref + step) raw[i] = 1;
     }
-    const dn = boxBlur(raw, W, H, Math.max(2, Math.round(fw * 0.008)));   // 去雜點（油光小亮點）
+    const dn = boxBlur(raw, W, H, Math.max(2, Math.round(fw * 0.008)));   // remove stray dots (small oily highlights)
     const sc = det.w / W;
     let added = 0;
     for (let i = 0; i < W * H; i++) {
@@ -313,21 +313,21 @@
     return { name, n, added, refL: +refL.toFixed(1), pigPct: +(pig.length / idx.length).toFixed(2), area: idx.length };
   }
 
-  // 輪廓：淺色區塊核心遮罩 → （外擴 expand 像素）→ OpenCV 抓外輪廓 → approxPolyDP 化簡 → 換到渲染座標
+  // Outline: core mask of light patches -> (expand outward by `expand` pixels) -> OpenCV external contours -> approxPolyDP simplification -> convert to render coordinates
   async function findPatches(expand = 3) {
     if (!S) throw new Error(__t('s0715', '先 prepare'));
     const cvx = await window.Vendor.opencv();
     const { det, W } = S, w = det.w, h = det.h, sc = W / w;
     const bin = new Uint8Array(w * h);
-    for (let i = 0; i < w * h; i++) bin[i] = S.core[i] > 0.5 ? 255 : 0;       // 含額頭、下巴分區判別的結果
+    for (let i = 0; i < w * h; i++) bin[i] = S.core[i] > 0.5 ? 255 : 0;       // includes the result of the forehead and chin zone detection
     const m = cvx.matFromArray(h, w, cvx.CV_8UC1, bin);
     const k = cvx.getStructuringElement(cvx.MORPH_ELLIPSE, new cvx.Size(3, 3));
-    cvx.morphologyEx(m, m, cvx.MORPH_CLOSE, k);                      // 補小洞、接斷線
+    cvx.morphologyEx(m, m, cvx.MORPH_CLOSE, k);                      // fill small holes, join broken lines
     const e = Math.max(0, Math.round(expand));
     if (e > 0) { const ke = cvx.getStructuringElement(cvx.MORPH_ELLIPSE, new cvx.Size(2 * e + 1, 2 * e + 1)); cvx.dilate(m, m, ke); ke.delete(); }
     const cs = new cvx.MatVector(), hi = new cvx.Mat();
     cvx.findContours(m, cs, hi, cvx.RETR_EXTERNAL, cvx.CHAIN_APPROX_NONE);
-    const minArea = w * h * 0.0003, out = [];                       // 原 0.0006；降一半讓臉頰細碎淺點也成塊
+    const minArea = w * h * 0.0003, out = [];                       // was 0.0006; halved so fine light dots on the cheeks also become patches (10-17)
     for (let i = 0; i < cs.size(); i++) {
       const c = cs.get(i), area = cvx.contourArea(c);
       if (area >= minArea) {
@@ -346,8 +346,8 @@
     return out;
   }
 
-  // 每一塊的目標色：外圍一圈（邊界外 1–4% 臉寬）、在臉上、不在其他淺色區塊、不在保護區的低頻色中位數
-  // src（第 2 輪起）：從「目前遮完的結果」取周圍顏色，排除還沒遮好的留白（src.excl），已遮好的舊區塊可以取
+  // Target color of each patch: median low-frequency color of the ring around it (1-4% of face width outside the boundary) that is on the face, not in other light patches and not in protected zones
+  // src (from round 2 on): take surrounding colors from "the current concealed result", excluding blank areas not yet concealed (src.excl); old, already concealed patches may be sampled
   function ringColor(p, src) {
     const { W, H, fw, skin, protect, det } = S;
     src = src || p.src;
@@ -381,19 +381,19 @@
       if (skin[i] < 0.9 || protect[i] > 0.1) continue;
       if (src) { if (src.excl[i]) continue; Ls.push(L[i]); As.push(A[i]); Bs.push(B[i]); continue; }
       const k480 = Math.min(det.h - 1, Math.floor((yy + y0) * sc)) * det.w + Math.min(det.w - 1, Math.floor((xx + x0) * sc));
-      if (det.mask[k480] > 0.05 || S.core[k480] > 0.5) continue;                                // 已判成淺色區塊（含交界）的不算
-      Ls.push(L[i]); As.push(A[i]); Bs.push(B[i]);                        // 原始像素：模糊後的顏色會混進淺色區塊
+      if (det.mask[k480] > 0.05 || S.core[k480] > 0.5) continue;                                // skip pixels already judged as light patch (including the border)
+      Ls.push(L[i]); As.push(A[i]); Bs.push(B[i]);                        // raw pixels: blurred colors would mix in light-patch color
     }
     const pct = (v, q) => v.sort((a, b) => a - b)[Math.min(v.length - 1, Math.floor(v.length * q))];
-    // 亮度取外圍「受光的」七成位、顏色取中位數（：中位數混進臉側陰影，
-    // 最大塊蓋在臉中央 T 字卻填成 44.3，比有色素皮膚中位數 47.2 還暗；camouflage.js 早先也是取受光的一半）
-    p.ring = Ls.length >= 30 ? [pct(Ls, RING_L_PCT), pct(As, 0.5), pct(Bs, 0.5)] : S.normal.slice();     // 周圍取不到就用整體的原本膚色
+    // Lightness takes the 70th percentile of the "lit" surrounding, color takes the median (owner,: "skin looks dark; see if the highlight can improve it": the median mixes in shadow on the face sides,
+    // the largest patch, sitting in the T-zone at the face center, was filled to 44.3, darker than the pigmented-skin median 47.2; camouflage.js also used the lit half earlier)
+    p.ring = Ls.length >= 30 ? [pct(Ls, RING_L_PCT), pct(As, 0.5), pct(Bs, 0.5)] : S.normal.slice();     // if nothing is found around, use the overall original skin color
     p.ringN = Ls.length;
     return p.ring;
   }
 
-  // 渲染：coverage 0–1、feather 羽化（渲染像素）、corrector 校色層、keepLight 保留明暗（只遮一部分亮度）
-  // 把一塊的目標色填進 tL/tA/tB（區塊＋外擴到羽化範圍）；只讀這塊的外框範圍，不整張讀畫布（區塊多時差十倍）
+  // Render: coverage 0-1, feather (render pixels), corrector = color-correction layer, keepLight = keep light/shade (conceal only part of the lightness)
+  // Fill one patch's target color into tL/tA/tB (patch + expansion to the feather range); only read this patch's bounding box, not the whole canvas (ten times faster with many patches)
   function paintTarget(g, p, feather, tL, tA, tB, wm) {
     const { W, H } = S, pad = feather * 2 + 2;
     const xs = p.pts.map((q) => q[0]), ys = p.pts.map((q) => q[1]);
@@ -410,7 +410,7 @@
     g.clearRect(x0, y0, x1 - x0, y1 - y0);
   }
 
-  // 只在 mask 範圍內做模糊（加權平均）：範圍外的顏色不混進來
+  // Blur only within the mask (weighted average): colors outside the range are not mixed in
   function normBlur(arr, mask, rad) {
     const { W, H } = S, n = W * H, am = new Float32Array(n);
     for (let i = 0; i < n; i++) am[i] = arr[i] * mask[i];
@@ -418,14 +418,14 @@
     for (let i = 0; i < n; i++) out[i] = den[i] > 1e-3 ? num[i] / den[i] : arr[i];
     return out;
   }
-  // 目標色平滑：每塊各自一個目標色，相鄰兩塊交界會跳一階 → 遮完出現塊狀硬邊。
-  // 只在有目標色的範圍內模糊，交界變成漸層；範圍外維持整體原本膚色。
+  // Target-color smoothing: each patch has its own target color, so the border of two adjacent patches jumps a step -> hard blocky edges after concealing (review: "patchwork look is sharper").
+  // Blur only within the area that has target colors, so borders become gradients; outside the range the overall original skin color is kept.
   function smoothTargets(tL, tA, tB, wm, rad) {
     const sL = normBlur(tL, wm, rad), sA = normBlur(tA, wm, rad), sB = normBlur(tB, wm, rad);
     for (let i = 0; i < tL.length; i++) if (wm[i] > 0) { tL[i] = sL[i]; tA[i] = sA[i]; tB[i] = sB[i]; }
   }
-  // 「保留光澤」：亮度改用「區塊內大範圍平均」和一般低頻混合當底色 → 額頭、顴骨那片大範圍的亮光不會被當成底色抹平
-  // 只在區塊內平均，外圍深膚色不混進來（不會出淺色邊）。
+  // "Keep sheen": lightness uses a mix of the "large-range average inside the patch" and the normal low frequency as base color -> the large bright sheen on forehead and cheekbones is not flattened into the base
+  // (review: "flattened the fine sheen of the original skin, the matte look of heavy foundation"). Averaging only inside the patch, so dark surrounding skin is not mixed in (no light edge appears).
   const shineLow = (low, cur, mask, s, wideR) => {
     if (s <= 0) return low;
     const wide = normBlur(cur, mask, wideR), out = new Float32Array(low.length);
@@ -433,10 +433,10 @@
     return out;
   };
 
-  // 光照連續目標色（泊松／薄膜內插，OpenCV seamlessClone 的核心；本版 OpenCV.js 沒編進 seamlessClone，自己解）：
-  // 斑塊內部是未知區，周圍正常皮膚當邊界，解拉普拉斯方程式 → 顏色從四周平滑延伸進來（亮側亮、暗側暗，中間漸變），
-  // 不再整塊同一個目標色。頭髮、眉眼、背景不當邊界（自然邊界）。在 1/4 解析度用 SOR 解，再雙線性放大。
-  //  貼「泊松融合…把周圍正常皮膚的光照連續性和漸變計算進來」→「應該是可以做到」。
+  // Illumination-continuous target color (Poisson / membrane interpolation, the core of OpenCV seamlessClone; this OpenCV.js build does not compile seamlessClone in, so we solve it ourselves):
+  // the patch interior is the unknown region, the surrounding normal skin is the boundary; solve the Laplace equation -> color extends smoothly from all sides (bright side bright, dark side dark, gradient in between),
+  // instead of one target color for the whole patch. Hair, brows/eyes and background are not boundaries (natural boundary). Solved with SOR at 1/4 resolution, then bilinearly upscaled.
+  // Owner posted "Poisson blending ... factor in the lighting continuity and gradient of the surrounding normal skin" -> "should be doable" (10-17).
   function membraneTargets(unk, lift) {
     const { W, H, L, A, B, skin, protect } = S, f = 4, cw = Math.ceil(W / f), ch = Math.ceil(H / f), n = cw * ch;
     const sum = [new Float32Array(n), new Float32Array(n), new Float32Array(n)], kn = new Float32Array(n), un = new Float32Array(n), tot = new Float32Array(n);
@@ -446,7 +446,7 @@
       if (unk[i] > 0.5) { un[c]++; continue; }
       if (skin[i] > 0.9 && protect[i] < 0.1) { kn[c]++; sum[0][c] += L[i]; sum[1][c] += A[i]; sum[2][c] += B[i]; }
     }
-    const state = new Int8Array(n);                                  // 1 未知、2 已知（邊界）、0 不參與
+    const state = new Int8Array(n);                                  // 1 unknown, 2 known (boundary), 0 not involved
     let gm = [0, 0, 0], gn = 0;
     for (let c = 0; c < n; c++) {
       if (un[c] > 0) state[c] = 1;
@@ -471,7 +471,7 @@
         F[0][c] += w * (s0 / m - F[0][c]); F[1][c] += w * (s1 / m - F[1][c]); F[2][c] += w * (s2 / m - F[2][c]);
       }
     }
-    // 放大回全解析度（雙線性，只用參與的格子加權；眉眼、頭髮、背景的格子沒有值，不能混進來，否則會出現亮點、橘色條紋）
+    // Upscale back to full resolution (bilinear, weighted over participating cells only; cells of brows/eyes, hair and background have no value and must not be mixed in, otherwise bright spots and orange stripes appear)
     const out = [new Float32Array(W * H), new Float32Array(W * H), new Float32Array(W * H), new Uint8Array(W * H)];
     for (let y = 0; y < H; y++) {
       const gy = Math.min(ch - 1, Math.max(0, (y + 0.5) / f - 0.5)), y0 = gy | 0, y1 = Math.min(ch - 1, y0 + 1), fy = gy - y0;
@@ -480,7 +480,7 @@
         const cs = [y0 * cw + x0, y0 * cw + x1, y1 * cw + x0, y1 * cw + x1], ws = [(1 - fx) * (1 - fy), fx * (1 - fy), (1 - fx) * fy, fx * fy];
         let wt = 0, v0 = 0, v1 = 0, v2 = 0;
         for (let q = 0; q < 4; q++) { if (!state[cs[q]]) continue; const wq = ws[q]; wt += wq; v0 += F[0][cs[q]] * wq; v1 += F[1][cs[q]] * wq; v2 += F[2][cs[q]] * wq; }
-        if (wt < 1e-4) continue;                                      // 周圍都沒有值：沿用原本的目標色
+        if (wt < 1e-4) continue;                                      // no values around: keep the original target color
         out[0][i] = v0 / wt + lift * unk[i]; out[1][i] = v1 / wt; out[2][i] = v2 / wt; out[3][i] = 1;
       }
     }
@@ -497,7 +497,7 @@
     const { W, H, px, L, A, B, lowL, lowA, lowB, skin, protect } = S;
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const g = c.getContext('2d', { willReadFrequently: true });
-    // 目標色：每一塊各自周圍的膚色（外擴到羽化範圍），沒被任何一塊蓋到的地方用整體原本膚色
+    // Target color: skin color around each patch (expanded to the feather range); places not covered by any patch use the overall original skin color
     const tL = new Float32Array(W * H).fill(S.normal[0]), tA = new Float32Array(W * H).fill(S.normal[1]), tB = new Float32Array(W * H).fill(S.normal[2]);
     g.fillStyle = '#fff'; g.strokeStyle = '#fff'; g.lineJoin = 'round';
     const base = S.patches.filter((p) => !p.round);
@@ -505,14 +505,14 @@
     for (const p of base) if (p.on && p.ring) paintTarget(g, p, feather, tL, tA, tB, wm);
     smoothTargets(tL, tA, tB, wm, tR);
     const fill = opt.fill || 'membrane';
-    // 遮罩：開著的區塊填滿 → 羽化（內部維持 1、邊緣往外漸淡）→ 只在臉上、扣保護區
+    // Mask: fill the enabled patches -> feather (interior stays 1, edge fades outward) -> only on the face, minus protected zones
     g.clearRect(0, 0, W, H);
     for (const p of base) if (p.on) g.fill(new Path2D(pathD(p.pts)));
     const d = g.getImageData(0, 0, W, H).data, raw = new Float32Array(W * H);
     for (let i = 0; i < W * H; i++) raw[i] = d[i * 4 + 3] / 255;
     const bl = boxBlur(raw, W, H, feather);
     if (fill === 'membrane') {
-      // 未知區＝斑塊（含所有輪次的區塊）外擴一點，避免邊界取到交界的淺色；lift＝往受光側提亮多少 L*
+      // Unknown region = patches (including those of all rounds) expanded a bit, so the boundary does not pick up border light color; lift = how much L* to raise toward the lit side
       const all = new Float32Array(W * H);
       g.clearRect(0, 0, W, H); g.lineWidth = Math.max(4, S.fw * 0.015); g.lineJoin = 'round';
       for (const p of S.patches) if (p.on) { const pa = new Path2D(pathD(p.pts)); g.fill(pa); g.stroke(pa); }
@@ -521,11 +521,11 @@
       const M = membraneTargets(all, Number(opt.lift ?? 3));
       if (M) for (let i = 0; i < W * H; i++) if (M[3][i] && (wm[i] > 0 || all[i] > 0)) { tL[i] = M[0][i]; tA[i] = M[1][i]; tB[i] = M[2][i]; }
     }
-    const kL = keepLight ? 0.6 : 1;                                   // 保留明暗：亮度只往周圍膚色靠六成，中心像受光、不像沒遮到
-    // 校色層：越白的地方中和越多（像化妝師只在最白處多點一點校色）；遮瑕越厚，校色透出越少
+    const kL = keepLight ? 0.6 : 1;                                   // keep light/shade: lightness moves only 60% toward the surrounding skin, so the center looks lit rather than unconcealed
+    // Color-correction layer: the whiter the spot, the more it neutralizes (like a makeup artist adding a bit of correction only at the whitest spots); the thicker the concealer, the less correction shows through
     const decay = concealer ? 1 - 0.25 * coverage : 1;
-    // 多次薄擦：第 1 次整塊上（含校色）；之後每次只補「還看得出差異」的地方，
-    // 差多少補多少（殘差 ÷ 6 當權重），已經融合的地方不再動 → 比一次蓋厚自然、臉不會變平。
+    // Multiple thin passes : pass 1 applies the whole patch (with color correction); each later pass only fills the places that "still show a difference",
+    // filling as much as the difference (residual / 6 as weight), leaving already blended places untouched -> more natural than one thick coat, and the face does not flatten.
     const passes = Math.min(3, Math.max(1, Math.round(Number(opt.passes ?? 1))));
     const cL = Float32Array.from(L), cA = Float32Array.from(A), cB = Float32Array.from(B);
     const mk = new Float32Array(W * H);
@@ -540,24 +540,24 @@
         let wgt = 1;
         if (pass) { wgt = Math.min(1, Math.hypot(lL[i] - tL[i], lA[i] - tA[i], lB[i] - tB[i]) / 6); if (wgt < 0.05) continue; }
         const cc = concealer ? coverage * m * wgt : 0;
-        const cw = corrector && pass === 0 ? m * decay * Math.min(1, Math.max(0.3, (lowL[i] - tL[i]) / 12)) : 0;   // 校色只在第 1 次
-        // 只換低頻底色（校色＋遮瑕），高頻紋理（毛孔、細紋）照原圖
-        cL[i] += cc * kL * (tL[i] - lL[i]) - cw * 1.5;          // 校色帶一點點壓暗（相乘的效果）
+        const cw = corrector && pass === 0 ? m * decay * Math.min(1, Math.max(0.3, (lowL[i] - tL[i]) / 12)) : 0;   // color correction only in the first pass
+        // Replace only the low-frequency base color (correction + concealer); high-frequency texture (pores, fine lines) stays as in the original
+        cL[i] += cc * kL * (tL[i] - lL[i]) - cw * 1.5;          // the correction darkens slightly (multiplicative effect)
         cA[i] += cc * (tA[i] - lA[i]) + cw * WARM[0];
         cB[i] += cc * (tB[i] - lB[i]) + cw * WARM[1];
       }
     }
-    // 第 2 輪起：
-    // findResidual 抓到的留白各自是一塊新的 SVG 區塊（round ≥ 1），目標色＝它周圍「已經遮好」的膚色；
-    // 每輪在上一輪結果上再蓋一層，差多少補多少（同多次薄擦），一樣保留紋理、扣保護區。
+    // From round 2 on :
+    // each blank area found by findResidual becomes a new SVG patch (round >= 1) whose target color = the "already concealed" skin around it;
+    // each round adds another layer on the previous result, filling as much as the difference (same as multiple thin passes), still keeping texture and excluding protected zones.
     const maxRound = Math.max(0, ...S.patches.map((p) => p.round || 0));
-    for (let k = 1; concealer && k <= maxRound; k++) {      // 只校色（不遮瑕）時不疊
+    for (let k = 1; concealer && k <= maxRound; k++) {      // do not stack when only color correction (no concealer) is applied
       const list = S.patches.filter((p) => p.round === k && p.on && p.ring);
       if (!list.length) continue;
       g.clearRect(0, 0, W, H);
       const kT = { L: Float32Array.from(tL), A: Float32Array.from(tA), B: Float32Array.from(tB) };
       const wk = new Float32Array(W * H);
-      if (fill !== 'membrane') {                                     // 光照連續模式：輪次區塊沿用同一個連續目標色
+      if (fill !== 'membrane') {                                     // illumination-continuous mode: round patches reuse the same continuous target color
         for (const p of list) paintTarget(g, p, feather, kT.L, kT.A, kT.B, wk);
         smoothTargets(kT.L, kT.A, kT.B, wk, tR);
       }
@@ -577,10 +577,10 @@
         if (rk[i] > 0) { tL[i] = kT.L[i]; tA[i] = kT.A[i]; tB[i] = kT.B[i]; mk[i] = Math.max(mk[i], m); raw[i] = Math.max(raw[i], rk[i]); }
       }
     }
-    // 留白：遮完後低頻顏色還比目標亮、色差 > 3 的皮膚；只看已遮區塊和它外圍 4% 臉寬內（不去動臉上天然的高光）
+    // Blank areas: skin whose low-frequency color after concealing is still brighter than the target with color difference > 3; only look at concealed patches and the 4% face-width ring around them (do not touch the face's natural highlights)
     const fL = boxBlur(cL, W, H, r), fA = boxBlur(cA, W, H, r), fB = boxBlur(cB, W, H, r);
     const near = boxBlur(raw, W, H, Math.max(3, Math.round(S.fw * 0.04)));
-    const rL = shineLow(fL, cL, raw, shine, wideR);                  // 判斷留白也用同一個底色：保留的光澤不算留白
+    const rL = shineLow(fL, cL, raw, shine, wideR);                  // blank areas are judged with the same base color: preserved sheen does not count as blank
     const resid = new Uint8Array(W * H);
     let rN = 0, sN = 0;
     for (let i = 0; i < W * H; i++) {
@@ -590,10 +590,10 @@
       const dE = Math.hypot(rL[i] - tL[i], fA[i] - tA[i], fB[i] - tB[i]);
       if (dE > 3 && rL[i] > tL[i] + 1.5) { resid[i] = 1; rN++; }
     }
-    // 打亮層（opt.highlight 0–1）：臉中央高點整體提亮、稍降飽和（米白），只加低頻、紋理照舊；評分在這之前算，不影響色差
+    // Highlight layer (opt.highlight 0-1): raise the high points at the face center as a whole and slightly lower saturation (off-white), add only low frequency, texture unchanged; scoring is computed before this, so it does not affect the color difference
     const hiAmt = Math.min(1, Math.max(0, Number(opt.highlight ?? 0)));
     if (hiAmt > 0 && S.spec && opt.hiMode !== 'spots') {
-      // 3D 打亮：核心米白（稍降飽和）、外圍一圈帶微量暖色（光線透進皮膚的透光感）
+      // 3D highlight: core off-white (slightly lower saturation), the outer ring with a trace of warm color (translucency of light entering the skin)
       const { core, wide } = S.spec;
       for (let i = 0; i < W * H; i++) {
         const c = core[i] * hiAmt, wd = wide[i] * hiAmt;
@@ -606,7 +606,7 @@
       for (let i = 0; i < W * H; i++) {
         const w = S.hi[i] * hiAmt;
         if (w < 0.004) continue;
-        cL[i] += w * HI_L; cA[i] *= 1 - 0.05 * w; cB[i] *= 1 - 0.08 * w;   // 稍降飽和、偏米白，不是純白
+        cL[i] += w * HI_L; cA[i] *= 1 - 0.05 * w; cB[i] *= 1 - 0.08 * w;   // slightly lower saturation, toward off-white, not pure white
       }
     }
     return { W, H, cL, cA, cB, tL, tA, tB, mk, fL, fA, fB, resid, residPct: sN ? rN / sN : 0, passes, rounds: maxRound };
@@ -624,7 +624,7 @@
       o[i * 4] = rgb[0]; o[i * 4 + 1] = rgb[1]; o[i * 4 + 2] = rgb[2];
       changed++;
     }
-    // 結果評分：淺色區塊核心（低頻）和各自周圍膚色的平均色差（Lab ΔE76）
+    // Result score: mean color difference (Lab deltaE76) between the low-frequency light-patch core and its own surrounding skin color
     const sc = S.det.w / W;
     let sum = 0, cnt = 0;
     for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) {
@@ -637,7 +637,7 @@
       residPct: st.residPct, passes: st.passes, rounds: st.rounds };
   }
 
-  // 抓留白：用目前設定遮一次 → 還看得出差異的地方用 OpenCV 抓輪廓 → 變成下一輪的 SVG 區塊（可開關、可拖點）
+  // Find blank areas: conceal once with the current settings -> places still showing a difference get contours via OpenCV -> become the next round's SVG patches (toggleable, draggable points)
   async function findResidual(opt = {}) {
     if (!S) throw new Error(__t('s0715', '先 prepare'));
     const cvx = await window.Vendor.opencv();
@@ -648,10 +648,10 @@
     for (let i = 0; i < W * H; i++) bin[i] = st.resid[i] ? 255 : 0;
     const m = cvx.matFromArray(H, W, cvx.CV_8UC1, bin);
     const k = cvx.getStructuringElement(cvx.MORPH_ELLIPSE, new cvx.Size(5, 5));
-    cvx.morphologyEx(m, m, cvx.MORPH_OPEN, k);                       // 去掉零星雜點
+    cvx.morphologyEx(m, m, cvx.MORPH_OPEN, k);                       // remove stray dots
     cvx.morphologyEx(m, m, cvx.MORPH_CLOSE, k);
     const ke = cvx.getStructuringElement(cvx.MORPH_ELLIPSE, new cvx.Size(5, 5)); cvx.dilate(m, m, ke);
-    const excl = new Uint8Array(m.data);                             // 留白（外擴後）：取周圍色時不算
+    const excl = new Uint8Array(m.data);                             // blank areas (after expansion): not counted when sampling surrounding colors
     const cs = new cvx.MatVector(), hi = new cvx.Mat();
     cvx.findContours(m, cs, hi, cvx.RETR_EXTERNAL, cvx.CHAIN_APPROX_NONE);
     const minArea = W * H * 0.0003, added = [];

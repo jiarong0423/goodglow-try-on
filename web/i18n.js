@@ -1,8 +1,8 @@
 'use strict';
-// 中英切換：預設依瀏覽器語言（中文→中文，其他→英文），網址 ?lang=en|zh 可強制，選過會記住。
-// 靜態字：元素帶 data-i18n="sNNNN"（文字）或 data-i18n-attr="屬性:sNNNN;…"（alt／aria-label／title）。
-// 中文原文第一次套用前先存在 data-i18n-zh／data-i18n-zh-<屬性>，切回中文逐字還原（中文零回歸）。
-// 英文字典來自 web/i18n/en.js（tools/build_i18n.py 由 docs/i18n/zh_en_map.csv 產生，逐字不改寫）。
+// Chinese/English switching: defaults to the browser language (Chinese -> Chinese, otherwise English); the URL ?lang=en|zh can force it, and the choice is remembered.
+// Static text: an element carries data-i18n="sNNNN" (text) or data-i18n-attr="attribute:sNNNN;..." (alt / aria-label / title).
+// The original Chinese text is stored in data-i18n-zh / data-i18n-zh-<attribute> before the first application; switching back to Chinese restores it verbatim (zero regression for Chinese).
+// The English dictionary comes from web/i18n/en.js (tools/build_i18n.py generates it from docs/i18n/zh_en_map.csv, verbatim and unrewritten).
 (function () {
   const STORE = 'goodglow-lang';
   const dict = () => window.I18N_EN || {};
@@ -12,21 +12,21 @@
     try {
       const q = new URLSearchParams(location.search).get('lang');
       if (q === 'en' || q === 'zh') return q;
-    } catch (_) { /* 沒有網址參數也能用 */ }
+    } catch (_) { /* works without URL parameters too */ }
     try {
       const s = localStorage.getItem(STORE);
       if (s === 'en' || s === 'zh') return s;
-    } catch (_) { /* 瀏覽器擋儲存也能用 */ }
+    } catch (_) { /* works even if the browser blocks storage */ }
     return /^zh/i.test(navigator.language || '') ? 'zh' : 'en';
   }
 
-  // 中文原文前後有空白（用來接在別的句子後面）時，英文也要帶同樣的空白，否則兩句會黏在一起
+  // When the original Chinese text has leading/trailing whitespace (to be attached after another sentence), the English must carry the same whitespace, otherwise the two sentences stick together
   function edge(zh, en) {
     const a = zh.match(/^\s*/)[0], b = zh.match(/\s*$/)[0];
     return (a && !/^\s/.test(en) ? a : '') + en + (b && !/\s$/.test(en) ? b : '');
   }
 
-  // 一般取字：英文模式且字典有這一鍵才換，否則維持呼叫處給的中文
+  // Normal lookup: swap only in English mode and when the dictionary has this key, otherwise keep the Chinese given at the call site
   function t(id, zh) {
     if (lang !== 'en') return zh;
     const v = dict()[id];
@@ -36,7 +36,7 @@
   function applyStatic(root) {
     const scope = root || document;
     scope.querySelectorAll('[data-i18n]').forEach((el) => {
-      // 程式（app.js）自己改過這個元素的文字（例如依模式變動的按鈕字）→ 不再覆寫，交給 app.js 自己用 t() 處理
+      // The code (app.js) has changed this element's text itself (e.g. button text that varies by mode) -> do not overwrite again; leave it to app.js to handle with t()
       if (el.__i18nLast !== undefined && el.textContent !== el.__i18nLast) return;
       if (!el.hasAttribute('data-i18n-zh')) el.setAttribute('data-i18n-zh', el.textContent);
       el.textContent = t(el.getAttribute('data-i18n'), el.getAttribute('data-i18n-zh'));
@@ -48,7 +48,7 @@
         if (i < 0) return;
         const attr = pair.slice(0, i), id = pair.slice(i + 1), keep = `data-i18n-zh-${attr}`;
         el.__i18nLastAttr = el.__i18nLastAttr || {};
-        if (el.__i18nLastAttr[attr] !== undefined && el.getAttribute(attr) !== el.__i18nLastAttr[attr]) return;   // 程式改過就不覆寫
+        if (el.__i18nLastAttr[attr] !== undefined && el.getAttribute(attr) !== el.__i18nLastAttr[attr]) return;   // Do not overwrite if the code has changed it
         if (!el.hasAttribute(keep)) el.setAttribute(keep, el.getAttribute(attr) || '');
         el.setAttribute(attr, t(id, el.getAttribute(keep)));
         el.__i18nLastAttr[attr] = el.getAttribute(attr);
@@ -56,19 +56,19 @@
     });
   }
 
-  // 切換語言：app.js 等程式內的字串在載入時就決定語言，所以存好偏好後重新載入頁面（切換鈕只在首頁，沒有進行中的資料）
+  // Switch language: strings inside code such as app.js decide the language at load time, so save the preference and reload the page (the switch button is only on the home page, where there is no data in progress)
   function setLang(next, persist) {
     if (next !== 'en' && next !== 'zh') return;
-    if (persist === false) {                      // 測試用：只在這一頁暫時切換靜態字，不重載
+    if (persist === false) {                      // For tests: temporarily switch static text on this page only, without reloading
       lang = next;
       document.documentElement.lang = next === 'en' ? 'en' : 'zh-Hant';
       applyStatic();
       syncButton();
       return;
     }
-    try { localStorage.setItem(STORE, next); } catch (_) { /* 記不住也能用 */ }
+    try { localStorage.setItem(STORE, next); } catch (_) { /* works even if it cannot be remembered */ }
     const u = new URL(location.href);
-    u.searchParams.set('lang', next);             // 記不住時，用網址參數帶過去
+    u.searchParams.set('lang', next);             // When it cannot be remembered, pass it along via a URL parameter
     location.replace(u.toString());
   }
 
@@ -80,10 +80,10 @@
     b.title = b.getAttribute('aria-label');
   }
 
-  // 程式內字串用：__t('sNNNN', '中文') 取一般字串；__T('sNNNN', () => `中文樣板`, () => `英文樣板`) 取樣板字串（兩個都是呼叫處的閉包，變數照常可用）
+  // For in-code strings: __t('sNNNN', 'Chinese') gets a normal string; __T('sNNNN', () => `Chinese template`, () => `English template`) gets a template string (both are closures at the call site, so variables work as usual)
   window.__t = t;
   window.__T = (id, zhFn, enFn) => (lang === 'en' ? edge(zhFn(), enFn()) : zhFn());
-  // 句子之間：中文不加空格，英文加一個空格（用在把兩段翻譯過的字串接起來的地方）
+  // Between sentences: Chinese adds no space, English adds one space (used where two translated strings are joined)
   window.__sp = () => (lang === 'en' ? ' ' : '');
 
   window.I18N = {

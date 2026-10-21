@@ -1,4 +1,4 @@
-# 白化症入口的個人化規則還沒定，由 albinism/ 分支補。
+# Personalization rules for the albinism entry are not defined yet; to be added by the albinism/ branch.
 
 
 def personalize(steps, skin):

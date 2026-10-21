@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""本機伺服器：提供 PWA，並代理 YouCam Makeup VTO（白化症好氣色試妝）。
+"""Local server: serves the PWA and proxies YouCam Makeup VTO (healthy-glow try-on for albinism).
 
-- API key 只在伺服器端讀（環境變數或專案 .env），不送進瀏覽器、不印出。
-- 照片只在記憶體內處理，不落檔；結果圖轉成 data URL 回給瀏覽器，伺服器不留。
-- 前端只送「妝感＋各項選項 id」，參數由 app/looks.py 依 presets.json 組，並檢查妝感允不允許。
-- --mock：不連 YouCam、不扣點。用示範照片時重播錄好的真實結果；用自己的照片時回原圖並標示「展示模式」。
+- The API key is read only on the server side (environment variable or the project .env), never sent to the browser, never printed.
+- Photos are processed in memory only and never written to disk; result images are turned into data URLs for the browser, and the server keeps nothing.
+- The frontend sends only "look style + each option id"; the parameters are built by app/looks.py from presets.json, which also checks whether the style allows them.
+- --mock: no connection to YouCam, no points spent. With demo photos the recorded real results are replayed; with the person's own photo the original image is returned, marked as demo mode.
 
-用法：
+Usage:
   python3 app/server.py --mock
   python3 app/server.py --max-calls 20
 """
@@ -45,22 +45,22 @@ import judge_auth  # noqa: E402
 
 WEB_DIR = ROOT / "web"
 MAX_BODY = 16 * 1024 * 1024
-MAX_PIXELS = 40_000_000                   # 檔頭宣告的畫面超過這個像素數就在解碼前拒收（小檔案大畫面＝解壓炸彈）
+MAX_PIXELS = 40_000_000                   # images whose header declares more pixels than this are rejected before decoding (small file, huge image = decompression bomb)
 ALLOWED_FORMATS = {"JPEG", "PNG", "WEBP"}
-SOCKET_TIMEOUT = 20                       # 單一連線讀寫逾時（秒）：慢速或停住的連線不能一直占著執行緒
-MAX_CONNECTIONS = 64                      # 同時處理的連線上限；滿了就直接關掉新連線
-# 公開部署用：吃 CPU 或會呼叫 YouCam 的請求同時最多幾個（淺色區塊遮罩、試妝、逐層、五官）；排不上隊就回 503，不拖垮整台。
+SOCKET_TIMEOUT = 20                       # read/write timeout of a single connection (seconds): slow or stalled connections must not hold a thread forever
+MAX_CONNECTIONS = 64                      # upper limit of concurrently handled connections; when full, new connections are closed immediately
+# for public deployment: how many CPU-heavy or YouCam-calling requests (light-patch mask, try-on, layers, facial features) may run at once; if they cannot queue, answer 503 instead of dragging the whole machine down.
 HEAVY_ROUTES = {"/api/patch-mask", "/api/makeup", "/api/looks", "/api/layers", "/api/face"}
 HEAVY_WAIT_SECONDS = 8
 DEFAULT_MAX_HEAVY = 2
-MIN_SHORT = 1080          # 拒收低解析度（實測放大會失真）
-HEX_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")    # 預期妝容分區色只收 #RRGGBB
-VTO_MAX_LONG = 1919       # Makeup VTO 要求長邊 < 1920
+MIN_SHORT = 640           # reject low resolution (no upscaling). Camera Kit on phones outputs about 680x1080, and the old threshold of 1080 would reject every Kit photo (, measured on a device)
+HEX_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")    # the expected-makeup zone colors accept only #RRGGBB
+VTO_MAX_LONG = 1919       # Makeup VTO requires the long side < 1920
 CONTENT_TYPES = {
     ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
     ".css": "text/css; charset=utf-8", ".webmanifest": "application/manifest+json",
     ".svg": "image/svg+xml", ".png": "image/png", ".json": "application/json", ".jpg": "image/jpeg",
-    ".mjs": "text/javascript; charset=utf-8", ".wasm": "application/wasm",   # web/vendor：ONNX Runtime Web（10-16）
+    ".mjs": "text/javascript; charset=utf-8", ".wasm": "application/wasm",   # web/vendor: ONNX Runtime Web (10-16)
 }
 ERROR_HINTS = {
     "error_face_position_invalid": "臉要完整出現在畫面裡",
@@ -70,11 +70,11 @@ ERROR_HINTS = {
     "error_below_min_image_size": "照片解析度不夠：改用前鏡頭最高畫質",
 }
 
-# 示範照片（Pexels，可修改授權）與錄好的真實結果：都在 demo/（進版控，來源見 demo/SOURCES.md）
+# demo photos (Pexels, modifiable license) and recorded real results: all under demo/ (version-controlled, sources in demo/SOURCES.md)
 DEMO_DIR = ROOT / "demo"
-# 改用四人標準組的明亮照（舊的 19276432 偏暗，取到色卡 5 級；舊照與重播圖封存在 runs/）
+#: switched to the bright photos of the four-person standard set (the old 19276432 was dark and landed on card level 5; old photos and replay images are archived in runs/)
 DEMO_PHOTO = DEMO_DIR / "photos" / "standard4" / "albinism_F_5273693.jpg"
-# points：取色點（只用於示範照）。白化症：臉部點位 landmark 50（受光側臉頰）、左眉中段；白斑症：10% 格線圖人工確認
+# points: sampling points (demo photos only). Albinism: face landmark 50 (the lit-side cheek) and the middle of the left brow; vitiligo: confirmed manually on a 10% grid image
 DEMOS = {
     "albinism": {"photo": DEMO_PHOTO, "credit": "Pexels（可修改授權）https://www.pexels.com/photo/5273693/",
                  "replay": DEMO_DIR / "replay" / "albinism",
@@ -84,18 +84,18 @@ DEMOS = {
                  "replay": DEMO_DIR / "replay" / "vitiligo",
                  "points": {"normal": [0.72, 0.58], "patch": [0.33, 0.52], "brow": [0.62, 0.41]},
                  "face": DEMO_DIR / "face" / "vitiligo_20551205.json",
-                 # 預期妝容（模擬）：AI 生成圖只取顏色明暗套回原圖；色號改從這張的三區取色
+                 # expected makeup (simulated): from the AI-generated image only the light/dark colors are taken and applied back to the original image; shades are sampled from this image's three zones
                  "expected": DEMO_DIR / "expected" / "vitiligo_20551205.json"},
 }
 
-# 各入口的定案妝容（模擬）：tools/export_final_looks.py 從 runs/ 匯出到 demo/final/（授權接進兩個入口）
+# finalized looks (simulated) per entry: tools/export_final_looks.py exports from runs/ to demo/final/ (, owner authorized wiring them into both entries)
 FINAL_DIR = DEMO_DIR / "final"
 FINAL_KEYS = {("albinism", "F"): "albinism_F", ("albinism", "M"): "albinism_M", ("vitiligo", "M"): "vitiligo_M", ("vitiligo", "F"): "vitiligo_F"}
 FINAL_DEFAULT_WHO = {"albinism": "F", "vitiligo": "M"}
 
 
 def _sensitivity(v) -> dict | None:
-    """敏感三題的答案：只收已知的鍵與值，其他忽略。"""
+    """Answers to the three sensitivity questions: only known keys and values are accepted, everything else is ignored."""
     if not isinstance(v, dict):
         return None
     out = {}
@@ -123,8 +123,8 @@ EXACT_ITEMS = ("foundation", "contour", "highlight", "brow", "lash", "blush", "l
 
 
 def exact_key(condition: str, style: str, selection: dict) -> str:
-    """精確重播的代號：入口＋妝感＋實際送給 YouCam 的試妝參數（looks.build_effects）。
-    選項、顏色（底妝色號、眉色、膚色）、presets 任一改變都會換代號，舊錄影不會被誤用（ 眉色卡改版後改成這樣）。"""
+    """Key of an exact replay: entry + look style + the try-on parameters actually sent to YouCam (looks.build_effects).
+    A change in options, colors (foundation shade, brow color, skin color) or presets changes the key, so old recordings are never used by mistake (done this way after the 10-16 brow-card revision)."""
     try:
         effects = looks.build_effects(selection)
     except looks.PresetError:
@@ -134,16 +134,16 @@ def exact_key(condition: str, style: str, selection: dict) -> str:
 
 
 def exact_replay(condition: str, style: str, selection: dict) -> bytes | None:
-    """展示模式：tools/record_demo_replays.py 實跑錄好的「完全同一組選項」結果；沒有就回 None。"""
+    """Demo mode: the result recorded by tools/record_demo_replays.py with exactly the same set of options; None if there is none."""
     f = DEMOS[condition]["replay"] / "exact" / f"{exact_key(condition, style, selection)}.jpg"
     return f.read_bytes() if f.is_file() else None
 
 
 def replay_image(condition: str, key: str, style: str = "natural") -> bytes | None:
-    """展示模式：依妝感與款式找錄好的結果（例如 grooming_clear.jpg），找不到就退回同款式的其他妝感。"""
+    """Demo mode: find a recorded result by look style and variant (e.g. grooming_clear.jpg); if not found, fall back to another style of the same variant."""
     folder = DEMOS[condition]["replay"]
     if key.startswith("foundation_only_"):
-        # 只上底妝：用逐層看第一層的錄影結果（同妝感優先，否則任一妝感的第一層）
+        # foundation only: use the recorded first-layer result of the layer view (same look style preferred, otherwise the first layer of any style)
         cands = [folder / f"{style}_layer1_foundation.jpg"] + sorted(folder.glob("*_layer1_foundation.jpg"))
         f = next((c for c in cands if c.is_file()), None)
         return f.read_bytes() if f else None
@@ -182,13 +182,13 @@ def decode_image(payload: dict) -> bytes:
 
 
 def open_checked(raw: bytes):
-    """先看檔頭的格式與畫面大小再開圖（PIL 是延遲解碼）：只收 JPEG／PNG／WebP，像素上限 MAX_PIXELS。"""
+    """Check the header format and image size before opening the image (PIL decodes lazily): only JPEG / PNG / WebP are accepted, pixel limit MAX_PIXELS."""
     from PIL import Image
 
     try:
         im = Image.open(io.BytesIO(raw))
         fmt, (w, h) = im.format, im.size
-    except Exception:  # noqa: BLE001  含 DecompressionBombError、格式錯誤
+    except Exception:  # noqa: BLE001  includes DecompressionBombError and format errors
         raise RequestError(400, "bad_photo", "讀不到這張照片") from None
     if fmt not in ALLOWED_FORMATS:
         raise RequestError(400, "bad_photo", "照片格式只收 JPEG、PNG、WebP")
@@ -198,7 +198,7 @@ def open_checked(raw: bytes):
 
 
 def prepare_vto_image(raw: bytes) -> bytes:
-    """轉正方向、拒收短邊 < 1080、縮到長邊 < 1920、重新編碼（去 EXIF）。"""
+    """Correct the orientation, reject short side < MIN_SHORT, shrink to long side < 1920, re-encode (strips EXIF)."""
     from PIL import Image, ImageOps
 
     try:
@@ -224,7 +224,7 @@ INTERNAL_KEYS = {"note", "_note", "foundation_note", "face_rules", "demo_note", 
 
 
 def public_view(obj):
-    """回給前端的資料不含內部備註欄位（作法、來源討論、日期等只留在檔案備註，不出貨到畫面或網路回應）。"""
+    """Data returned to the frontend contains no internal note fields (approach, source discussion, dates etc. stay in file notes only and are not shipped to the screen or network responses)."""
     if isinstance(obj, dict):
         return {k: public_view(v) for k, v in obj.items() if k not in INTERNAL_KEYS}
     if isinstance(obj, list):
@@ -232,7 +232,7 @@ def public_view(obj):
     return obj
 
 
-_REQ = threading.local()      # 目前這個請求的語言（do_GET／do_POST 一進來就設定），mock_label 用
+_REQ = threading.local()      # language of the current request (set as soon as do_GET / do_POST starts), used by mock_label
 
 
 def _label_font(size: int, lang: str):
@@ -250,8 +250,8 @@ def _label_font(size: int, lang: str):
 
 
 def mock_label(jpeg: bytes, text: str = "") -> bytes:
-    """自己的照片在展示模式：回原圖，底部加一條細標示（依語言），避免被當成真的試妝結果。
-    不再把選項清單畫到圖上（選項已顯示在圖下方的說明文字； 手機實測：舊版黑條是英文、被截斷）。"""
+    """Own photo in demo mode: return the original image with a thin label added at the bottom (by language), so it is not mistaken for a real try-on result.
+    The option list is no longer drawn onto the image (the options are already shown in the caption below the image; 10-21 phone test: the old black bar was in English and got truncated)."""
     from PIL import Image, ImageDraw
 
     lang = getattr(_REQ, "lang", "zh")
@@ -269,14 +269,14 @@ def mock_label(jpeg: bytes, text: str = "") -> bytes:
 
 
 def nearest_replay(condition: str, style: str = "natural") -> bytes | None:
-    """示範照在展示模式找不到「完全同一組選項」的錄影結果時，退回最接近的一張錄好的官方結果（不燒字；
-    畫面下方的說明文字與 MOCK_SAME 會註明展示模式只錄了幾種組合）。"""
+    """When a demo photo has no recording for exactly the same set of options in demo mode, fall back to the closest recorded official result (no burned-in text;
+    the caption below the image and MOCK_SAME state that demo mode recorded only a few combinations)."""
     folder = DEMOS[condition]["replay"]
     cands = [folder / f"{style}_glow.jpg", folder / f"{style}_clear.jpg", folder / "natural_glow.jpg"] + sorted(folder.glob("*.jpg"))
     f = next((c for c in cands if c.is_file()), None)
     if f:
         return f.read_bytes()
-    # 沒有具名的錄影檔：用這個入口的定案妝容圖（同一張示範照做的完整妝容，demo/final），再不行才用任一張精確錄影
+    # no named recording: use this entry's finalized look image (the full look made on the same demo photo, demo/final), and only then any exact recording
     try:
         key = FINAL_KEYS.get((condition, FINAL_DEFAULT_WHO[condition]))
         rel = json.loads((FINAL_DIR / "recipes.json").read_text(encoding="utf-8"))[key]["images"].get("final")
@@ -290,8 +290,8 @@ def nearest_replay(condition: str, style: str = "natural") -> bytes | None:
 
 def replay_key(selection: dict, which: str | None) -> str:
     if selection.get("foundation", "keep") != "keep":
-        only = all(selection.get(k, "keep") == "keep" for k in ("blush", "lip", "brow", "lash"))   # 打亮不影響重播選圖
-        # 只有底妝＝簡化流程的「全臉底妝」；有錄才重播，沒有就標示展示模式
+        only = all(selection.get(k, "keep") == "keep" for k in ("blush", "lip", "brow", "lash"))   # highlight does not affect which replay image is chosen
+        # foundation only = the "whole-face foundation" of the simplified flow; replay if recorded, otherwise label it as demo mode
         return f"foundation_only_{selection['foundation']}" if only else f"foundation_{selection['foundation']}"
     if which in ("glow", "clear"):
         return which
@@ -323,17 +323,17 @@ class State:
                  simulate_error: str | None = None, max_heavy: int = DEFAULT_MAX_HEAVY):
         self.mock = mock
         self.heavy = threading.BoundedSemaphore(max(1, int(max_heavy)))
-        # simulate_error（--simulate-youcam-error）：只在 --mock 用，讓試妝類請求回 YouCam 的錯誤碼，重現「YouCam 處理不了時改由本機模擬接手」
+        # simulate_error (--simulate-youcam-error): only used with --mock; makes try-on requests return a YouCam error code, reproducing "the local simulation takes over when YouCam cannot process it"
         if simulate_error and not mock:
             raise ValueError("--simulate-youcam-error 只能和 --mock 一起用")
         self.simulate_error = simulate_error
-        self.est_units = 0           # 展示模式下「如果是正式模式會花幾點」的估算（官方價目 app/budget.py PRICES）；不扣任何點、不呼叫 YouCam
+        self.est_units = 0           # estimate of "how many points this would cost in live mode" while in demo mode (official prices in app/budget.py PRICES); spends no points and does not call YouCam
         self.est_calls = {}
-        # alias=True（--brand-alias）：錄影、截圖、公開頁面用。內部仍用真實品牌資料比對，回傳給畫面的品牌名換成字母代稱、產品名換成品類
+        # alias=True (--brand-alias): for recordings, screenshots and public pages. Internally real brand data is still used for matching; brand names returned to the screen become letter aliases and product names become categories
         self.alias = brand_alias.load() if alias else None
-        # catalog="demo"：錄影片、截圖用，只顯示虛構示範型錄，畫面不出現第三方品牌名稱（比賽規則：影片不得含第三方商標）
+        # catalog="demo": for recording videos and screenshots, shows only the fictional demo catalog, so no third-party brand names appear on screen (contest rule: videos must not contain third-party trademarks)
         self.catalog = "demo" if catalog == "demo" else "all"
-        # 首頁數字與色號頁說明要和實際載入的型錄一致：沒有官網現行資料（乾淨 clone）或指定 demo 時，只有虛構示範型錄
+        # the home-page numbers and the shade-page text must match the catalog actually loaded: with no current official data (clean clone) or when demo is specified, only the fictional demo catalog exists
         self.catalog_kind = "demo" if self.catalog == "demo" or not ce.OFFICIAL_CATALOG.exists() else "official"
         _cats = ce.load_catalogs(self.catalog_kind)
         self.catalog_stats = {"shades": sum(len(p["shades"]) for p in _cats), "brands": len({p["brand"] for p in _cats})}
@@ -353,13 +353,13 @@ class State:
                 "est_units": self.est_units, "est_calls": dict(self.est_calls)}
 
     def src(self, payload: dict) -> str:
-        """型錄來源：示範型錄模式一律用虛構示範型錄，否則照請求（預設 all＝官網現行色號優先）。"""
+        """Catalog source: demo-catalog mode always uses the fictional demo catalog, otherwise follows the request (default all = current official shades first)."""
         return "demo" if self.catalog == "demo" else payload.get("source", "all")
 
-    # ---- 一次 Makeup VTO
+    # ---- one Makeup VTO
     def render(self, jpeg: bytes, selection: dict, demo: str | None, which: str | None = None,
                style: str = "natural", layer: str | None = None) -> str:
-        """demo：示範照的入口（albinism／vitiligo），自己的照片為 None。layer：逐層看的第幾層（展示模式重播用）。"""
+        """demo: the entry of a demo photo (albinism / vitiligo), None for the person's own photo. layer: which layer of the layer view (used for demo-mode replay)."""
         if self.mock:
             self._estimate("makeup-vto")
             if demo:
@@ -369,11 +369,11 @@ class State:
                     if data:
                         return to_data_url(data)
                     if layer.startswith("final"):
-                        layer = None                     # 最後一層＝整套妝，退回整套的錄影結果
+                        layer = None                     # the last layer = the full look, fall back to the recording of the full look
                 if not layer:
                     data = exact_replay(demo, style, selection) or replay_image(demo, replay_key(selection, which), style)
                     if not data and selection.get("foundation", "keep") != "keep":
-                        # 還沒錄含底妝的版本：先用同款不含底妝的錄影結果（畫面已註明是相近結果）
+                        # a version including foundation is not recorded yet: use the recording of the same variant without foundation (the screen already says it is a similar result)
                         data = replay_image(demo, replay_key(dict(selection, foundation="keep"), which), style)
                     if data:
                         return to_data_url(data)
@@ -416,7 +416,7 @@ class State:
             code = str(data.get("error") or data.get("error_code") or "task_error")
             print(f"ERROR makeup-vto task：{code}", file=sys.stderr, flush=True)
             raise RequestError(422, code, ERROR_HINTS.get(code, "這張沒辦法試妝，換個角度或光線再拍一次"))
-        holder["ok"] = True  # YouCam 回 success 就已扣點，之後下載失敗也要記帳
+        holder["ok"] = True  # once YouCam returns success the points are already charged, so even if the download fails afterwards it must be booked
         urls = find_urls(data.get("results"), [])
         if not urls:
             raise RequestError(502, "no_result", "試妝結果是空的，請再試一次")
@@ -425,7 +425,7 @@ class State:
         print(f"makeup-vto ok，已用 {self.calls}/{self.max_calls}，預算剩 {self.budget.remaining()}", file=sys.stderr, flush=True)
         return to_data_url(result)
 
-    # ---- 端點邏輯
+    # ---- endpoint logic
     def photo_from(self, payload: dict) -> tuple[bytes, str | None]:
         if payload.get("demo"):
             cond = demo_condition(payload)
@@ -473,7 +473,7 @@ class State:
         return {"ok": True, "mode": self.status()["mode"], "selection": sel,
                 "image": self.render(jpeg, sel, demo, None, style), "hint": looks.balance_hint(sel, self.presets)}
 
-    # ---- 逐層看：底妝 → ＋腮紅 → ＋唇 → ＋眉 → ＋睫毛（每層 1 次 Makeup VTO）
+    # ---- layer view: foundation -> + blush -> + lip -> + brow -> + lash (1 Makeup VTO call per layer)
     def layers(self, payload: dict) -> dict:
         self._maybe_simulated_failure()
         style = payload.get("style", "natural")
@@ -500,7 +500,7 @@ class State:
                         "image": self.render(jpeg, layer_sel, demo, None, style, key)})
         return {"ok": True, "mode": self.status()["mode"], "layers": out}
 
-    # ---- 依五官給建議（Face Attribute 1–5 項＝10 點，本人按了才跑）
+    # ---- suggestions from facial features (Face Attribute items 1-5 = 10 points, runs only when the person presses it)
     def face(self, payload: dict) -> dict:
         style = payload.get("style", "natural")
         jpeg, demo = self.photo_from(payload)
@@ -543,7 +543,7 @@ class State:
             raise RequestError(422, code, ERROR_HINTS.get(code, "這張沒辦法分析五官，換個正面、光線均勻的照片再試"))
         return {"ok": True, "available": True, "mode": "live", "advice": face_rules.advise(data.get("results") or {}, style)}
 
-    # ---- 色卡比對（本機，不扣點）
+    # ---- shade-card matching (local, no points)
     def match(self, payload: dict) -> dict:
         try:
             res = ce.match_hex(payload["hex"], payload.get("category", "foundation"), payload.get("undertone"),
@@ -573,8 +573,8 @@ class State:
             items = rec.shades_for(sel, tone_id, self.presets, self.src(payload))
         except looks.PresetError as exc:
             raise RequestError(400, "bad_selection", str(exc)) from None
-        if payload.get("skin_hex") and payload.get("condition") != "vitiligo":   # 白斑的打底／修邊色由 /api/recommend 給
-            # 膚色 → 膚色色卡格子 → 同一格的專櫃色號（不直接比色差：照片和產品色票的顏色空間不同）
+        if payload.get("skin_hex") and payload.get("condition") != "vitiligo":   # the base / edge-blending color for vitiligo is given by /api/recommend
+            # skin color -> skin-tone card cell -> counter shade in the same cell (not compared directly by color difference: photos and product swatches live in different color spaces)
             tone = None if payload.get("undertone_unsure") else {"pink_cool": "cool", "warm_ivory": "warm"}.get(tone_id, "neutral")
             try:
                 cell, shades = ce.card_shades(payload["skin_hex"], "foundation", tone, self.src(payload))
@@ -584,7 +584,7 @@ class State:
                              "card": cell, "matches": shades})
         condition = "vitiligo" if payload.get("condition") == "vitiligo" else "albinism"
         if payload.get("skin_hex"):
-            # 臉部色號：白化症加遮瑕；有上打亮／修容就給對應色號（白斑的遮瑕、修邊、校色由 /api/recommend 給）
+            # face shades: albinism adds concealer; if highlight / contour are applied, give the matching shades (vitiligo concealer, edge blending and corrector come from /api/recommend)
             want = (["concealer"] if condition == "albinism" else []) + \
                    [k for k in ("highlight", "contour") if sel.get(k, "keep") != "keep"]
             zones = payload.get("zones") if isinstance(payload.get("zones"), dict) else None
@@ -619,7 +619,7 @@ class State:
                 "official_note": official.get("note"), "partner_source": partner.get("source"),
                 "counts": {"demo": count(demo), "official": count(official), "partner_2018": count(partner)}}
 
-    # ---- 淺色區塊遮罩（本機，不扣點）：網頁送照片（或上完妝的模擬圖）＋上妝範圍，這裡用 Python 算多尺度偵測
+    # ---- light-patch mask (local, no points): the page sends the photo (or the simulated made-up image) + the makeup region, and multi-scale detection is computed here in Python
     #
     def patch_mask(self, payload: dict) -> dict:
         import time
@@ -636,7 +636,7 @@ class State:
             raise
         except Exception:  # noqa: BLE001
             raise RequestError(400, "bad_image", "照片或範圍讀不到") from None
-        if max(img.size) > 3200:                                       # 太大先縮（偵測照比例調整尺度）
+        if max(img.size) > 3200:                                       # too large: shrink first (detection scales are adjusted proportionally)
             s = 3200 / max(img.size)
             img = img.resize((round(img.width * s), round(img.height * s)), Image.LANCZOS)
         out_size = region_img.size
@@ -652,12 +652,12 @@ class State:
             meta = json.loads(d["expected"].read_text(encoding="utf-8"))
             out["expected"] = {"image": to_data_url((ROOT / meta["image"]).read_bytes()), "zones": meta["zones"],
                                "how": meta["how"]}
-            if meta.get("layer_fit"):           # 化妝塗層用的擬合色號＋不透明度（ B；不含內部說明）
+            if meta.get("layer_fit"):           # fitted shade + opacity for the makeup overlay (10-17 B; without internal notes)
                 out["expected"]["layer_fit"] = {k: meta["layer_fit"][k] for k in ("shades", "opacity")}
         return out
 
     def final_look(self, condition: str, who: str | None = None) -> dict:
-        """定案妝容（模擬）：只讀 demo/final/，不呼叫 YouCam、不扣點。"""
+        """Finalized look (simulated): reads only demo/final/, no YouCam call, no points."""
         if condition not in FINAL_DEFAULT_WHO:
             raise RequestError(400, "bad_condition", "入口只有膚色很淺、膚色深淺不一兩種")
         who = who or FINAL_DEFAULT_WHO[condition]
@@ -670,8 +670,8 @@ class State:
         r = json.loads(recipes.read_text(encoding="utf-8"))[key]
         who_options = sorted(w for (c, w) in FINAL_KEYS if c == condition)
         img = {k: (to_data_url((FINAL_DIR / v).read_bytes()) if v else None) for k, v in r["images"].items()}
-        # 流程：本地逐層底妝 → 官方 makeup-vto 這一步 → 配方卡。展示模式只放錄好的官方結果，不呼叫 YouCam、不扣點；
-        # 沒錄好的就只顯示本地結果並註明（；真實呼叫後端另由 shared/auto-finish 負責）
+        # flow: local layered foundation -> this official makeup-vto step -> recipe card. Demo mode only shows recorded official results, with no YouCam call and no points;
+        # without a recording only the local result is shown, with a note (, owner: proactively slot in the YouCam service; the backend for real calls is handled separately by shared/auto-finish)
         official = ({"image": img["official"], "status": "replay", "note": "官方這一步：YouCam 試妝錄好的結果（展示模式重播，不扣點）"}
                     if img["official"] else
                     {"image": None, "status": "not_recorded", "note": "官方這一步尚未錄製；展示模式不呼叫 YouCam，以下顯示本地結果"})
@@ -683,7 +683,7 @@ class State:
 
 class Handler(BaseHTTPRequestHandler):
     state: State
-    live_state: State | None = None            # 評審登入後才用的真實呼叫狀態（--judge-live）
+    live_state: State | None = None            # state for real calls, used only after judge login (--judge-live)
     auth: "judge_auth.JudgeAuth | None" = None
     timeout = SOCKET_TIMEOUT
 
@@ -694,11 +694,11 @@ class Handler(BaseHTTPRequestHandler):
         return bool(self.auth) and self.auth.valid_cookie_header(self.headers.get("Cookie"))
 
     def _pick_state(self) -> State:
-        """未登入一律展示模式；只有帶有效評審 cookie 的請求才走真實呼叫。"""
+        """Not logged in is always demo mode; only requests carrying a valid judge cookie take real calls."""
         return self.live_state if (self.live_state is not None and self._logged_in()) else type(self).state
 
     def _judge_post(self, path: str):
-        """/api/judge-login、/api/judge-logout：不經照片路由、不吃運算名額。"""
+        """/api/judge-login, /api/judge-logout: bypass the photo routes and take no compute slot."""
         secure = self._secure()
         if path == "/api/judge-logout":
             self._set_cookies = [judge_auth.clear_cookie_value(secure)]
@@ -727,16 +727,16 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
 
-    def log_message(self, fmt, *args):  # 只記方法與路徑
+    def log_message(self, fmt, *args):  # log only method and path
         sys.stderr.write(f"{self.log_date_time_string()} {self.command} {self.path.split('?')[0]}\n")
 
     def _lang(self) -> str:
-        """請求語言：X-App-Lang 標頭（前端 api() 會帶）或 ?lang=；只有 'en' 才換成英文，其餘一律維持中文。"""
+        """Request language: the X-App-Lang header (sent by the frontend api()) or ?lang=; only 'en' switches to English, everything else stays Chinese."""
         q = urllib.parse.parse_qs(self.path.partition("?")[2]).get("lang", [""])[0]
         return "en" if (self.headers.get("X-App-Lang") or q).strip().lower() == "en" else "zh"
 
     def _json(self, code: int, obj: dict):
-        if self.state.alias is not None:                      # 檯面代稱：先換品牌／產品名，再做語言轉換
+        if self.state.alias is not None:                      # surface alias: first replace brand / product names, then do the language conversion
             obj = self.state.alias.scrub(obj, self._lang())
         if self._lang() == "en":
             obj = i18n_srv.localize(obj)
@@ -798,7 +798,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-cache")
         self._security_headers()
         self.end_headers()
-        with target.open("rb") as fh:                      # 分段送出，大檔（14 MB 的 wasm）不整個讀進記憶體
+        with target.open("rb") as fh:                      # send in chunks, so a large file (the 14 MB wasm) is not read into memory whole
             shutil.copyfileobj(fh, self.wfile, 64 * 1024)
 
     def do_POST(self):
@@ -820,7 +820,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(400, {"ok": False, "error_code": "bad_length", "hint": "請求格式錯誤"})
         if length <= 0 or length > MAX_BODY:
             return self._json(413, {"ok": False, "error_code": "body_size", "hint": "照片太大"})
-        raw = self.rfile.read(length)                 # 先把請求讀完再排隊，慢速上傳不佔用運算名額
+        raw = self.rfile.read(length)                 # read the whole request before queueing, so a slow upload does not hold a compute slot
         heavy = path in HEAVY_ROUTES
         if heavy and not self.state.heavy.acquire(timeout=HEAVY_WAIT_SECONDS):
             return self._json(503, {"ok": False, "error_code": "busy", "hint": "現在使用的人比較多，請幾秒後再試一次"})
@@ -839,7 +839,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 class BoundedHTTPServer(ThreadingHTTPServer):
-    """連線數有上限（MAX_CONNECTIONS）：滿了就直接關掉新連線，不再無限開執行緒。"""
+    """The number of connections is capped (MAX_CONNECTIONS): when full, new connections are closed immediately instead of spawning unlimited threads."""
     daemon_threads = True
 
     def __init__(self, *args, max_connections: int = MAX_CONNECTIONS, **kwargs):
@@ -866,7 +866,7 @@ def make_server(host: str, port: int, state: State, live_state: State | None = N
 
 
 def check_api_base(url: str) -> bool:
-    """隱藏的 --api-base 只允許 YouCam 的 https 主機或本機測試伺服器，金鑰不會被導去別處。"""
+    """The hidden --api-base allows only YouCam https hosts or a local test server, so the key can never be redirected elsewhere."""
     u = urllib.parse.urlsplit(url)
     host = (u.hostname or "").lower()
     if u.scheme == "https" and (host == "makeupar.com" or host.endswith(".makeupar.com")):
@@ -901,7 +901,7 @@ def main(argv=None) -> int:
         return 2
     live_state = auth = None
     try:
-        # --judge-live：對外的 state 固定是展示模式；真實呼叫的 state 只給登入的評審用
+        # --judge-live: the externally visible state is always demo mode; the state for real calls is given only to the logged-in judge
         state = State(args.mock or args.judge_live, args.max_calls, args.api_base, args.budget_cap, catalog=args.catalog,
                       alias=args.brand_alias, simulate_error=args.simulate_youcam_error, max_heavy=args.max_heavy)
         if args.judge_live:

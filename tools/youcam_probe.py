@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""YouCam 探測工具：查價目、對任一功能跑一次 task，存去網址的回應；公開測試照可另存結果圖。
+"""YouCam probe tool: query the price list, run one task for any feature, and save the response with URLs removed; public test photos may also have their result images saved.
 
-子指令：
-  cost                       查各功能扣點（GET /s2s/v2.0/credit/feature-cost，不扣點）
-  task FEATURE PHOTO BODY    上傳 PHOTO，以 BODY（JSON 檔）建立 task 並等結果；要加 --run 才會真的送出（扣點），沒加只預演
-                             --save-images 只能用在 photos/public 或 photos/crops 的公開照片
+Subcommands:
+  cost                       query the credit cost of each feature (GET /s2s/v2.0/credit/feature-cost; spends no credits)
+  task FEATURE PHOTO BODY    upload PHOTO, create a task with BODY (a JSON file) and wait for the result; it is only really sent (spending credits) with --run, otherwise it is a dry run
+                             --save-images may only be used with public photos under photos/public or photos/crops
 
-結果寫到 runs/<時間>_probe_<feature>/：response.json（網址已移除）、images/（選用）、meta.json
+Results are written to runs/<time>_probe_<feature>/: response.json (URLs removed), images/ (optional), meta.json
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ PUBLIC_DIRS = {"public", "crops"}
 def client() -> nt.YouCamClient:
     key = nt.load_api_key()
     if not key:
-        nt.log_error(f"找不到 {nt.KEY_ENV}")
+        nt.log_error(f"{nt.KEY_ENV} not found")
         sys.exit(2)
     return nt.YouCamClient(key)
 
@@ -53,7 +53,7 @@ def cmd_cost(args) -> int:
         text = json.dumps(s, ensure_ascii=False)
         if keyword in text.lower():
             print(text)
-    print(f"共 {len(skus)} 筆 SKU")
+    print(f"{len(skus)} SKUs in total")
     return 0
 
 
@@ -72,11 +72,11 @@ def find_urls(obj, out):
 def cmd_task(args) -> int:
     photo = Path(args.photo).resolve()
     if args.save_images and photo.parent.name not in PUBLIC_DIRS:
-        nt.log_error("--save-images 只允許公開測試照片（photos/public、photos/crops）")
+        nt.log_error("--save-images is only allowed for public test photos (photos/public, photos/crops)")
         return 2
     body = json.loads(Path(args.body).read_text(encoding="utf-8"))
     if not args.run:
-        print(f"DRY-RUN task feature={args.feature} photo={photo.name} body_keys={sorted(body)}；沒有呼叫 YouCam、不扣點。確定要送出再加 --run。")
+        print(f"DRY-RUN task feature={args.feature} photo={photo.name} body_keys={sorted(body)}; YouCam was not called and no credits were spent. Add --run to actually send.")
         return 0
     c = client()
     jpeg, w, h = nt.prepare_photo(photo)
@@ -105,7 +105,7 @@ def cmd_task(args) -> int:
         if data.get("task_status") in ("success", "error"):
             break
         if time.monotonic() > deadline:
-            nt.log_error("等待逾時")
+            nt.log_error("timed out while waiting")
             return 1
         time.sleep(nt.POLL_SECONDS)
     secs = round(time.monotonic() - t0, 1)
@@ -130,9 +130,9 @@ def cmd_task(args) -> int:
             "saved_images": saved}
     (run_dir / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(meta, ensure_ascii=False, indent=2))
-    print(f"輸出：{run_dir}")
+    print(f"Output: {run_dir}")
     if data.get("task_status") != "success":
-        nt.log_error(f"task 失敗：{meta['error']}")
+        nt.log_error(f"task failed: {meta['error']}")
         return 1
     return 0
 
@@ -141,15 +141,15 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     a = sub.add_parser("cost")
-    a.add_argument("--filter", help="只印含此字串的 SKU")
+    a.add_argument("--filter", help="only print SKUs containing this string")
     a.set_defaults(func=cmd_cost)
     b = sub.add_parser("task")
-    b.add_argument("feature", help="例如 skin-analysis、face-attr-analysis、skin-tone-analysis、makeup-vto")
+    b.add_argument("feature", help="e.g. skin-analysis, face-attr-analysis, skin-tone-analysis, makeup-vto")
     b.add_argument("photo")
-    b.add_argument("body", help="task 參數 JSON 檔（不含 src_file_id）")
-    b.add_argument("--run", action="store_true", help="真的送出（會扣該功能的點數）；沒加只印預演")
+    b.add_argument("body", help="task parameter JSON file (without src_file_id)")
+    b.add_argument("--run", action="store_true", help="actually send (spends the credits of that feature); without it only a dry run is printed")
     b.add_argument("--save-images", action="store_true")
-    b.add_argument("--max-long", type=int, default=0, help="上傳前把長邊縮到小於此值（Makeup VTO 要 < 1920）")
+    b.add_argument("--max-long", type=int, default=0, help="shrink the long side below this value before upload (Makeup VTO needs < 1920)")
     b.add_argument("--runs-dir", default=str(nt.DEFAULT_RUNS_DIR))
     b.set_defaults(func=cmd_task)
     args = ap.parse_args(argv)

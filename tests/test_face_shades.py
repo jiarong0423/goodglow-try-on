@@ -19,7 +19,7 @@ class FaceShadeTests(unittest.TestCase):
         self.assertTrue(rows[0]["matches"])
 
     def test_pale_contour_without_close_match_gives_swatch_and_warning(self):
-        #：極淺膚色的灰褐修容，型錄粉底不是偏橘就是太淺 → 不硬推色號
+        #: grey-brown contour for very light skin; catalog foundations are either too orange or too light -> do not force a shade
         row = ce.face_shades("#DDC9C0", None, None, "official" if ce.OFFICIAL_CATALOG.exists() else "demo", ("contour",))[0]
         if not row["matches"]:
             self.assertIn("灰褐", row["warn"])

@@ -1,6 +1,6 @@
-"""點數總預算：跨次啟動累計，先預留、成功才記帳、失敗退回；超過上限就拒絕。
+"""Total points budget: accumulates across launches; reserve first, record only on success, refund on failure; refuse when the cap is exceeded.
 
-帳本：runs/budget_ledger.json（不進版控）。價目依官方 feature-cost（2026-10-15 實查）。
+Ledger: runs/budget_ledger.json (not version-controlled). Prices follow the official feature-cost (checked 2026-10-15).
 """
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LEDGER = ROOT / "runs" / "budget_ledger.json"
 PRICES = {"makeup-vto": 1, "face-attr-analysis(1-5)": 10, "skin-tone-analysis": 20, "skin-analysis-hd(1-4)": 12,
-          "mu-transfer": 2, "image-to-image": 1, "obj-replace": 1,   # 仿妝 V1.0、圖生圖 V2.0（feature-cost 2026-10-16 實查）
-          "hair-color": 1, "beard-style": 2}   # 官方規格頁 2026-10-16：髮色 Full／Ombre 各 1 點、鬍子造型 2 點
+          "mu-transfer": 2, "image-to-image": 1, "obj-replace": 1,   # makeup transfer V1.0, image-to-image V2.0 (feature-cost, checked 2026-10-16)
+          "hair-color": 1, "beard-style": 2}   # official spec page, 2026-10-16: hair color Full / Ombre 1 point each, beard style 2 points
 
 
 class BudgetExceeded(Exception):

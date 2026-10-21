@@ -1,11 +1,11 @@
-"""眉色卡：先替每支眉筆色號建標籤（深淺 6 級 × 色系 5 種），再用標籤匹配（本機，不扣點）。
+"""Brow color card: first tag every brow-pencil shade (6 depth levels x 5 color families), then match by tag (local, no points spent).
 
-依據：
-- 白化症化妝重點（參考資料）：極白膚色避免黑色、深灰；用淺棕、金棕、焦糖色，順著原眉微調；晚宴可焦糖或灰褐加深。
-- 參考影片：有人用 taupe 灰褐眉膏、有人用 Blonde 02 淺金眉筆。
-- 保養品牌白斑化妝指南：淺膚色用金色眉筆、深膚色用棕色；眉毛上的淺色區塊用眉筆補、刷子暈開。
-- 既有規則：眉毛本來看得見就照原眉色補，或深一階加立體，不往淺的方向改。
-色系優先用品牌說明裡的冷／暖／中性字樣（同底妝做法），沒寫才看顏色算。
+Owner's request (10-16): brow shades looked wrong, so build the tags first and then match. Basis:
+- Albinism makeup notes supplied by the owner: for very pale skin avoid black and dark grey; use light brown, golden brown, caramel, adjusting along the natural brow; for evening, caramel or grey-brown can deepen it.
+- Videos of people with the condition (supplied by the owner): some use taupe grey-brown brow gel, some use Blonde 02 light-gold brow pencil.
+- A skincare brand's vitiligo makeup guide: gold brow pencil for light skin, brown for deeper skin; fill light patches on the brow with the pencil and blend with a brush.
+- Existing rule: if the brow is already visible, fill in the natural brow color or go one level deeper for definition; never shift toward lighter.
+Color family prefers the cool / warm / neutral wording in the brand description (same approach as foundation); only if absent is it computed from the color.
 """
 from __future__ import annotations
 
@@ -14,13 +14,13 @@ import re
 
 import color_engine as ce
 
-LEVELS = [  # (級, 名稱, L* 下限)；由淺到深
+LEVELS = [  # (level, name, lower bound of L*); light to dark
     (1, "淺金", 68.0), (2, "淺棕", 58.0), (3, "中棕", 45.0), (4, "深棕", 32.0), (5, "黑棕", 20.0), (6, "黑", -1.0)]
 LEVEL_MID_L = {1: 72.0, 2: 63.0, 3: 51.0, 4: 38.0, 5: 26.0, 6: 13.0}
-# 色系代表色（Lab 色相角、彩度），用來算「目標標籤」的試妝顏色
+# representative color per family (Lab hue angle, chroma), used to compute the color for the target label's try-on
 FAMILIES = {"金": (75.0, 18.0), "暖棕": (52.0, 16.0), "中性棕": (58.0, 10.0), "冷灰褐": (65.0, 5.0), "黑": (40.0, 2.0)}
-PALE_SKIN_L = 72.0          # 膚色 L* ≥ 72 視為很淺：眉色最深到第 3 級、不用黑（淺的灰褐可以，常見用 taupe）
-VISIBLE_DL = 15.0           # 膚色與眉色亮度差 ≥ 15：眉毛本來就看得見（同 color_engine.BROW_VISIBLE_DL）
+PALE_SKIN_L = 72.0          # skin L* >= 72 counts as very pale: brow color goes at most to level 3, no black (light grey-brown is fine; people with the condition often use taupe)
+VISIBLE_DL = 15.0           # skin-vs-brow lightness difference >= 15: the brow is already visible (same as color_engine.BROW_VISIBLE_DL)
 
 
 def level_of(L: float) -> int:
@@ -35,12 +35,12 @@ def level_name(lv: int) -> str:
 
 
 def family_of(lab, text: str = "") -> str:
-    """色系：說明或名稱寫了就照寫的（black／ash、grey、cool／warm、auburn、chocolate／neutral），否則看顏色。"""
+    """Color family: use what the description or name states (black / ash, grey, cool / warm, auburn, chocolate / neutral), otherwise look at the color."""
     L, a, b = lab
     t = text.lower()
     if L < 20 or re.search(r"\bblack black\b|^black$|自然黑", t):
         return "黑"
-    # 明寫 warm／cool 優先（例如「warm ash-blonde」算暖），只寫 ash、grey 才算冷灰
+    # an explicit warm / cool wins (e.g. "warm ash-blonde" counts as warm); only ash or grey alone counts as cool grey
     if re.search(r"\b(warm|auburn|chocolate|caramel|honey|golden|red)\b|暖|焦糖", t):
         return "金" if (L >= 50 and "blonde" in t) or "金" in t else "暖棕"
     if re.search(r"\b(ash|ashy|grey|gray|cool|taupe)\b|灰|冷", t):
@@ -71,22 +71,22 @@ def tag_color(lv: int, fam: str) -> str:
 
 
 def target(brow_hex: str, skin_hex: str, strength: str = "soft") -> dict:
-    """本人眉色 → 目標標籤與試妝顏色。strength：soft（補一點）或 defined（略深、加立體）。"""
+    """Own brow color -> target label and try-on color. strength: soft (fill a little) or defined (slightly deeper, adds definition)."""
     bL, ba, bb = ce.hex_to_lab(brow_hex)
     sL = ce.hex_to_lab(skin_hex)[0]
     own = tag(brow_hex)
     if sL - bL >= VISIBLE_DL:
-        # 眉毛本來就看得見：同色系，soft 用原眉色、defined 深一級；不往淺的方向改
+        # brow already visible: same family, soft uses the own brow color, defined goes one level deeper; never shift toward lighter
         lv = own["level"] if strength == "soft" else min(6, own["level"] + 1)
         hex_ = brow_hex if strength == "soft" else ce.lab_to_hex((max(8.0, bL - 6), ba, bb))
         return {"level": lv, "family": own["family"], "hex": hex_, "own": own, "visible": True,
                 "why": "照你原本的眉色補稀疏處" if strength == "soft" else "照你原本的眉色深一級，加強立體感"}
     if sL >= PALE_SKIN_L:
-        # 膚色很淺、眉毛很淡：補一點用淺金棕，略深用淺灰褐（taupe）；不用黑與深灰
+        # very pale skin, very faint brow: soft uses light golden brown, defined uses light grey-brown (taupe); no black or dark grey
         lv, fam = (2, "金") if strength == "soft" else (3, "冷灰褐")
         why = "眉毛很淡、膚色很淺：用淺金棕補，不用黑或深灰" if strength == "soft" else "眉毛很淡：用淺灰褐略深一點加立體，不用黑或深灰"
     else:
-        # 眉毛很淡但膚色較深（例如淺色區塊長在眉毛上）：用棕色系
+        # faint brow but deeper skin (e.g. a light patch sits on the brow): use the brown family
         lv = min(6, level_of(sL - (24 if strength == "soft" else 32)))
         fam = "暖棕" if own["family"] in ("金", "暖棕") else "中性棕"
         why = "眉毛顏色淡：用棕色系補到看得見"
@@ -94,8 +94,8 @@ def target(brow_hex: str, skin_hex: str, strength: str = "soft") -> dict:
 
 
 def match(tgt: dict, shades: list[dict], skin_hex: str | None = None, k: int = 3) -> list[dict]:
-    """shades：[{brand, product, code, hex, description?, source}]。先同深淺同色系，再放寬到深淺差一級、色系相近；
-    膚色很淺時排除黑與深冷灰（第 4 級以上）。每筆回 fit（標籤吻合程度）與 delta_e（對目標試妝色）。"""
+    """shades: [{brand, product, code, hex, description?, source}]. First same depth and same family, then relax to one level apart / nearby family;
+    for very pale skin black and dark cool grey (level 4 and up) are excluded. Each entry returns fit (how well the label matches) and delta_e (against the target try-on color)."""
     pale = skin_hex is not None and ce.hex_to_lab(skin_hex)[0] >= PALE_SKIN_L and not tgt.get("visible")
     near = {"金": {"暖棕", "中性棕", "冷灰褐"}, "暖棕": {"金", "中性棕"}, "中性棕": {"暖棕", "冷灰褐"},
             "冷灰褐": {"中性棕", "暖棕", "金"}, "黑": {"冷灰褐", "中性棕"}}

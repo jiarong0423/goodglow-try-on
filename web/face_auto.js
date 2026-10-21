@@ -1,26 +1,26 @@
 'use strict';
-// 自動取色：MediaPipe 臉部定位（在手機上跑，照片不上傳）找出臉頰、額頭、下巴、眉毛，
-// 再取膚色、白斑、眉色。取到的顏色一律顯示色塊讓本人確認，可再手動點選修正。
-// 載入失敗（離線、舊瀏覽器）就回 null，畫面退回手動點選。
+// Auto color picking: MediaPipe face landmarks (run on the phone, photo not uploaded) locate the cheeks, forehead, chin and brows,
+// then pick skin color, patch color and brow color. Picked colors are always shown as swatches for the person to confirm, and can be corrected by tapping manually.
+// If loading fails (offline, old browser) return null, and the UI falls back to manual tapping.
 
 const MP_VERSION = '0.10.14';
 const MP_BASE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}`;
 const MP_MODEL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
 
-// MediaPipe Face Mesh 468 點的編號（臉部左右以照片為準）
+// Point indices of the MediaPipe Face Mesh 468 points (left/right of the face follow the photo)
 const FACE_POINTS = {
   cheekLeft: [50, 205, 117, 123, 187],
   cheekRight: [280, 425, 346, 352, 411],
   forehead: [151, 108, 337, 69, 299],
-  // 下顎線上緣（臉和脖子交界的臉側），彩妝選色教學建議在這裡試色
+  // Upper edge of the jawline (the face side at the face-neck border); makeup color-picking guides recommend trying shades here
   jawLeft: [215, 192, 213],
   jawRight: [435, 416, 433],
   browLeft: [105, 66, 52, 65],
   browRight: [334, 296, 282, 295],
 };
 
-// 多類別分割（同一套 MediaPipe）：0 背景、1 頭髮、2 身體皮膚、3 臉部皮膚、4 衣服、5 其他。
-// 臉部網格的外框只到額頭中段（第 10 點），分割的「臉部皮膚」才會到髮際線
+// Multi-class segmentation (same MediaPipe suite): 0 background, 1 hair, 2 body skin, 3 face skin, 4 clothes, 5 other.
+// The face-mesh outline only reaches the middle of the forehead (point 10); only the segmentation's "face skin" reaches the hairline
 const MP_SEG_MODEL = 'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite';
 let segmenterPromise = null;
 function loadSegmenter() {
@@ -31,16 +31,16 @@ function loadSegmenter() {
       const seg = await vision.ImageSegmenter.createFromOptions(files, {
         baseOptions: { modelAssetPath: MP_SEG_MODEL, delegate: 'CPU' }, runningMode: 'IMAGE', outputCategoryMask: true, outputConfidenceMasks: false,
       });
-      try {                                                        // 暖機：第一次推論要初始化，先在背景用小圖跑掉
+      try {                                                        // Warm-up: the first inference needs initialization, so run it once in the background on a small image
         const c = document.createElement('canvas'); c.width = 64; c.height = 64; c.getContext('2d').fillRect(0, 0, 64, 64);
         seg.segment(c).close();
-      } catch (_) { /* 暖機失敗不影響正式使用 */ }
+      } catch (_) { /* a warm-up failure does not affect real use */ }
       return seg;
     })().catch((err) => { console.warn('臉部分割載入失敗，額頭只到臉部網格外框', err); segmenterPromise = null; return null; });
   }
   return segmenterPromise;
 }
-// 回傳 { arr: Uint8Array（類別編號）, w, h }；失敗回 null
+// Returns { arr: Uint8Array (class ids), w, h }; null on failure
 async function segmentFace(imageOrCanvas) {
   const seg = await loadSegmenter();
   if (!seg) return null;
@@ -52,7 +52,7 @@ async function segmentFace(imageOrCanvas) {
   } catch (err) { console.warn('臉部分割失敗', err); return null; }
 }
 
-// 同一張照片只分割一次（約 1 秒）：選完照片就在背景先跑，進到局部遮瑕時直接拿結果
+// Segment each photo only once (about 1 second): start it in the background as soon as the photo is chosen, and reuse the result when entering local concealer
 const segCache = new Map();
 function segmentCached(key, imageOrCanvas) {
   if (!segCache.has(key)) {
@@ -76,7 +76,7 @@ function loadLandmarker() {
   return landmarkerPromise;
 }
 
-// sRGB → Lab（D65），和伺服器 color_engine 同一套公式
+// sRGB -> Lab (D65), the same formula as the server's color_engine
 function hexToLab(hex) {
   const n = parseInt(hex.slice(1), 16);
   const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
@@ -93,9 +93,9 @@ function medianHex(hexes) {
 }
 
 /**
- * 回傳 { skin, patch, brow, points } 或 null（找不到臉／載入失敗）。
- * sample(img, point, dark, radius) 由 app.js 提供（同一套取色）。
- * condition：'albinism' 取受光側臉頰；'vitiligo' 依「彩度÷亮度」把臉部膚色點分成原本膚色與白斑兩群。
+ * Returns { skin, patch, brow, points } or null (no face found / loading failed).
+ * sample(img, point, dark, radius) is provided by app.js (the same color picking).
+ * condition: 'albinism' picks the lit-side cheek; 'vitiligo' splits the face skin points into original skin and patch by "chroma / lightness".
  */
 async function autoColors(img, condition, sample) {
   const lm = await loadLandmarker();
@@ -106,24 +106,24 @@ async function autoColors(img, condition, sample) {
   if (!face) return null;
   const xs = face.map((p) => p.x);
   const faceW = Math.max(...xs) - Math.min(...xs);
-  const radius = Math.max(2, Math.round(faceW * 300 * 0.025));   // 取色範圍跟著臉的大小
+  const radius = Math.max(2, Math.round(faceW * 300 * 0.025));   // Sampling range scales with face size
   const at = (i) => ({ x: face[i].x, y: face[i].y });
   const pts = (name) => FACE_POINTS[name].map(at);
   const out = { points: {} };
 
-  // 眉色：兩邊眉毛各點取較暗的 30%（毛髮）
+  // Brow color: from each brow's points take the darker 30% (hair)
   const browPts = [...pts('browLeft'), ...pts('browRight')];
   out.brow = medianHex(browPts.map((p) => sample(img, p, true, radius)));
   out.points.brow = browPts;
 
   if (condition === 'vitiligo') {
-    // 只用正面受光的點（臉頰、額頭、下巴前緣）；下顎底、太陽穴常在陰影裡
+    // Use only front-lit points (cheeks, forehead, front edge of the chin); jaw underside and temples are often in shadow
     const skinPts = ['cheekLeft', 'cheekRight', 'forehead', 'jawLeft', 'jawRight'].flatMap(pts).concat([199, 32, 262].map(at));
     const samples = skinPts.map((p) => ({ p, hex: sample(img, p, false, radius) })).map((s) => {
       const [L, a, b] = hexToLab(s.hex);
       return { ...s, L, ratio: Math.hypot(a, b) / Math.max(L, 1) };
     });
-    // 分群看「彩度÷亮度」：白斑缺黑色素，比原本膚色淡又不飽和；陰影只是整體變暗，比值不太變（ 實照驗證）
+    // Clustering looks at "chroma / lightness": a patch lacks melanin, so it is paler and less saturated than the original skin; shadow only darkens everything, and the ratio barely changes (verified on real photos, 10-15)
     let lo = Math.min(...samples.map((s) => s.ratio)), hi = Math.max(...samples.map((s) => s.ratio));
     const split = () => [samples.filter((s) => Math.abs(s.ratio - lo) <= Math.abs(s.ratio - hi)),
       samples.filter((s) => Math.abs(s.ratio - lo) > Math.abs(s.ratio - hi))];
@@ -136,22 +136,22 @@ async function autoColors(img, condition, sample) {
     const [patchGroup, normalGroup] = split();
     out.skin = medianHex(normalGroup.map((s) => s.hex));
     out.points.skin = normalGroup.map((s) => s.p);
-    // 比值差太小、或白斑那群只有一點（多半是反光）就不當成白斑
+    // If the ratio difference is too small, or the patch cluster has only a few points (mostly reflections), do not treat it as a patch
     if (patchGroup.length >= 2 && hi - lo >= 0.06) {
       const bright = [...patchGroup].sort((x, y) => y.L - x.L).slice(0, Math.max(1, Math.ceil(patchGroup.length / 2)));
-      out.patch = medianHex(bright.map((s) => s.hex));       // 白斑取較亮的一半，避開交界
+      out.patch = medianHex(bright.map((s) => s.hex));       // For the patch take the brighter half, to avoid the border
       out.points.patch = patchGroup.map((s) => s.p);
-      out.patch_ratio = Math.round((patchGroup.length / samples.length) * 100) / 100;   // 白斑約佔取色點的比例，算平衡色用
+      out.patch_ratio = Math.round((patchGroup.length / samples.length) * 100) / 100;   // Approximate fraction of sampling points that are patch, used to compute the balance color
     }
   } else {
-    // 受光側的臉頰＋下顎線上緣一起取（選色教學：在臉和脖子交界試色；側光時平均會被陰影拉暗）
+    // Take the lit-side cheek plus the upper jawline edge together (color-picking guide: try shades at the face-neck border; with side light the average gets pulled dark by shadow)
     const leftPts = [...pts('cheekLeft'), ...pts('jawLeft')], rightPts = [...pts('cheekRight'), ...pts('jawRight')];
     const left = leftPts.map((p) => sample(img, p, false, radius));
     const right = rightPts.map((p) => sample(img, p, false, radius));
     const lum = (h) => hexToLab(h)[0];
     const lm2 = medianHex(left), rm = medianHex(right);
-    // 臉有點轉向時，轉開的那側臉頰被拉窄、取色點會落到臉的邊緣；改取轉向鏡頭、看得比較寬的那一側（ 手機實測）
-    const wl = face[1].x - face[234].x, wr = face[454].x - face[1].x;       // 鼻尖到左、右臉緣的寬度
+    // When the face is slightly turned, the cheek on the turned-away side is narrowed and its sample points fall on the face edge; instead use the side turned toward the camera, which looks wider (phone test, 10-21)
+    const wl = face[1].x - face[234].x, wr = face[454].x - face[1].x;       // Width from the nose tip to the left and right face edges
     const turned = Math.abs(wl - wr) / Math.max(wl + wr, 1e-6) > 0.16;
     const useLeft = turned ? wl > wr : lum(lm2) >= lum(rm);
     out.skin = useLeft ? lm2 : rm;
@@ -161,14 +161,14 @@ async function autoColors(img, condition, sample) {
 }
 
 /**
- * 拍攝小幫手：量臉框、正面代理點位、臉頰亮度，給 CaptureGuide.assess 用。照片只在手機上算。
- * 回傳 { imgW, imgH, face, noseX, mouthX, eyeWL, eyeWR, lightness, detScore }；找不到臉時 face=null、detScore=null；載入失敗回 null。
- * 臉部網格沒有信心分數：找到臉就給 0.9；偵測穩定度（兩個偵測器互相比對）這一版沒算。
+ * 10-21 capture helper: measures the face box, frontal proxy landmarks and cheek lightness for CaptureGuide.assess. The photo is processed on the phone only.
+ * Returns { imgW, imgH, face, noseX, mouthX, eyeWL, eyeWR, lightness, detScore }; face=null and detScore=null when no face is found; null on load failure.
+ * The face mesh has no confidence score: give 0.9 when a face is found; detection stability (cross-check of two detectors) is not computed in this version.
  */
 async function measure(img) {
   const lm = await loadLandmarker();
   if (!lm) return null;
-  const W = img.naturalWidth || img.videoWidth || img.width, H = img.naturalHeight || img.videoHeight || img.height;   // 圖片或 <video>（即時取景）
+  const W = img.naturalWidth || img.videoWidth || img.width, H = img.naturalHeight || img.videoHeight || img.height;   // Image or <video> (live viewfinder)
   let res;
   try { res = lm.detect(img); } catch (err) { console.warn('臉部定位失敗', err); return null; }
   const face = res && res.faceLandmarks && res.faceLandmarks[0];
@@ -181,7 +181,7 @@ async function measure(img) {
   const g = c.getContext('2d', { willReadFrequently: true });
   g.drawImage(img, 0, 0, c.width, c.height);
   const Ls = [];
-  for (const i of [50, 280, 117, 346, 205, 425]) {          // 兩頰與顴骨下方
+  for (const i of [50, 280, 117, 346, 205, 425]) {          // Both cheeks and below the cheekbones
     const [x, y] = P(i);
     const d = g.getImageData(Math.max(0, Math.round(x * sc) - 2), Math.max(0, Math.round(y * sc) - 2), 5, 5).data;
     for (let k = 0; k < d.length; k += 4) Ls.push(hexToLab('#' + [d[k], d[k + 1], d[k + 2]].map((v) => v.toString(16).padStart(2, '0')).join(''))[0]);

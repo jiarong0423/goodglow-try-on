@@ -1,4 +1,4 @@
-"""品牌代稱（app/brand_alias.py）與伺服器端英文化（app/i18n_srv.py）的單元測試。不依賴本機品牌資料。"""
+"""Unit tests for brand aliases (app/brand_alias.py) and server-side English localization (app/i18n_srv.py). Do not depend on local brand data."""
 import sys
 import unittest
 from pathlib import Path
@@ -80,7 +80,7 @@ class ServerLocalizerTests(unittest.TestCase):
 
 
 class ShadeAliasTests(unittest.TestCase):
-    """色號只留代碼、去掉色名：真實品牌的色名是商標素材，代碼才是找貨用得到的。"""
+    """Shade labels keep only the code and drop the shade name (10-21): real brand shade names are trademarked material; the code is what is needed to find the product."""
 
     def test_code_extraction_rules(self):
         f = brand_alias.shade_alias
@@ -93,7 +93,7 @@ class ShadeAliasTests(unittest.TestCase):
         self.assertEqual(f("AB5", 1), "AB5")
         self.assertEqual(f(".5X", 1), ".5X")
         self.assertEqual(f("#01", 1), "#01")
-        self.assertEqual(f("Light 100 Cool", 1), "100 Cool")        # 冷暖留著，不然 Light 150 Cool／Warm 會撞成同一個
+        self.assertEqual(f("Light 100 Cool", 1), "100 Cool")        # keep cool/warm, otherwise Light 150 Cool / Warm would collide into the same label
         self.assertEqual(f("Rich Deep 450 Warm", 1), "450 Warm")
 
     def test_name_only_shade_becomes_position_number(self):
@@ -123,7 +123,7 @@ class ShadeAliasTests(unittest.TestCase):
     def test_free_text_replaces_compound_names_only(self):
         out = self.ba.scrub_text("建議 Sand Beige (Z-046) 或 WX 64 Honeyed", "zh")
         self.assertEqual(out, "建議 Z-046 或 WX 64")
-        self.assertEqual(self.ba.scrub_text("Plum Whisper 是一種說法", "zh"), "Plum Whisper 是一種說法")   # 純色名不做全域代換（會誤傷一般用語）
+        self.assertEqual(self.ba.scrub_text("Plum Whisper 是一種說法", "zh"), "Plum Whisper 是一種說法")   # pure shade names are not substituted globally (would hit ordinary wording)
 
     def test_leaks_flags_real_shade_names_in_structured_fields(self):
         row = {"product": "Acme Lip", "code": "Plum Whisper"}
@@ -132,7 +132,7 @@ class ShadeAliasTests(unittest.TestCase):
 
 
 class OpaqueStringTests(unittest.TestCase):
-    """安全審查：圖片 base64 裡剛好有品牌字串時，不能被代換壓壞。"""
+    """Red team F2: a brand string that happens by chance inside image base64 must not be corrupted by substitution."""
 
     def setUp(self):
         self.ba = brand_alias.BrandAlias({"XYZ": "M"}, {})
@@ -180,7 +180,7 @@ class LoadAllPartnerFilesTests(unittest.TestCase):
 
 
 class LocalizerSafetyTests(unittest.TestCase):
-    """安全審查：用戶端字串回波進回應時，樣式比對不能被惡意長字串拖垮。"""
+    """Red team F1: when a client string is echoed into a response, pattern matching must not be dragged down by a long malicious string."""
 
     def setUp(self):
         self.loc = i18n_srv.Localizer({"exact": {}, "templates": [["http://{a}:{b} 模式：{c} presets {d}", "x {a} {b} {c} {d}"]]})

@@ -1,4 +1,4 @@
-"""依 presets.json 組 Makeup VTO 的 effects。前端只送「哪一項選第幾個 id」，不送任意參數。"""
+"""Build the effects of a Makeup VTO request from presets.json. The frontend sends only "which id was chosen for each item", never arbitrary parameters."""
 from __future__ import annotations
 
 import json
@@ -23,37 +23,37 @@ def _pick(options: list[dict], option_id: str, item: str) -> dict:
 
 
 def build_effects(selection: dict, presets: dict | None = None) -> list[dict]:
-    """selection 例：{"undertone": "pink_cool", "blush": "soft", "lip": "natural_gloss",
-    "brow": "taupe", "lash": "brown", "contour": "keep"}；沒給的項目視為 keep。"""
+    """selection example: {"undertone": "pink_cool", "blush": "soft", "lip": "natural_gloss",
+    "brow": "taupe", "lash": "brown", "contour": "keep"}; items not given are treated as keep."""
     p = presets or load_presets()
     tone_id = selection.get("undertone", "neutral")
     if tone_id not in p["undertones"]:
         raise PresetError(f"沒有膚色基調 {tone_id}")
     tone = p["undertones"][tone_id]
-    effects: list[dict] = [dict(category="skin_smooth", **p["skin_smooth"])]  # 磨皮一律 0
+    effects: list[dict] = [dict(category="skin_smooth", **p["skin_smooth"])]  # skin smoothing is always 0
 
-    # 底妝先上（全臉、依皮膚範圍）；顏色＝膚色色卡自動對到的色號，再疊眉、唇、腮紅、睫毛
+    # foundation goes on first (whole face, within the skin region); color = the shade the skin-tone card matched automatically, then brow, lip, blush, lash are layered on top
     found = _pick(p["foundation"], selection.get("foundation", "keep"), "foundation")
     if found["id"] != "keep":
         effects.append({"category": "foundation", "palettes": [{
             "color": render_foundation(selection, p), "colorIntensity": found["colorIntensity"],
             "glowIntensity": found["glowIntensity"], "coverageIntensity": found["coverageIntensity"]}]})
         if found.get("with_concealer"):
-            # 全覆蓋：再疊官方 concealer（固定套在眼下、額頭、下巴；欄位照 makeup_vto.json），同一個色號
+            # full coverage: also layer the official concealer (fixed under the eyes, forehead, chin; fields per makeup_vto.json), same shade
             c = found["with_concealer"]
             effects.append({"category": "concealer", "palettes": [{
                 "color": foundation_color(selection), "colorIntensity": c["colorIntensity"],
                 "colorUnderEyeIntensity": c["colorUnderEyeIntensity"], "coverageLevel": c["coverageLevel"]}]})
 
-    # 修容（白化症五官立體）：底妝之後、打亮之前；冷調灰褐霧面，顏色由底妝色號算（contour_color）
+    # contour (albinism facial definition): after foundation, before highlight; cool grey-brown matte, color computed from the foundation shade (contour_color)
     contour = _pick(p["contour"], selection.get("contour", "keep"), "contour")
     if contour["id"] != "keep":
         effects.append({"category": "contour", "pattern": {"name": contour["pattern"]},
                         "palettes": [{"color": contour_color(contour, selection, tone, p),
                                       "colorIntensity": contour["intensity"]}]})
 
-    # 打亮：底妝之後、腮紅之前；顏色比底妝淺一階、低珠光，不放大紋理與白斑。
-    # 選項自帶圖樣就用它（修容上方、T 字），否則依臉型選面中打亮圖樣
+    # highlight: after foundation, before blush; one level lighter than the foundation, low shimmer, so it does not magnify texture or patches.
+    # if the option brings its own pattern (above the contour, T-zone) use it, otherwise choose the mid-face highlight pattern by face shape
     hl = _pick(p["highlight"], selection.get("highlight", "keep"), "highlight")
     if hl["id"] != "keep":
         effects.append({"category": "highlighter",
@@ -98,7 +98,7 @@ ITEMS = ("foundation", "contour", "highlight", "blush", "lip", "brow", "lash")
 
 
 def depth_colors(selection: dict, tone_id: str, presets: dict) -> dict | None:
-    """腮紅、唇色依膚色深淺帶×冷暖（presets.depth_colors；經驗建議）。沒有膚色就回 None（沿用冷暖固定色）。"""
+    """Blush and lip colors by skin depth band x undertone (presets.depth_colors; per a 10-16 suggestion). Returns None when there is no skin color (keeping the fixed undertone colors)."""
     skin = selection.get("skin_hex")
     table = presets.get("depth_colors")
     if not (skin and table):
@@ -114,12 +114,12 @@ def depth_colors(selection: dict, tone_id: str, presets: dict) -> dict | None:
 
 
 def blush_hex(blush: dict, tone: dict, dc: dict | None) -> str:
-    """有自己顏色的選項（暖杏）照用；其他依膚色深淺帶×冷暖，沒有就用冷暖固定色。"""
+    """Options with their own color (warm apricot) are used as is; others follow skin depth band x undertone, falling back to the fixed undertone color when there is none."""
     return blush.get("color") or (dc["blush"] if dc else tone["blush"])
 
 
 def blush_intensity(blush: dict, dc: dict | None) -> int:
-    """強度＝深淺帶的基準 ×（本選項強度 ÷「淡」55），例：一點血色 0.82、淡 1、中 1.27；有自己顏色的選項不縮放。"""
+    """Strength = the depth band's base x (this option's strength / the "light" strength 55), e.g. a hint of flush 0.82, light 1, medium 1.27; options with their own color are not scaled."""
     if not dc or blush.get("color"):
         return blush["intensity"]
     return int(min(100, round(dc["blush_i"] * blush["intensity"] / 55)))
@@ -132,7 +132,7 @@ def lip_hex(lip: dict, tone: dict, dc: dict | None) -> str:
 
 
 def lip_intensity(lip: dict, dc: dict | None) -> int:
-    """跟著膚色走的唇色：強度依深淺帶縮放（基準 50）；固定色（紅唇、裸粉潤唇）不縮放。"""
+    """Lip color that follows the skin: strength is scaled by depth band (base 50); fixed colors (red lip, nude-pink tinted balm) are not scaled."""
     if not dc or not lip.get("use_undertone_color"):
         return lip["intensity"]
     return int(min(100, round(lip["intensity"] * dc["lip_i"] / 50)))
@@ -144,8 +144,8 @@ def highlight_pattern(face_shape: str | None, presets: dict) -> str:
 
 
 def highlight_color(selection: dict, hl: dict | None = None, presets: dict | None = None) -> str:
-    """打亮色＝試妝底妝色淺一階（lift_L，預設 +10）、彩度乘 chroma（預設 0.7）；沒有底妝色號時用柔和香檳色。
-    深膚色的 T 字打亮不降彩度（chroma 1.0），否則發灰。"""
+    """Highlight color = the try-on foundation color one level lighter (lift_L, default +10) with chroma multiplied by chroma (default 0.7); with no foundation shade, a soft champagne.
+    On deep skin the T-zone highlight does not reduce chroma (chroma 1.0), otherwise it turns grey (image review, 10-16)."""
     import color_engine as ce
     hl = hl or {}
     if not selection.get("foundation_hex"):
@@ -159,8 +159,8 @@ def highlight_color(selection: dict, hl: dict | None = None, presets: dict | Non
 
 
 def contour_color(contour: dict, selection: dict, tone: dict, presets: dict | None = None) -> str:
-    """修容色：試妝底妝色暗 dL（預設 −14）、a*、b* 各乘 ka、kb＝灰褐（白皙膚不用古銅，會變橘）。
-    沒有底妝色號就用膚色基調的修容色。"""
+    """Contour color: the try-on foundation color darkened by dL (default -14), a* and b* multiplied by ka and kb = grey-brown (fair skin should not get bronze, which turns orange).
+    With no foundation shade, use the contour color of the skin undertone."""
     if not contour.get("color_from_foundation"):
         return tone["contour"] if contour.get("use_undertone_color") else contour["color"]
     import color_engine as ce
@@ -174,8 +174,8 @@ def contour_color(contour: dict, selection: dict, tone: dict, presets: dict | No
 
 
 def render_foundation(selection: dict, presets: dict | None = None) -> str:
-    """試妝用的底妝顏色。預設＝色卡對到的色號色碼；選項有 toward_skin 時（白斑「薄透水光」），
-    在 Lab 裡往本人周圍膚色（skin_hex）靠這個比例，模擬薄塗後的實際顏色，色號推薦不變。"""
+    """Foundation color for the try-on. Default = the color code of the shade the card matched; when the option has toward_skin (vitiligo "thin sheer glow"),
+    it moves toward the person's surrounding skin color (skin_hex) in Lab by that ratio, simulating the actual color after thin application; the shade recommendation is unchanged."""
     hex_ = foundation_color(selection)
     p = presets or load_presets()
     opt = next((o for o in p["foundation"] if o["id"] == selection.get("foundation", "keep")), {})
@@ -190,12 +190,12 @@ def render_foundation(selection: dict, presets: dict | None = None) -> str:
     return neutralize_redness(hex_, skin)
 
 
-REDNESS_HUE = 45.0        # 膚色色相 < 45°（偏粉紅）且彩度夠，視為泛紅
-REDNESS_SHIFT = 4.0       # 底妝色相往黃（中性）轉 4°（經驗建議 3–5°，經驗建議）
+REDNESS_HUE = 45.0        # skin hue < 45° (pinkish) with enough chroma counts as redness
+REDNESS_SHIFT = 4.0       # shift the foundation hue toward yellow (neutral) by 4° (suggested 3-5°,, rule of thumb)
 
 
 def neutralize_redness(found_hex: str, skin_hex: str | None) -> str:
-    """泛紅的皮膚：底妝顏色色相往中性微調，自然中和泛紅，不用綠色修色、不做局部遮瑕。"""
+    """Reddish skin: nudge the foundation hue toward neutral to cancel the redness naturally; no green correcting, no local concealing."""
     if not skin_hex:
         return found_hex
     import math
@@ -212,7 +212,7 @@ def neutralize_redness(found_hex: str, skin_hex: str | None) -> str:
 
 
 def foundation_color(selection: dict) -> str:
-    """底妝顏色：用膚色色卡對到的專櫃色號色碼（foundation_hex）。沒有就不能試底妝。"""
+    """Foundation color: the color code of the counter shade matched via the skin-tone card (foundation_hex). Without it, foundation cannot be tried."""
     hex_ = selection.get("foundation_hex") or ""
     if not (len(hex_) == 7 and hex_.startswith("#")):
         raise PresetError("試底妝要先有對應的底妝色號（先取膚色）")
@@ -224,7 +224,7 @@ def foundation_color(selection: dict) -> str:
 
 
 def brow_color(brow: dict, selection: dict) -> tuple[str, int]:
-    """固定色選項直接用；照原眉色的選項由照片取到的眉色、膚色算（color_engine.brow_from_photo）。"""
+    """Fixed-color options are used directly; "natural brow color" options are computed from the brow color and skin color taken from the photo (color_engine.brow_from_photo)."""
     if not brow.get("from_photo"):
         return brow["color"], brow["intensity"]
     import color_engine as ce
@@ -238,7 +238,7 @@ def brow_color(brow: dict, selection: dict) -> tuple[str, int]:
 
 
 def check_style_selection(style: str, selection: dict, presets: dict | None = None) -> None:
-    """妝感決定可選的選項（例如紅唇只在「精緻」）；不在清單內就拒絕。"""
+    """The look style decides which options are selectable (e.g. red lip only in "polished"); options outside the list are refused."""
     p = presets or load_presets()
     if style not in p["styles"]:
         raise PresetError(f"沒有妝感 {style}")
@@ -252,8 +252,8 @@ def check_style_selection(style: str, selection: dict, presets: dict | None = No
 def quick_selection(style: str, which: str, undertone: str, presets: dict | None = None,
                     brow_hex: str | None = None, skin_hex: str | None = None,
                     foundation_hex: str | None = None, condition: str = "albinism") -> dict:
-    """快速三選的「好氣色」（glow）或「清晰」（clear）；保留原樣不呼叫 API。
-    有照片眉色時，固定眉色改成「照原眉色」（brow_photo_map），不套固定淺色。"""
+    """Quick three-way choice, "glow" or "clear"; items kept as is do not call the API.
+    When a photo brow color exists, the fixed brow color becomes "natural brow color" (brow_photo_map) instead of the fixed light color."""
     p = presets or load_presets()
     if style not in p["styles"]:
         raise PresetError(f"沒有妝感 {style}")
@@ -261,25 +261,25 @@ def quick_selection(style: str, which: str, undertone: str, presets: dict | None
     if which not in quick:
         raise PresetError(f"快速選項只有 {list(quick)}")
     sel = dict(quick[which], undertone=undertone)
-    # 底妝顏色＝最接近膚色的色號；還沒取到膚色（沒有色號）就先不上底妝
+    # foundation color = the shade closest to the skin; if no skin color was taken yet (no shade), do not apply foundation
     if foundation_hex:
         sel["foundation_hex"] = foundation_hex
         if condition == "vitiligo" and sel.get("foundation", "keep") != "keep":
-            # 白斑：白斑由手機上的局部遮瑕蓋住，全臉底妝只要「自然」讓膚色一致
+            # vitiligo: patches are covered by local concealing on the phone; whole-face foundation only needs to be "natural" so the skin tone is even
             sel["foundation"] = "medium"
         if sel.get("highlight", "keep") != "keep":
-            #  兩個方向：白化症修容＋修容上方打亮（五官立體）；白斑症 T 字打亮
+            # two directions from: albinism contour + highlight above the contour (facial definition); vitiligo T-zone highlight
             sel.update(p.get("condition_quick", {}).get(condition, {}).get(style, {}))
     elif sel.get("foundation", "keep") != "keep":
         sel["foundation"] = "keep"
     if skin_hex:
-        sel["skin_hex"] = skin_hex                   # 白斑「薄透水光」底妝往周圍膚色靠要用
+        sel["skin_hex"] = skin_hex                   # needed for the vitiligo "thin sheer glow" foundation to move toward the surrounding skin
     if brow_hex and skin_hex:
         sel["brow_hex"] = brow_hex
         if sel.get("brow", "keep") != "keep":
             sel["brow"] = p["brow_photo_map"].get(sel["brow"], sel["brow"])
     elif sel.get("brow", "keep") != "keep" and _pick(p["brow"], sel["brow"], "brow").get("from_photo"):
-        sel["brow"] = "fill_light"                   # 「照原眉色」要有照片眉色；沒有就退回固定淺色只補一點
+        sel["brow"] = "fill_light"                   # "natural brow color" needs a photo brow color; without it fall back to the fixed light color, fill a little only
     return sel
 
 
@@ -288,7 +288,7 @@ def build_body(selection: dict, presets: dict | None = None) -> dict:
 
 
 def balance_hint(selection: dict, presets: dict | None = None) -> str | None:
-    """紅唇很深時建議（不自動）加深眉、睫毛來平衡。"""
+    """When the red lip is very deep, suggest (not automatically) deepening brow and lashes to balance."""
     p = presets or load_presets()
     lip = _pick(p["lip"], selection.get("lip", "keep"), "lip")
     if lip.get("suggest_balance") and selection.get("brow", "keep") in ("keep", "light_brown", "taupe"):
@@ -296,12 +296,12 @@ def balance_hint(selection: dict, presets: dict | None = None) -> str | None:
     return None
 
 
-LAYER_ORDER = ("foundation", "contour", "highlight", "blush", "lip", "brow", "lash")   # 逐層疊加：底妝→修容→打亮→腮紅→唇→眉→睫毛
+LAYER_ORDER = ("foundation", "contour", "highlight", "blush", "lip", "brow", "lash")   # layered one on top of another: foundation -> contour -> highlight -> blush -> lip -> brow -> lash
 LAYER_LABEL = {"foundation": "底妝", "contour": "修容", "highlight": "打亮", "blush": "腮紅", "lip": "唇", "brow": "眉毛", "lash": "睫毛"}
 
 
 def layers(selection: dict) -> list[tuple[str, dict]]:
-    """把一套妝拆成逐層累加的選項：第 1 層只有底妝，第 2 層＝底妝＋腮紅……保留原樣的項目跳過。"""
+    """Split a look into cumulative layered options: layer 1 is foundation only, layer 2 = foundation + blush ...; items kept as is are skipped."""
     base = {k: v for k, v in selection.items() if k not in ITEMS}
     out, acc = [], {}
     for item in LAYER_ORDER:

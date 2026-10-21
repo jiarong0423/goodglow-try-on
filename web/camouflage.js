@@ -1,25 +1,25 @@
 'use strict';
-// 白斑局部遮瑕模擬（在手機上算，照片不上傳、不扣點）。
-// 為什麼要自己做：YouCam 試妝的底妝只能全臉均勻上、遮瑕只能套在固定區域，沒辦法指定白斑位置；
-// 實際做法（參考影片與遮蓋指南）是先把接近周圍膚色的粉底「點在白斑上」，再全臉推勻。
-// 做法：
-// 1. 臉部定位（MediaPipe）畫出臉的輪廓，挖掉眼睛和嘴巴。
-// 2. 臉上每個像素和兩個取色（原本膚色、白斑）比：比較像白斑、而且比原本膚色亮的，算白斑。
-// 3. 白斑範圍去雜點、邊緣羽化。
-// 4. 在試妝結果上，把白斑範圍的「低頻底色」換成「試妝後受光的周圍膚色＋一點暖色」，保留高頻紋理與明暗：
-//    白斑各處深淺不一（全脫色、半脫色），用整塊平均位移會讓亮的白斑留白、暗的被拉過頭；
-//    改成逐處算白斑的局部底色再補到目標色（頻率分離）。暖色補償＝蜜桃／橘校色的作用，避免遮完偏灰。
-// 畫面一律標明「手機上模擬的局部遮瑕」。
+// Local concealer simulation for vitiligo patches (computed on the phone; the photo is not uploaded and no points are deducted).
+// Why we build this ourselves: the YouCam try-on foundation can only be applied evenly over the whole face and its concealer only to fixed areas, so a vitiligo patch cannot be targeted;
+// the actual technique (from videos supplied by the owner and a vitiligo-covering guide) is to dab a foundation close to the surrounding skin color "onto the patch" first, then blend it over the whole face.
+// Method:
+// 1. Face landmarks (MediaPipe) outline the face; eyes and mouth are cut out.
+// 2. Each pixel on the face is compared with two sampled colors (original skin, patch): a pixel that looks more like the patch and is brighter than the original skin counts as patch.
+// 3. The patch area is despeckled and its edges feathered.
+// 4. On the try-on result, the patch area's "low-frequency base color" is replaced with "the lit surrounding skin after try-on plus a little warm color", keeping high-frequency texture and light/shade:
+//    patches vary in depth (fully or partly depigmented); shifting by one block average would leave bright patches uncovered and pull dark ones too far;
+//    instead, each place's local base color of the patch is computed and brought to the target color (frequency separation). The warm compensation acts like a peach/orange color corrector, so the result does not look gray .
+// The UI always labels this as "local concealer simulated on the phone".
 
 (function () {
-  // MediaPipe Face Mesh 輪廓與五官（點編號）
+  // MediaPipe Face Mesh outline and facial features (point indices)
   const FACE_OVAL = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148,
     176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109];
   const LEFT_EYE = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246];
   const RIGHT_EYE = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398];
   const LIPS = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185];
-  const WORK_W = 480;              // 運算解析度（寬）
-  const T_LINE = [151, 9, 168, 6, 197, 195, 5];   // 額頭中央→眉心→鼻樑→鼻頭
+  const WORK_W = 480;              // working resolution (width)
+  const T_LINE = [151, 9, 168, 6, 197, 195, 5];   // forehead center -> between brows -> nose bridge -> nose tip
 
   function srgbToLab(r, g, b) {
     const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
@@ -40,7 +40,7 @@
   }
 
   function polygonMask(ctx, w, h, face, groups) {
-    // groups：[[點編號…, 是否挖掉]]；回傳 Uint8Array（1＝臉上可遮的皮膚）
+    // groups: [[point indices..., whether to cut out]]; returns Uint8Array (1 = skin on the face that can be concealed)
     ctx.clearRect(0, 0, w, h);
     for (const [ids, cut] of groups) {
       ctx.globalCompositeOperation = cut ? 'destination-out' : 'source-over';
@@ -58,7 +58,7 @@
   }
 
   function boxBlur(src, w, h, r) {
-    // 可分離方框模糊（兩次）＝近似高斯，用來去雜點與羽化
+    // Separable box blur (two passes) = approximate Gaussian, used to remove stray dots and feather
     let a = Float32Array.from(src), b = new Float32Array(src.length);
     for (let pass = 0; pass < 2; pass++) {
       for (let y = 0; y < h; y++) {
@@ -86,7 +86,7 @@
   }
 
   /**
-   * 判別白斑範圍（在原圖上）：回傳 { mask: Float32Array(0–1，已羽化), w, h, ratio }，失敗回 null。
+   * Detect the patch area (on the original image): returns { mask: Float32Array(0-1, feathered), w, h, ratio }, or null on failure.
    */
   async function detectPatches(original, normalHex, patchHex, extend = 0, blend = 1) {
     const lm = await window.FaceAuto.loadLandmarker();
@@ -108,7 +108,7 @@
       if (!skin[i]) continue;
       faceN++;
       const [L, a, b] = srgbToLab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]);
-      // 白斑（含半脫色、交界）：比原本膚色亮到「兩色亮度差的三成」以上，或顏色本來就比較像白斑
+      // Patch (including partly depigmented areas and borders): brighter than the original skin by at least "30% of the lightness difference between the two colors", or its color already resembles the patch more
       //
       const dn = (L - nLab[0]) ** 2 + 2 * ((a - nLab[1]) ** 2 + (b - nLab[2]) ** 2);
       const dp = (L - pLab[0]) ** 2 + 2 * ((a - pLab[1]) ** 2 + (b - pLab[2]) ** 2);
@@ -116,60 +116,60 @@
       if (lighter || (dp < dn && L > nLab[0] + 3)) { raw[i] = 1; patchN++; }
     }
     const r = Math.max(2, Math.round(w * 0.006));
-    let soft = boxBlur(raw, w, h, r);                       // 去雜點：低於一半的孤立點拿掉
+    let soft = boxBlur(raw, w, h, r);                       // despeckle: remove isolated points below one half
     for (let i = 0; i < soft.length; i++) soft[i] = soft[i] > 0.45 && skin[i] ? 1 : 0;
-    const core = Float32Array.from(soft);                  // 白斑本體（未外擴）
+    const core = Float32Array.from(soft);                  // patch body (not expanded)
     if (extend > 0) {
-      // 邊界外擴：白斑輪廓往外多蓋 extend 像素（運算解析度），再羽化，消除白斑邊緣那圈亮線（外部建議）
+      // Boundary expansion: extend the patch outline outward by `extend` pixels (working resolution), then feather, to remove the bright line around the patch edge (外部建議)
       const grown = boxBlur(soft, w, h, Math.max(1, Math.round(extend)));
       for (let i = 0; i < soft.length; i++) soft[i] = grown[i] > 0.12 && skin[i] ? 1 : 0;
     }
-    // 邊緣羽化；blend > 1 時過渡帶加寬，白斑到周圍膚色漸進銜接
+    // Edge feathering; when blend > 1 the transition band is widened so the patch blends progressively into the surrounding skin
     soft = boxBlur(soft, w, h, Math.max(2, Math.round(w * (extend > 0 ? 0.016 : 0.012) * blend)));
     return { mask: soft, core, w, h, ratio: faceN ? patchN / faceN : 0, face };
   }
 
   /**
-   * 在試妝結果上做局部遮瑕：把白斑範圍的局部底色補到周圍膚色（＋暖色），保留紋理。回傳 dataURL。
-   * 預設＝V8：V7 參數＋中央加亮改成 T 字形漸進（centerMode 'tband'、+9）。
-   *   「目標是自然」；本機量測白斑色差 8.2 → 4.3、鼻樑比外頰亮 13 → 21。
-   *   V7 可用 { centerMode: 'gauss' } 重現；V6 可用 { centerMode: 'ellipse', center: 8, warm: [0, 0], extend: 0, darkSpot: 0 } 與強度 0.85 重現。
-   * strength：0–1（預設 0.88：色差降到約 5.5–6.5 就好，不硬蓋到 0）
-   * opts.center＝臉中央遮完保留比周圍亮多少（L*，預設 9：外部建議建議 +6，但本機量到中央比外頰只亮 12，
-   *   目標是 18–20，+9／範圍 0.20 才到；見 <本機紀錄>）；opts.centerMode＝'gauss'（預設：以鼻樑、兩側蘋果肌為中心、
-   *   往白斑邊緣遞減到 0）或 'ellipse'（V6：鼻子為中心的橢圓＋T 字帶）。這位使用者的白斑長在天然高光區，
-   *   整片拉成外輪廓的深膚色會又平又髒
-   * opts.warm＝[Δa*, Δb*] 暖色補償（預設 [1.8, 1.2]，紅多於黃；V5 的 [3, 4] 偏橘髒、V6 的 [0, 0] 偏冷灰）
-   * opts.sigma＝中央高斯範圍（臉寬倍數，預設 0.20）；opts.extend＝白斑邊界外擴（原圖像素，預設 10）；opts.darkSpot＝臉頰深色斑提亮（L*，預設 4）
-   * opts.blend＝邊緣過渡帶寬度倍數（預設 1）；opts.neckFade＝嘴角以下到下巴，遮瑕權重漸減到多少（預設 1＝不減）
-   * opts.fill＝'local'（就近取色：白斑填成附近有色素皮膚的低頻顏色，T 字亮部自然銜接到白斑，往外頰漸深；
-   *   附近取不到周圍膚色的大塊白斑才退回整體目標色＋中央加亮）或 'global'（V7：整體目標色＋中央加亮）。
-   *   實測這張照片白斑旁邊的皮膚偏深，就近取色會整片變暗，不採用。
-   *   'tzone'：量 T 字（額頭中央到鼻頭、下巴）有色素皮膚的實際亮度當亮端、外頰受光膚色當暗端，
-   *   白斑依離 T 字的距離在兩端之間漸進填色（opts.tzoneSigma＝範圍，臉寬倍數，預設 0.18）。實測鼻樑本來就亮、
-   *   被算進白斑，量到的亮端偏暗，也不採用。
-   *   opts.centerMode＝'tband'：中央加亮的權重改用 T 字形（額頭中央到鼻頭＋下巴）往外漸進遞減，加亮量＝opts.center
-   * opts.transition＝白斑中心保留多少遮瑕（0–1，預設不設＝整塊同強度）：邊緣維持 strength 接平周圍膚色，
-   *   越往白斑中心遮得越少，中心只到 transition 倍，留下較淺的中間色——過渡而不是整塊壓成深色
-   *   opts.transitionWidth＝深度模糊半徑（臉寬倍數，預設 0.035）、
-   *   opts.transitionStart＝深度多少才開始漸淡（預設 0.5；調高＝邊緣遮滿的帶加寬）
-   * opts.split＝顏色和明度分開遮：{ chroma: 0.90, edgeL: strength, centerL: 0.52, rim: 15, falloff: 35,
-   *   seam: 8, seamSigma: 4 }（距離單位＝原圖像素）。顏色（a*、b*＋暖色）整塊白斑都遮 chroma；只有明度 L* 從白斑邊緣往內
-   *   rim 像素維持 edgeL，再用 falloff 像素的餘弦漸層降到 centerL——中心亮但顏色已是暖膚色，看起來像受光、不像沒遮到。
-   *   漸淡只在臉中央（眼下、鼻樑、內頰、下巴）；額角髮際、下顎角的白斑中心照樣遮到 edgeL。
-   *   seam＝白斑邊界內外各多少像素做跨邊界平滑（低頻 σ≈seamSigma、保留毛孔），去掉邊界那條淺色細線。
-   *   opts.centerWarm＝白斑中心的暖色 [Δa*, Δb*]（預設同 warm；邊緣到中心漸變）。
-   *   V10：split.lumaExtend＝明度遮蓋只到原始白斑邊界（設 0；外側比目標色暗的正常皮膚
-   *   不動明度，只壓暗比目標亮的像素），顏色仍跟 opts.extend 外擴；split.hfBand／hfKeep＝原始邊界內側 hfBand 像素內，
-   *   「像素減低頻」的亮邊只保留 hfKeep 倍（低頻在邊界會混到外側深膚色，差值被當紋理印回來成亮邊）。
-   * opts.tWidth＝T 字加亮帶寬（臉寬倍數，預設 0.12；V10 收窄 25% → 0.09）
-   * opts.darkSpotAB＝深色斑提亮時一起調的 [Δa*, Δb*]（預設 [0, 0]；V9 建議 [-1, -1]）
-   * opts.darkSpotGrow＝深色斑遮罩往 [右, 下] 外擴多少原圖像素（預設不擴；V10 [8, 8]，蓋過下緣暗溝）
-   * opts.makeup＝第二段「化妝」：
-   *   遮瑕補平之後，對全臉皮膚（不只白斑）做 T 字打亮與外圍修容，往色卡顏色靠、保留紋理：
-   *   { hi: '#hex'（T 字目標色，色卡淺一級）, hiAmt: 0–1, co: '#hex'（修容目標色，色卡深一級）, coAmt: 0–1, tWidth: 0.12, coWidth: 0.09（修容帶寬，臉寬倍數）}。
-   *   T 字＝額頭中央到鼻頭＋下巴；修容＝臉輪廓內側一圈（太陽穴、顴骨下、下顎），臉中央不碰。
-   * opts.mode＝'lowfreq'（預設）或 'mean'（舊做法）
+   * Local concealer on the try-on result: fill the patch area's local base color toward the surrounding skin color (+ warm color), keeping texture. Returns a dataURL.
+   * Default = V8: V7 parameters + the center brightening changed to a T-shaped progressive form (centerMode 'tband', +9). Owner,: "the bright T-zone blends into the detected/filled vitiligo patches"
+   *   and "the goal is natural"; measured locally: patch color difference 8.2 -> 4.3, nose bridge brighter than the outer cheek by 13 -> 21 .
+   *   V7 can be reproduced with { centerMode: 'gauss' }; V6 with { centerMode: 'ellipse', center: 8, warm: [0, 0], extend: 0, darkSpot: 0 } and strength 0.85.
+   * strength: 0-1 (default 0.88: bring the color difference down to about 5.5-6.5 and no further; do not force it to 0)
+   * opts.center = how much brighter (L*, default 9) the face center stays than its surroundings after concealing: 外部建議suggested +6, but measured locally the center was only 12 brighter than the outer cheek,
+   *   the target is 18-20, which +9 / range 0.20 reaches; see <本機紀錄>); opts.centerMode = 'gauss' (default: centered on the nose bridge and the two apples of the cheeks,
+   *   decreasing to 0 toward the patch edge) or 'ellipse' (V6: an ellipse centered on the nose plus a T-band). This user's patches lie in a naturally highlighted area,
+   *   and pulling the whole area to the dark skin tone of the outer contour would look flat and dirty
+   * opts.warm = [delta a*, delta b*] warm compensation (default [1.8, 1.2], more red than yellow; V5's [3, 4] looked orange and dirty, V6's [0, 0] looked cold gray)
+   * opts.sigma = Gaussian range of the center (x face width, default 0.20); opts.extend = outward expansion of the patch boundary (original-image pixels, default 10); opts.darkSpot = brightening of dark spots on the cheeks (L*, default 4)
+   * opts.blend = multiplier of the edge transition band width (default 1); opts.neckFade = how far the concealer weight fades from the mouth corners down to the chin (default 1 = no fade)
+   * opts.fill = 'local' (nearest-color sampling: the patch is filled with the low-frequency color of nearby pigmented skin, so the bright T-zone blends naturally into the patch and gets progressively darker toward the outer cheek;
+   *   only large patches with no surrounding skin nearby fall back to the overall target color + center brightening) or 'global' (V7: overall target color + center brightening).
+   *   Owner,: "the bright T-zone blends into the detected/filled vitiligo patches". Measured on this photo, the skin next to the patch is rather dark, so nearest-color sampling darkens the whole patch; not adopted.
+   *   'tzone': take the measured lightness of pigmented skin in the T-zone (forehead center to nose tip, chin) as the bright end and the lit outer-cheek skin as the dark end,
+   *   and fill the patch progressively between the two ends according to its distance from the T-zone (opts.tzoneSigma = range, x face width, default 0.18). Measured: the nose bridge is naturally bright and
+   *   was counted as patch, so the measured bright end was too dark; not adopted either.
+   *   opts.centerMode = 'tband': the center brightening weight uses a T shape (forehead center to nose tip + chin) decreasing progressively outward; brightening amount = opts.center
+   * opts.transition = how much concealment is kept at the patch center (0-1, default unset = same strength over the whole patch): the edge keeps strength to level with the surrounding skin,
+   *   the closer to the patch center the less is concealed, the center only reaches transition times, leaving a lighter middle tone -- a transition rather than a uniform dark fill
+   *   . opts.transitionWidth = depth blur radius (x face width, default 0.035),
+   *   opts.transitionStart = how deep before it starts to fade (default 0.5; raising it widens the fully concealed band at the edge)
+   * opts.split = conceal color and lightness separately : { chroma: 0.90, edgeL: strength, centerL: 0.52, rim: 15, falloff: 35,
+   *   seam: 8, seamSigma: 4 } (distance unit = original-image pixels). Color (a*, b* + warm color) is concealed at chroma over the whole patch; only lightness L* keeps edgeL for
+   *   rim pixels inward from the patch edge, then drops to centerL over falloff pixels with a cosine gradient -- the center is bright but its color is already warm skin, so it looks lit rather than unconcealed.
+   *   The fade applies only at the face center (under the eyes, nose bridge, inner cheeks, chin); patch centers at the temple hairline and jaw angles are still concealed to edgeL.
+   *   seam = how many pixels inside and outside the patch boundary get cross-boundary smoothing (low frequency sigma ~ seamSigma, pores preserved), removing the thin light line along the boundary.
+   *   Owner,: "a transition rather than pressing it into a dark color". opts.centerWarm = warm color at the patch center [delta a*, delta b*] (default same as warm; gradient from edge to center).
+   *   V10 : split.lumaExtend = lightness concealment only reaches the original patch boundary (set 0; normal skin outside darker than the target
+   *   keeps its lightness, only pixels brighter than the target are darkened), while color still expands with opts.extend; split.hfBand / hfKeep = within hfBand pixels inside the original boundary,
+   *   the bright edge from "pixel minus low frequency" is kept only hfKeep times (at the boundary the low frequency mixes in the dark outer skin, and the difference printed back as texture becomes a bright edge).
+   * opts.tWidth = width of the T-zone highlight band (x face width, default 0.12; V10 narrowed it by 25% -> 0.09)
+   * opts.darkSpotAB = [delta a*, delta b*] adjusted together when brightening dark spots (default [0, 0]; V9 suggested [-1, -1])
+   * opts.darkSpotGrow = how many original-image pixels the dark-spot mask expands to [right, down] (default none; V10 [8, 8], covering the dark groove at the lower edge)
+   * opts.makeup = second stage "makeup" :
+   *   after the concealer has leveled things out, apply T-zone highlight and outer contouring to the whole facial skin (not only the patches), moving toward the swatch color while preserving texture:
+   *   { hi: '#hex' (T-zone target color, one shade lighter than the swatch), hiAmt: 0-1, co: '#hex' (contour target color, one shade darker than the swatch), coAmt: 0-1, tWidth: 0.12, coWidth: 0.09 (contour band width, x face width)}.
+   *   T-zone = forehead center to nose tip + chin; contour = a ring just inside the face outline (temples, below the cheekbones, jaw), face center untouched.
+   * opts.mode = 'lowfreq' (default) or 'mean' (old method)
    */
   async function apply(resultSrc, originalSrc, normalHex, patchHex, strength = 0.88, opts = {}) {
     const warm = opts.warm || [1.8, 1.2], mode = opts.mode || 'lowfreq';
@@ -186,13 +186,13 @@
     const split = opts.split ? Object.assign({ chroma: 0.9, edgeL: strength, centerL: 0.52, rim: 15, falloff: 35, seam: 8, seamSigma: 4, lumaExtend: null, hfBand: 0, hfKeep: 1 }, opts.split) : null;
     const centerWarm = opts.centerWarm || warm;
     if (!det) return null;
-    const px2w = det.w / (original.naturalWidth || det.w);   // 原圖像素 → 運算解析度
+    const px2w = det.w / (original.naturalWidth || det.w);   // original-image pixels -> working resolution
     const W = result.naturalWidth, H = result.naturalHeight;
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const g = c.getContext('2d', { willReadFrequently: true });
     g.drawImage(result, 0, 0);
     const img = g.getImageData(0, 0, W, H), d = img.data;
-    // 試妝結果裡「白斑範圍」與「周圍皮膚」各自的平均色（在臉上、遠離交界的像素）
+      // Average colors of the "patch area" and the "surrounding skin" in the try-on result (pixels on the face, away from the border)
     const sum = { p: [0, 0, 0, 0], n: [0, 0, 0, 0] };
     const mAt = (x, y) => det.mask[Math.min(det.h - 1, Math.floor(y * det.h / H)) * det.w + Math.min(det.w - 1, Math.floor(x * det.w / W))];
     const sc = document.createElement('canvas'); sc.width = det.w; sc.height = det.h;
@@ -208,12 +208,12 @@
         if (m > 0.9) { sum.p[0] += d[i]; sum.p[1] += d[i + 1]; sum.p[2] += d[i + 2]; sum.p[3]++; continue; }
         if (m >= 0.05) continue;
         const L = srgbToLab(d[i], d[i + 1], d[i + 2])[0];
-        if (L < nRef - 25) continue;                           // 周圍皮膚不要算到陰影、眉毛、鬍渣
+        if (L < nRef - 25) continue;                           // surrounding skin must not include shadows, brows, stubble
         normals.push([L, d[i], d[i + 1], d[i + 2]]);
       }
     }
     if (!sum.p[3] || normals.length < 20) return null;
-    // 目標色＝試妝後「受光的」周圍膚色（亮度較高的一半）：用整體平均會把陰影算進去，白斑被拉成暗沉一塊
+    // Target color = the "lit" surrounding skin after try-on (the brighter half): using the overall average would include shadows and pull the patch into a dull block (owner: "too heavy")
     normals.sort((u, v) => v[0] - u[0]);
     const lit = normals.slice(0, Math.max(10, Math.floor(normals.length / 2)));
     for (const q of lit) { sum.n[0] += q[1]; sum.n[1] += q[2]; sum.n[2] += q[3]; sum.n[3]++; }
@@ -235,7 +235,7 @@
         }
       }
     } else {
-      // 低頻底色：只用白斑像素（遮罩加權）做模糊，交界不會混到周圍膚色
+      // Low-frequency base color: blur using only patch pixels (mask-weighted), so the border does not mix in surrounding skin color
       const w = det.w, h = det.h;
       sg.clearRect(0, 0, w, h);
       sg.drawImage(result, 0, 0, w, h);
@@ -248,17 +248,17 @@
       }
       const r = Math.max(3, Math.round(w * 0.025));
       const bw = boxBlur(wgt, w, h, r), bc = ch.map((a) => boxBlur(a, w, h, r));
-      // 外擴到周圍皮膚的那一圈：用「全部皮膚」的低頻底色，免得把白斑的位移套到正常皮膚、壓出一圈暗邊
+      // The ring extended into surrounding skin: use the low-frequency base color of "all skin", so the patch's shift is not applied to normal skin and does not press out a dark rim
       const sw = new Float32Array(w * h), sch = [0, 1, 2].map(() => new Float32Array(w * h));
       for (let i = 0; i < w * h; i++) { if (skin[i]) { sw[i] = 1; for (let k = 0; k < 3; k++) sch[k][i] = sp[i * 4 + k]; } }
       const bsw = boxBlur(sw, w, h, r), bsc = sch.map((a) => boxBlur(a, w, h, r));
       const coreSoft = boxBlur(det.core, w, h, Math.max(2, Math.round(w * 0.006)));
-      // 白斑「深度」：離白斑邊緣越遠越接近 1（大半徑模糊白斑本體，邊緣約 0.5）
+      // Patch "depth": the farther from the patch edge, the closer to 1 (large-radius blur of the patch body, about 0.5 at the edge)
       const depthMap = transition === undefined ? null : boxBlur(det.core, w, h, Math.max(4, Math.round(w * (opts.transitionWidth || 0.035))));
-      // 就近取色：只用「不是白斑、不是陰影眉毛」的皮膚，兩種半徑模糊出附近膚色的低頻顏色
+      // Nearest-color sampling: use only skin that is "neither patch nor shadow/brows", blur at two radii to get the low-frequency color of nearby skin
       let tz = null;
       if (fill === 'tzone' || centerMode === 'tband') {
-        // T 字遮罩：額頭中央→鼻頭的粗帶＋下巴；量其中「不是白斑」皮膚的平均色（YouCam T 字打亮也在這裡）
+        // T-zone mask: a thick band from forehead center to nose tip plus chin; measure the average color of the "non-patch" skin within it (YouCam's T-zone highlight is also here)
         const f2 = det.face, P2 = (i) => [f2[i].x * w, f2[i].y * h];
         const fw2 = Math.hypot(P2(234)[0] - P2(454)[0], P2(234)[1] - P2(454)[1]);
         sg.clearRect(0, 0, w, h); sg.fillStyle = sg.strokeStyle = '#fff'; sg.lineCap = sg.lineJoin = 'round';
@@ -272,7 +272,7 @@
         }
         if (acc[3] > 20 || centerMode === 'tband') {
           const cT = acc[3] ? [0, 1, 2].map((k) => acc[k] / acc[3]) : target;
-          // 往外漸進的權重：T 字帶本身＝1，用多次大半徑模糊做出平滑遞減
+          // Progressively decreasing weight outward: the T-band itself = 1, smooth falloff made with several large-radius blurs
           let wT = boxBlur(t0, w, h, Math.max(4, Math.round(fw2 * (opts.tzoneSigma || 0.18) * 0.5)));
           wT = boxBlur(wT, w, h, Math.max(4, Math.round(fw2 * (opts.tzoneSigma || 0.18) * 0.5)));
           let mx = 0; for (let i = 0; i < w * h; i++) mx = Math.max(mx, wT[i]);
@@ -291,12 +291,12 @@
         const r1 = Math.max(4, Math.round(w * 0.04)), r2 = Math.max(8, Math.round(w * 0.1));
         near = [r1, r2].map((rr) => ({ w: boxBlur(nw, w, h, rr), c: nch.map((a) => boxBlur(a, w, h, rr)) }));
       }
-      // 臉中央權重：鼻子為中心的橢圓（含雙頰內側、眼下、嘴周）＋額頭到鼻頭的 T 字帶，大半徑羽化
+      // Face-center weight: an ellipse centered on the nose (including inner cheeks, under the eyes, around the mouth) plus the forehead-to-nose-tip T-band, feathered with a large radius
       let cm = null, lift = [0, 0, 0];
       const f = det.face, P = (i) => [f[i].x * w, f[i].y * h];
       const fw = Math.hypot(P(234)[0] - P(454)[0], P(234)[1] - P(454)[1]);
       if (center > 0 && centerMode === 'gauss') {
-        // 以鼻樑（6）、鼻樑中段（195）、兩側蘋果肌（205、425）為中心的高斯權重，再乘「離白斑邊緣多遠」，邊緣遞減到 0
+        // Gaussian weights centered on the nose bridge (6), mid nose bridge (195) and the two apples of the cheeks (205, 425), multiplied by "distance from the patch edge", decreasing to 0 at the edge
         const cs = [6, 195, 205, 425].map(P), sig = fw * (opts.sigma || 0.2);
         const inner = boxBlur(det.core, w, h, Math.max(3, Math.round(w * 0.03)));
         cm = new Float32Array(w * h);
@@ -322,7 +322,7 @@
         const hi = labToSrgb(Math.min(95, tL + center), ta, tb);
         lift = [0, 1, 2].map((k) => hi[k] - target[k]);
       }
-      // 臉頰深色斑：兩頰範圍內、不是白斑、比受光膚色暗 10 以上的像素，局部提亮 darkSpot（遮完白斑後黑斑會像髒污）
+      // Dark spots on the cheeks: pixels within the cheek area, not patch, and at least 10 darker than lit skin get local brightening darkSpot (after the patch is concealed, dark spots look like dirt)
       let dm = null, dlift = [0, 0, 0];
       if (darkSpot > 0) {
         const tLab = srgbToLab(...target), d0 = new Float32Array(w * h);
@@ -337,7 +337,7 @@
           }
         }
         if (opts.darkSpotGrow) {
-          // 往右、往下外擴（原圖像素 → 運算解析度），蓋過深色斑下緣與白斑交界的暗溝
+          // Expand to the right and down (original-image pixels -> working resolution), covering the dark groove between the lower edge of the dark spot and the patch border
           const gx = Math.round(opts.darkSpotGrow[0] * px2w), gy = Math.round(opts.darkSpotGrow[1] * px2w), g0 = Float32Array.from(d0);
           for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
             const i = y * w + x; if (!skin[i] || d0[i]) continue;
@@ -351,7 +351,7 @@
         const hi = labToSrgb(Math.min(95, tLab[0] + darkSpot), tLab[1] + ab[0], tLab[2] + ab[1]);
         dlift = [0, 1, 2].map((k) => hi[k] - target[k]);
       }
-      // V9：白斑內「離邊緣多遠」（運算解析度像素，3-4 倒角距離）＋臉中央權重＋邊界接縫帶
+      // V9: "distance from the edge" inside the patch (working-resolution pixels, 3-4 chamfer distance) + face-center weight + boundary seam band
       let lumT = null, seamBand = null, lumaMask = null, hfBand = null;
       if (split) {
         const INF = 1e9, dist = new Float32Array(w * h);
@@ -370,7 +370,7 @@
           if (y < h - 1) { v = Math.min(v, dist[i + w] + 3); if (x < w - 1) v = Math.min(v, dist[i + w + 1] + 4); if (x > 0) v = Math.min(v, dist[i + w - 1] + 4); }
           dist[i] = v;
         }
-        // 臉中央：鼻子為中心的橢圓（眼下、內頰、嘴周、下巴）＋額頭中央到鼻頭的 T 字帶，羽化；額角、下顎角不在內
+        // Face center: an ellipse centered on the nose (under the eyes, inner cheeks, around the mouth, chin) plus the forehead-center-to-nose-tip T-band, feathered; temple corners and jaw angles excluded
         sg.clearRect(0, 0, w, h); sg.fillStyle = sg.strokeStyle = '#fff';
         sg.beginPath(); sg.ellipse(...P(195), fw * 0.27, fw * 0.45, 0, 0, Math.PI * 2); sg.fill();
         sg.lineCap = sg.lineJoin = 'round'; sg.lineWidth = fw * 0.14;
@@ -386,7 +386,7 @@
           lumT[i] = t * Math.min(1, cen[i]);
         }
         if (split.seam > 0) {
-          // 存到 det 給最後一步（全解析度接縫平滑）用
+          // Store on det for the last step (full-resolution seam smoothing)
           const rb = Math.max(1, Math.round(split.seam * px2w / 2));
           const cb = boxBlur(det.core, w, h, rb), sIn = boxBlur(skin, w, h, rb * 2);
           seamBand = new Float32Array(w * h);
@@ -396,20 +396,20 @@
           det.seamBand = seamBand;
         }
         if (split.lumaExtend !== null) {
-          // 明度只遮到原始白斑邊界：白斑本體小半徑羽化後放大，邊界上已是 1、往外約 2 格內歸零
+          // Lightness is concealed only to the original patch boundary: the patch body is feathered with a small radius and upscaled, equal to 1 at the boundary and dropping to 0 within about 2 cells outward
           const rr = Math.max(1, Math.round(split.lumaExtend * px2w) + 2), cbL = boxBlur(det.core, w, h, rr);
           lumaMask = new Float32Array(w * h);
           for (let i = 0; i < w * h; i++) lumaMask[i] = Math.min(1, 2 * cbL[i]);
         }
         if (split.hfBand > 0 && split.hfKeep < 1) {
-          // 原始邊界內側環狀帶（往內 hfBand 像素）
+          // Ring band just inside the original boundary (hfBand pixels inward)
           const rh = Math.max(1, Math.round(split.hfBand * px2w / 2)), ch2 = boxBlur(det.core, w, h, rh);
           hfBand = new Float32Array(w * h);
           for (let i = 0; i < w * h; i++) hfBand[i] = det.core[i] > 0.5 ? Math.max(0, 1 - Math.abs(2 * ch2[i] - 1)) : 0;
         }
       }
       if (opts.makeup) {
-        // V11 化妝層的權重（運算解析度）：T 字帶＋下巴、臉輪廓內側一圈
+        // Weights of the V11 makeup layer (working resolution): T-band + chin, a ring just inside the face outline
         const mk = opts.makeup;
         sg.clearRect(0, 0, w, h); sg.fillStyle = sg.strokeStyle = '#fff'; sg.lineCap = sg.lineJoin = 'round';
         sg.lineWidth = fw * (mk.tWidth || 0.12); sg.beginPath(); T_LINE.forEach((i, k) => (k ? sg.lineTo : sg.moveTo).call(sg, ...P(i))); sg.stroke();
@@ -440,16 +440,16 @@
           if (m < 0.02) continue;
           let a = m * strength;
           if (depthMap) {
-            const dep = Math.min(1, Math.max(0, (depthMap[j] - (opts.transitionStart || 0.5)) / 0.35));   // transitionStart 越高，邊緣遮滿的帶越寬
+            const dep = Math.min(1, Math.max(0, (depthMap[j] - (opts.transitionStart || 0.5)) / 0.35));   // the higher transitionStart, the wider the fully concealed band at the edge
             a *= 1 - (1 - transition) * dep;
           }
           if (neckFade < 1) {
-            // 下臉漸減：嘴角下方（17）到下巴（152）之間，權重從 1 漸進降到 neckFade，下顎到脖子不會一刀切成面具
+            // Lower-face fade: between below the mouth corners (17) and the chin (152), the weight decreases progressively from 1 to neckFade, so the jaw-to-neck transition does not cut off like a mask
             const t = Math.min(1, Math.max(0, (y / H - f[17].y) / Math.max(1e-3, f[152].y - f[17].y)));
             a *= 1 - (1 - neckFade) * t;
           }
           const cw = cm ? cm[j] : 0, core = coreSoft[j];
-          // 就近取色的信心：小半徑附近有足夠周圍膚色就用小半徑，否則大半徑，再不夠就退回整體目標色＋中央加亮
+          // Confidence of nearest-color sampling: use the small radius if enough surrounding skin is nearby, otherwise the large radius, and if still insufficient fall back to the overall target color + center brightening
           let nearW = 0, nearC = null;
           if (near) {
             const s1 = Math.min(1, near[0].w[j] / 0.2), s2 = Math.min(1, near[1].w[j] / 0.1);
@@ -472,16 +472,16 @@
             if (!split) d[i + k] = Math.max(0, Math.min(255, d[i + k] + (tgt - low) * a));
           }
           if (split) {
-            // 顏色整塊遮 chroma；明度從邊緣 edgeL 漸進到中心 centerL（a 已含遮罩羽化與下臉漸減，換算成比例）
+            // Color is concealed over the whole patch at chroma; lightness goes progressively from edge edgeL to center centerL (a already includes mask feathering and lower-face fade, converted to a ratio)
             const t = lumT[j], scale = a / strength;
-            // V10：明度用「只到原始邊界」的遮罩（a 裡的下臉漸減換算回來：a / (m × strength)）
+            // V10: lightness uses the mask that reaches only "the original boundary" (undo the lower-face fade in a: a / (m x strength))
             const scaleL = lumaMask ? lumaMask[j] * a / (m * strength) : scale;
             const aL = scaleL * (split.edgeL - (split.edgeL - split.centerL) * t), aC = scale * split.chroma;
             const pl = srgbToLab(d[i], d[i + 1], d[i + 2]), ll = srgbToLab(...lowV), tl = srgbToLab(...tgtV);
             tl[1] += (centerWarm[0] - warm[0]) * t; tl[2] += (centerWarm[1] - warm[1]) * t;
             let L2 = pl[0] + (tl[0] - ll[0]) * aL;
-            if (hfBand && hfBand[j] > 0 && pl[0] > ll[0]) L2 -= (1 - split.hfKeep) * hfBand[j] * (pl[0] - ll[0]);   // 邊界內側亮邊只留 hfKeep
-            if (lumaMask && core < 0.5) L2 = pl[0] > tl[0] ? Math.max(tl[0], Math.min(pl[0], L2)) : pl[0];       // 邊界外：只壓暗比目標亮的像素
+            if (hfBand && hfBand[j] > 0 && pl[0] > ll[0]) L2 -= (1 - split.hfKeep) * hfBand[j] * (pl[0] - ll[0]);   // inside the boundary, keep only hfKeep of the bright edge
+            if (lumaMask && core < 0.5) L2 = pl[0] > tl[0] ? Math.max(tl[0], Math.min(pl[0], L2)) : pl[0];       // outside the boundary: only darken pixels brighter than the target
             const o = labToSrgb(L2, pl[1] + (tl[1] - ll[1]) * aC, pl[2] + (tl[2] - ll[2]) * aC);
             d[i] = o[0]; d[i + 1] = o[1]; d[i + 2] = o[2];
           }
@@ -489,7 +489,7 @@
       }
     }
     if (split && split.seam > 0 && det.seamBand) {
-      // 接縫平滑：邊界帶內把「中低頻」換成 σ≈seamSigma 的模糊結果，保留最細的毛孔紋理（外部建議：海岸線）
+      // Seam smoothing: within the boundary band, replace the "mid-low frequency" with a blur of sigma ~ seamSigma, keeping the finest pore texture (外部建議: "coastline")
       const rL = Math.max(1, Math.round(split.seamSigma)), band = det.seamBand;
       for (let k = 0; k < 3; k++) {
         const ch = new Float32Array(W * H);
@@ -507,7 +507,7 @@
       }
     }
     if (opts.makeup && det.mk) {
-      // 第二段化妝：低頻底色往 T 字／修容目標色移，像素加同樣位移（紋理不變）
+      // Second-stage makeup: move the low-frequency base color toward the T-zone / contour target colors; pixels get the same shift (texture unchanged)
       const mk = opts.makeup, ww = det.w, hh = det.h, { wT, wC } = det.mk;
       const lowL = [0, 1, 2].map(() => new Float32Array(ww * hh));
       for (let y = 0; y < hh; y++) for (let x = 0; x < ww; x++) {

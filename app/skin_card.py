@@ -1,12 +1,12 @@
-"""膚色色卡：先把膚色對到自己的色卡（深淺 10 級 × 冷暖 3 種），再從色卡找專櫃色號。
+"""Skin-tone card: first match the skin color to its own card cell (10 depth levels x 3 undertones), then find counter shades from the card.
 
-為什麼不直接用色差（ΔE）比：照片裡的皮膚受光線、相機影響，比產品色票灰、偏粉（ 實測：照片膚色彩度 19、
-色相 43°；同亮度的產品色票彩度 33–49、色相 58–70°），直接比會全部「沒有接近色」。
-所以兩邊各自分級：
-- 照片膚色：深淺用亮度 L*，冷暖用色相（彩度太低時判中性，請本人確認）。
-- 專櫃色號：深淺用色票亮度 L*；冷暖優先用品牌自己的標示（官網說明、色號裡的 C/N/W 等字母），
-  沒有標示時才用「同深淺色號之間的相對色相」排名（低的三分之一偏冷、高的三分之一偏暖）。
-兩邊落在同一格就是同深淺同冷暖。同深淺沒有色號時，給一淺一深兩色混合。
+Why not compare directly by color difference (ΔE): skin in a photo is affected by lighting and camera, and is greyer and pinker than product swatches (10-15 measurement: photo skin chroma 19,
+hue 43°; product swatches of the same lightness chroma 33-49, hue 58-70°), so a direct comparison would give "no close shade" for everything.
+So each side is graded on its own:
+- Photo skin: depth by lightness L*, undertone by hue (when chroma is too low it is judged neutral and the person is asked to confirm).
+- Counter shades: depth by swatch lightness L*; undertone prefers the brand's own marking (official description, C/N/W letters in the shade code),
+  and only when unmarked uses the ranking of "relative hue among shades of the same depth" (the lowest third is cool, the highest third is warm).
+Both sides landing in the same cell means the same depth and undertone. When no shade of the same depth exists, mix one lighter and one deeper.
 """
 from __future__ import annotations
 
@@ -17,15 +17,15 @@ from pathlib import Path
 
 import color_engine as ce
 
-# 深淺 10 級的 L* 下界（第 1 級最淺）；色卡顯示色只是示意
+# lower L* bound of each of the 10 depth levels (level 1 is the lightest); the card's display colors are only illustrative
 LEVEL_BOUNDS = [88, 82, 76, 70, 64, 57, 50, 42, 34, -1]
 LEVEL_NAMES = ["極淺", "很淺", "淺", "淺中", "中", "中深", "深", "很深", "極深", "最深"]
 TONES = ("cool", "neutral", "warm")
-# 排序權重（ 推薦排序 C，隔離區比較 <本機紀錄>）：色差 ΔE00 每 3 約等於差一級；
-# 比膚色淺的色號級差算兩倍（白化症規則「不選更白」；彩妝教學：太淺會顯灰）
+# ranking weights ( ranking C, isolation comparison <本機紀錄>): every 3 of ΔE00 is about one level;
+# a shade lighter than the skin counts its level gap double (albinism rule "do not pick whiter"; makeup tutorials: too light looks grey)
 DE_WEIGHT = 3.0
 LIGHTER_PENALTY = 2.0
-# 現行排序（R0：品牌冷暖＋ΔE/40）的第 1 名色差已小於這個值就保留，不被新排序換掉
+# if the current ranking's (R0: brand undertone + ΔE/40) first-place color difference is already below this, keep it and do not let the new ranking replace it
 KEEP_DE = 1.5
 R0_DE_WEIGHT = 40.0
 TONE_LABEL = {"cool": "冷調", "neutral": "中性", "warm": "暖調"}
@@ -33,7 +33,7 @@ _TONE_HUE = {"cool": 40.0, "neutral": 55.0, "warm": 70.0}
 
 
 
-_VERDICT_CODES = {"很接近": "very_close", "接近": "close", "有差": "gap"}   # 前端用代碼比對，畫面文字才能跟著語言換
+_VERDICT_CODES = {"很接近": "very_close", "接近": "close", "有差": "gap"}   # the frontend compares by code, so on-screen text can follow the language
 
 
 def _verdict(ld, tg) -> str:
@@ -53,7 +53,7 @@ def level_mid_L(level: int) -> float:
 
 
 def card() -> list[dict]:
-    """30 格色卡（示意色）：前端畫色卡、配色卡顯示用。"""
+    """30-cell card (illustrative colors): used by the frontend to draw the card and show the shade card."""
     cells = []
     for lv in range(1, len(LEVEL_BOUNDS) + 1):
         L = level_mid_L(lv)
@@ -66,16 +66,16 @@ def card() -> list[dict]:
 
 
 def classify_photo(hex_color: str) -> dict:
-    """照片取到的膚色 → 色卡格子。"""
+    """Skin color from the photo -> card cell."""
     prof = ce.skin_profile(hex_color)
     lv = level_of(prof["lab"][0])
     return {"hex": hex_color, "level": lv, "level_name": LEVEL_NAMES[lv - 1], "tone": prof["undertone"],
             "tone_label": TONE_LABEL[prof["undertone"]], "tone_confirm": prof["low_chroma"], "profile": prof}
 
 
-# ---------------------------------------------------------------- 專櫃色號分級
+# ---------------------------------------------------------------- counter-shade grading
 
-# 品牌自己的色號冷暖寫法：品牌色號資料只留本機（app/brand_codes_local.json，不進公開 repo），沒有就只用通用規則
+# how brands write undertone in their shade codes: brand shade-code data stays local only (app/brand_codes_local.json, not in the public repo); without it only the generic rules are used
 _BRAND_CODE_FILE = Path(__file__).resolve().parent / "brand_codes_local.json"
 _BRAND_CODE = ({b: [tuple(x) for x in v] for b, v in json.loads(_BRAND_CODE_FILE.read_text(encoding="utf-8"))["codes"].items()}
                if _BRAND_CODE_FILE.exists() else {})
@@ -84,8 +84,8 @@ _GENERIC_CODE = [(r"^\.?\d+(\.\d+)?\s*C\d?", "cool"), (r"^\.?\d+(\.\d+)?\s*W\d?"
 
 
 def brand_tone(shade: dict, brand: str | None = None) -> str | None:
-    """品牌自己的冷暖標示。順序：明寫的 undertone 欄位 → 說明裡「cool/warm/neutral undertone」→
-    品牌色號字母 → 色號名稱裡的 Cool/Warm/Neutral → 說明裡的 pink/yellow 描述。都沒有就回 None。"""
+    """A brand's own undertone marking. Order: an explicit undertone field -> "cool/warm/neutral undertone" in the description ->
+    the brand shade-code letter -> Cool/Warm/Neutral in the shade name -> pink/yellow wording in the description. None if there is none."""
     if shade.get("undertone") in TONES:
         return shade["undertone"]
     code, desc = shade.get("code", ""), shade.get("description", "").lower()
@@ -109,13 +109,13 @@ def brand_tone(shade: dict, brand: str | None = None) -> str | None:
     return None
 
 
-# 色號名稱裡的冷暖字（只看名稱與編碼，不看官網說明句）；Honey、Beige、Sand 是顏色名不是冷暖標示（有的品牌 Honey 官網寫 Cool）
+# undertone words in the shade name (only the name and code are read, not the official description sentence); Honey, Beige, Sand are color names, not undertone markings (for some brands Honey is described as Cool on the official site)
 _NAME_WORDS = [(r"\b(cool|warm|neutral)\b", None), (r"\b(golden|olive)\b", "warm"), (r"\b(rosy|rose|pink)\b", "cool")]
 
 
 def label_tone(code: str, brand: str | None = None) -> str | None:
-    """色號名稱／品牌編碼本身標的冷暖。
-    有的品牌編碼字母和一般說法相反（例如某組字母偏黃、另一組偏粉），對照表只放本機品牌檔 brand_codes_local.json。"""
+    """The undertone marked by the shade name / brand code itself (owner's rule,: if the brand name already marks undertone (C/W/Golden etc.), use the brand marking; use relative position only when unmarked).
+    Some brands' code letters are the opposite of the usual reading (e.g. one set of letters leans yellow and another leans pink); the lookup table lives only in the local brand file brand_codes_local.json."""
     for rx, tone in _BRAND_CODE.get(brand or "", []) + _GENERIC_CODE:
         if re.search(rx, code, re.I):
             return tone
@@ -131,7 +131,7 @@ def _hue(lab) -> float:
 
 
 def classify_catalog(products: list[dict]) -> list[dict]:
-    """把型錄每個膚色類色號（粉底、遮瑕）標上深淺級與冷暖。冷暖來源記在 tone_source。"""
+    """Tag every complexion-category shade (foundation, concealer) in the catalog with a depth level and undertone. The undertone source is recorded in tone_source."""
     rows = []
     for p in products:
         if p["category"] not in ("foundation", "concealer"):
@@ -141,15 +141,15 @@ def classify_catalog(products: list[dict]) -> list[dict]:
             rows.append({"brand": p["brand"], "product": p["name"], "category": p["category"], "source": p["source"],
                          "code": s["code"], "hex": s["hex"], "lab": lab, "level": level_of(lab[0]),
                          "tone": brand_tone(s, p["brand"]), "tone_source": "brand"})
-    # 排序用的相對冷暖（tone_rel）：同品牌、同類別、±1 級內依色相角的百分位分三等分（低＝偏紅＝cool、高＝偏黃＝warm）。
-    # 品牌文字標示（tone）只留給畫面顯示：同樣標 cool，各品牌的網頁色票色相差很多（ 偏黃調查）
+    # relative undertone for ranking (tone_rel): within the same brand and category, within ±1 level, split into three equal groups by the hue-angle percentile (low = reddish = cool, high = yellowish = warm).
+    # the brand's text marking (tone) is kept only for display: even when labeled cool, the web swatch hues differ a lot between brands (10-17 yellowness survey)
     for r in rows:
         peers = [_hue(x["lab"]) for x in rows if x["brand"] == r["brand"] and x["category"] == r["category"] and abs(x["level"] - r["level"]) <= 1]
         rank = sum(h < _hue(r["lab"]) for h in peers) / max(1, len(peers) - 1)
         r["tone_rel"] = "cool" if rank < 1 / 3 else ("warm" if rank > 2 / 3 else "neutral")
-        # 排序用冷暖：名稱／編碼有標就用標示，沒標才用相對位置
+        # undertone for ranking: use the marking if the name/code has one, otherwise the relative position
         r["tone_rank"] = label_tone(r["code"], r["brand"]) or r["tone_rel"]
-    # 沒有品牌標示的：和同深淺（±1 級）所有色號比相對色相
+    # for shades without a brand marking: compare relative hue against all shades of the same depth (±1 level)
     for r in rows:
         if r["tone"]:
             continue
@@ -177,17 +177,17 @@ def fit_text(level_diff: int, tone_gap: float) -> str:
 
 
 def counter_shades(target: dict, rows: list[dict], category: str = "foundation", per_product: int = 1) -> list[dict]:
-    """色卡格子 → 每條產品線最適合的色號；同深淺沒有時附一淺一深兩色混合。"""
+    """Card cell -> the best shade for each product line; when none of the same depth exists, attach a one-lighter and one-deeper mix."""
     out = []
     lines = {}
     for r in rows:
         if r["category"] == category:
             lines.setdefault((r["brand"], r["product"], r["source"]), []).append(r)
     tL = level_mid_L(target["level"]) if "L" not in target else target["L"]
-    # 同一格裡挑「顏色最接近膚色」的那支；
-    # 色差只當格內排序用，因為照片和色票整體有落差，不拿來判斷接不接近
+    # within the same cell pick the one whose color is closest to the skin ;
+    # the color difference is used only for ordering inside the cell, because photos and swatches differ overall, so it is not used to judge whether something is close
     t_lab = tuple(target["profile"]["lab"]) if target.get("profile") else None
-    # 保留門檻：現行排序（品牌冷暖＋ΔE/40）的第 1 名若色差 < KEEP_DE，就固定排第 1
+    # keep threshold: if the current ranking's (brand undertone + ΔE/40) first place has color difference < KEEP_DE, it is pinned at first
     keep = None
     if t_lab:
         r0 = [(abs(s["level"] - target["level"]) + _tone_gap(s["tone"], target["tone"]) + ce.delta_e2000(t_lab, s["lab"]) / R0_DE_WEIGHT, i, s)
@@ -229,7 +229,7 @@ def counter_shades(target: dict, rows: list[dict], category: str = "foundation",
 
 def match_skin(hex_color: str, products: list[dict], category: str = "foundation",
                tone_override: str | None = None) -> dict:
-    """照片膚色 → 色卡格子 → 各產品線色號。"""
+    """Photo skin color -> card cell -> shades per product line."""
     cell = classify_photo(hex_color)
     if tone_override in TONES:
         cell = dict(cell, tone=tone_override, tone_label=TONE_LABEL[tone_override], tone_confirm=False)

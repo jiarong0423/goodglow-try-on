@@ -1,13 +1,13 @@
-"""把 web/index.html 裡使用者看得到的中文標上 data-i18n（只加屬性或包 <span>，不改任何中文字、不改結構以外的東西）。
+"""Annotate the user-visible Chinese in web/index.html with data-i18n (only adds attributes or wraps text in <span>; no Chinese character and nothing beyond that structure is changed).
 
-  python3 tools/i18n_annotate_html.py            # 就地改寫 web/index.html；已標過的不重複標
-  python3 tools/i18n_annotate_html.py --check    # 只檢查：回報還沒標的列，有缺就 exit 1
+  python3 tools/i18n_annotate_html.py            # rewrite web/index.html in place; already-annotated text is not annotated again
+  python3 tools/i18n_annotate_html.py --check    # check only: report rows not yet annotated; exit 1 if any are missing
 
-規則
-- 文字節點：該元素只有這一段文字 → 在開始標籤加 data-i18n="sNNNN"；元素裡還有別的標籤或文字 → 把這段文字包進 <span data-i18n="sNNNN">。
-- 屬性：alt／aria-label／title 的值等於表內中文 → 加 data-i18n-attr="屬性:sNNNN;屬性:sNNNN"。
-- 位置專屬鍵：docs/i18n/position_overrides.csv 列出的 (id, 檔:行) 改用鍵 "sNNNN@web/index.html:行"。
-資料來源：docs/i18n/zh_en_map.csv（zh→id）。失敗路徑印 ERROR 並回非零。
+Rules
+- Text nodes: if the element holds only this one piece of text, add data-i18n="sNNNN" to the opening tag; if the element also holds other tags or text, wrap this text in <span data-i18n="sNNNN">.
+- Attributes: if the value of alt/aria-label/title equals a Chinese string in the table, add data-i18n-attr="attribute:sNNNN;attribute:sNNNN".
+- Position-specific keys: the (id, file:line) pairs listed in docs/i18n/position_overrides.csv use the key "sNNNN@web/index.html:line".
+Data source: docs/i18n/zh_en_map.csv (zh→id). Failure paths print ERROR and return non-zero.
 """
 from __future__ import annotations
 
@@ -44,8 +44,8 @@ class Scan(HTMLParser):
         for line in text.split("\n"):
             starts.append(starts[-1] + len(line) + 1)
         self.line_start = starts
-        self.stack = []            # {'tag','s','e','kids'} ；kids = 有內容的子節點數
-        self.edits = []            # (pos, insert_text) 或 (start, end, replacement)
+        self.stack = []            # {'tag','s','e','kids'} ; kids = number of child nodes with content
+        self.edits = []            # (pos, insert_text) or (start, end, replacement)
         self.marked_text, self.marked_attr, self.unmatched = 0, 0, []
 
     def off(self):
@@ -84,7 +84,7 @@ class Scan(HTMLParser):
         while self.stack:
             top = self.stack.pop()
             if top["tag"] == tag:
-                # 只有一段文字、沒有其他子節點 → 屬性標在開始標籤
+                # only one piece of text and no other child nodes → the attribute goes on the opening tag
                 if top["kids"] == len(top["texts"]) == 1 and "data-i18n" not in top["have"]:
                     pos, id_ = top["texts"][0]
                     ins = top["e"] - 1
@@ -111,13 +111,13 @@ class Scan(HTMLParser):
 def run(check_only: bool) -> int:
     zh2id, overrides = load_maps()
     text = HTML.read_text(encoding="utf-8")
-    # 第一遍：解析，收集需要包 <span> 的節點
+    # first pass: parse and collect the nodes that need a <span> wrapper
     sc = Scan(text, zh2id, overrides)
     sc.feed(text)
     sc.close()
-    # 需要包 span 的文字節點：元素內有其他內容者
+    # text nodes that need a span: those whose element has other content
     wraps = []
-    # 重新走一遍堆疊資訊較複雜，改用第二個掃描器專門找「混合內容」節點
+    # re-walking the stack information is more complicated, so use a second scanner dedicated to finding mixed-content nodes
     class Mixed(HTMLParser):
         def __init__(self):
             super().__init__(convert_charrefs=False)
@@ -157,29 +157,29 @@ def run(check_only: bool) -> int:
         id_ = sc.key_for(zh2id[t], pos)
         todo_edits.append((pos, pos + len(t), f'<span data-i18n="{id_}">{t}</span>'))
     unmatched = [u for u in sc.unmatched]
-    print(f"文字節點屬性標記 {sc.marked_text}、混合內容包 span {len(mx.mixed)}、屬性標記 {sc.marked_attr}、表外中文 {len(unmatched)}")
+    print(f"text-node attribute marks {sc.marked_text}, mixed-content span wraps {len(mx.mixed)}, attribute marks {sc.marked_attr}, Chinese not in the table {len(unmatched)}")
     for pos, t in unmatched[:20]:
-        print(f"  表外：行 {text.count(chr(10), 0, pos) + 1}：{t[:40]}")
+        print(f"  not in table: line {text.count(chr(10), 0, pos) + 1}: {t[:40]}")
     if check_only:
         left = len(todo_edits)
-        print(f"還需標記 {left} 處")
+        print(f"{left} more places need marking")
         return 1 if left or unmatched else 0
     if not todo_edits:
-        print("沒有需要改的地方")
+        print("nothing to change")
         return 0
-    # 由後往前套用，位置才不會位移
+    # apply from back to front so positions do not shift
     out = text
     for edit in sorted(todo_edits, key=lambda x: (x[0], x[1]), reverse=True):
         a, b, rep = edit
         out = out[:a] + rep + out[b:]
     HTML.write_text(out, encoding="utf-8")
-    print(f"已寫入 {HTML}（{len(todo_edits)} 處）")
+    print(f"Wrote {HTML} ({len(todo_edits)} places)")
     return 0
 
 
 if __name__ == "__main__":
     try:
         sys.exit(run("--check" in sys.argv))
-    except Exception as exc:  # 失敗必須留痕
+    except Exception as exc:  # failures must leave a trace
         print(f"ERROR: {exc!r}")
         sys.exit(2)

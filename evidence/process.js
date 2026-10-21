@@ -1,7 +1,7 @@
 'use strict';
-// 示範頁：一套妝是怎麼一層一層做出來的（漸進式，每一步都是累積圖，全部標「模擬」）。
-// 證據頁（GitHub，不在 App 裡）。資料：process.json（tools/export_process_demo.py 由本機逐層引擎的累積圖匯出）。中英文都在 JSON／本檔，語言跟 i18n.js 一致。
-// 所有文字用 textContent 放進畫面（不經 innerHTML）。
+// Demo page: how a makeup look is built up layer by layer (progressive, every step is a cumulative image, all labeled "simulated").
+// Evidence page (GitHub, not inside the app). Data: process.json (exported by tools/export_process_demo.py from the cumulative images of the local layer engine). Chinese and English are both in the JSON / this file; the language follows i18n.js.
+// All text is put on screen with textContent (not through innerHTML).
 (function () {
   const L = () => (window.I18N && window.I18N.lang() === 'en' ? 'en' : 'zh');
   const $ = (id) => document.getElementById(id);
@@ -171,7 +171,7 @@
   function metricText(st) {
     const u = ui();
     if (st.delta == null) return '';
-    if (Array.isArray(st.delta)) return '';        //  裁示 4a-A：不顯示「色差 a → b」（像改善數字）；只留單層顏色改變量
+    if (Array.isArray(st.delta)) return '';        // Design decision 4a-A,: do not show "color difference a -> b" (it reads like an improvement figure); keep only the single-layer color change amount
     return u.metricShift(Number(st.delta).toFixed(2));
   }
 
@@ -184,7 +184,7 @@
     const next = front === 'a' ? b : a, prev = front === 'a' ? a : b;
     next.src = src;
     const swap = () => { next.classList.add('on'); prev.classList.remove('on'); front = front === 'a' ? 'b' : 'a'; };
-    if (instant) { prev.src = src; next.classList.remove('on'); prev.classList.add('on'); } else if (next.complete) swap(); else next.onload = swap;   // 交叉淡入
+    if (instant) { prev.src = src; next.classList.remove('on'); prev.classList.add('on'); } else if (next.complete) swap(); else next.onload = swap;   // Cross-fade
     const total = s.steps.length - 1;
     setText('pr-count', idx === 0 ? u.startCount(total) : u.step(idx, total));
     setText('pr-step', L() === 'en' ? st.en : st.zh);

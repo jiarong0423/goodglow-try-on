@@ -1,4 +1,4 @@
-"""離線測試：用本機假伺服器走完整 run 流程，不連 YouCam、不扣點。"""
+"""Offline test: runs the full run flow against a local fake server, without contacting YouCam or spending units."""
 import contextlib
 import io
 import json
@@ -93,7 +93,7 @@ class FakeYouCam(BaseHTTPRequestHandler):
         if idx in st["fail_tasks"]:
             self._send(200, {"status": 200, "data": {"task_status": "error", "error_code": "error_lighting_dark"}})
             return
-        raw = 70.0 + (idx % 3)  # 70, 71, 72 輪替 → 已知雜訊
+        raw = 70.0 + (idx % 3)  # 70, 71, 72 rotating -> known noise
         self._send(200, {"status": 200, "data": {"task_status": "success", "results": {"output": [
             {"type": "hd_redness", "ui_score": 77, "raw_score": raw,
              "mask_urls": ["https://example.com/hd_redness_output.png"]},
@@ -141,7 +141,7 @@ class ParseTests(unittest.TestCase):
         self.assertIn(("all", "whole", 75.5, None), rows)
 
     def test_live_format_20261015(self):
-        """2026-10-15 實跑回應（網址已移除）：區域在平的 region 欄位、skin_type 是文字。"""
+        """2026-10-15 real-run response (URLs removed): region is a flat field, skin_type is text."""
         data = {"results": {"output": [
             {"ui_score": 87, "raw_score": 91.74, "type": "hd_redness", "mask_urls": ["<url removed>"]},
             {"type": "hd_skin_type", "region": "whole", "skin_type": "Normal"},
@@ -220,7 +220,7 @@ class RunFlowTests(unittest.TestCase):
     def _run(self, srv, *extra, env_key=TEST_KEY):
         env = {nt.KEY_ENV: env_key} if env_key else {}
         with mock.patch.dict(os.environ, env, clear=False), \
-                mock.patch.object(nt, "PROJECT_ROOT", self.root):  # 不讀到真的 .env
+                mock.patch.object(nt, "PROJECT_ROOT", self.root):  # do not read the real .env
             if not env_key:
                 os.environ.pop(nt.KEY_ENV, None)
             return run_main(["run", "--photos", str(self.photos), "--label", "same_light",
@@ -257,7 +257,7 @@ class RunFlowTests(unittest.TestCase):
         st = FakeYouCam.state
         self.assertEqual(len(st["tasks"]), 4)
         self.assertEqual(st["tasks"][0]["dst_actions"], ["hd_redness"])
-        for body in st["uploads"]:  # 上傳的照片沒有 EXIF
+        for body in st["uploads"]:  # uploaded photos have no EXIF
             self.assertEqual(len(Image.open(io.BytesIO(body)).getexif()), 0)
 
         run_dir = next(self.runs.iterdir())
@@ -265,7 +265,7 @@ class RunFlowTests(unittest.TestCase):
         self.assertEqual(names, ["run_meta.json", "schema_sample.json", "scores.csv", "summary.json", "summary.md"])
         for p in run_dir.iterdir():
             text = p.read_text(encoding="utf-8")
-            self.assertNotIn("example.com", text, p.name)  # 結果網址不落檔
+            self.assertNotIn("example.com", text, p.name)  # result URLs are not written to files
             self.assertNotIn("sig=", text, p.name)
             self.assertNotIn(TEST_KEY, text, p.name)
         self.assertNotIn(TEST_KEY, out + err)

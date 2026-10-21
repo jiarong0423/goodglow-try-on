@@ -1,4 +1,4 @@
-"""評審登入：未登入永遠是展示模式，只有登入的瀏覽器才走真實呼叫；帳密只來自環境變數，輸錯會鎖定。"""
+"""Judge login: logged-out visitors always get demo mode; only logged-in browsers make real calls; credentials come only from environment variables, and wrong attempts lock out."""
 import json
 import sys
 import tempfile
@@ -14,7 +14,7 @@ import judge_auth  # noqa: E402
 import server  # noqa: E402
 
 FAKE_USER = "judge-demo"
-FAKE_PASS = "not-a-real-password-123"  # gitleaks:allow  測試用假值
+FAKE_PASS = "not-a-real-password-123"  # gitleaks:allow  test-only fake value
 WRONG = "wrong-guess-for-test-xx"
 
 
@@ -42,10 +42,10 @@ class JudgeAuthUnit(unittest.TestCase):
         self.assertTrue(a.valid_token(t, now=5001))
         self.assertFalse(a.valid_token(t, now=5000 + judge_auth.SESSION_SECONDS + 1))
         exp, _, sig = t.partition(".")
-        self.assertFalse(a.valid_token(f"{int(exp) + 99999}.{sig}", now=5001))      # 改到期時間
+        self.assertFalse(a.valid_token(f"{int(exp) + 99999}.{sig}", now=5001))      # change the expiry time
         self.assertFalse(a.valid_token("", now=5001))
         self.assertFalse(a.valid_token("abc.def", now=5001))
-        other = judge_auth.JudgeAuth(FAKE_USER, FAKE_PASS)                          # 另一次啟動的簽章金鑰不同
+        other = judge_auth.JudgeAuth(FAKE_USER, FAKE_PASS)                          # a different start has a different signing key
         self.assertFalse(other.valid_token(t, now=5001))
 
     def test_cookie_header(self):
@@ -64,7 +64,7 @@ class JudgeAuthServer(unittest.TestCase):
         self.td = tempfile.TemporaryDirectory()
         ledger = Path(self.td.name) / "l.json"
         demo = server.State(True, 3, "http://127.0.0.1:9", 50, ledger, catalog="demo")
-        live = server.State(True, 7, "http://127.0.0.1:9", 50, ledger, catalog="demo")      # 用 max_calls 當「走到哪個 state」的記號
+        live = server.State(True, 7, "http://127.0.0.1:9", 50, ledger, catalog="demo")      # max_calls serves as a marker for which state was reached
         self.auth = judge_auth.JudgeAuth(FAKE_USER, FAKE_PASS)
         self.httpd = server.make_server("127.0.0.1", 0, demo, live, self.auth)
         threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
@@ -106,11 +106,11 @@ class JudgeAuthServer(unittest.TestCase):
         cookie = hdr["Set-Cookie"]
         self.assertIn("HttpOnly", cookie)
         self.assertIn("SameSite=Lax", cookie)
-        self.assertNotIn("Secure", cookie)                      # 本機 http 測試
+        self.assertNotIn("Secure", cookie)                      # local http test
         pair = cookie.split(";")[0]
         s = self.status(cookie=pair)
         self.assertEqual((s["max_calls"], s["judge_signed_in"]), (7, True))
-        self.assertEqual(self.status(cookie=pair + "tamper")["max_calls"], 3)   # 竄改的 cookie 當沒登入
+        self.assertEqual(self.status(cookie=pair + "tamper")["max_calls"], 3)   # a tampered cookie is treated as not logged in
 
     def test_secure_flag_behind_https_proxy(self):
         st, _, hdr = self.login(headers={"X-Forwarded-Proto": "https"})
@@ -123,7 +123,7 @@ class JudgeAuthServer(unittest.TestCase):
         self.assertIsNone(hdr.get("Set-Cookie"))
         for _ in range(judge_auth.FAIL_LIMIT):
             self.login(password=WRONG)
-        self.assertEqual(self.login()[0], 429)                  # 鎖定期間連對的密碼也不收
+        self.assertEqual(self.login()[0], 429)                  # during lockout even the correct password is rejected
 
     def test_logout_clears_cookie(self):
         st, _, hdr = self.req("/api/judge-logout", {})

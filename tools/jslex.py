@@ -1,6 +1,6 @@
-"""最小 JS 詞法掃描：找出最外層的字串（'…' "…"）與樣板字串（`…`），正確處理 ${…} 裡面巢狀的字串、樣板與註解。
-原本用單一正規表示式切，遇到「樣板字串裡又有樣板字串」會切歪（ 第 2 階段實測，app.js 兩處）。
-只回傳最外層 token；巢狀的屬於外層樣板的一部分。回傳 [(start, end, kind)]，kind ∈ str｜tpl｜comment｜regex。
+"""Minimal JS lexical scanner: find the outermost strings ('…' "…") and template strings (`…`), correctly handling strings, templates and comments nested inside ${…}.
+The original single-regex split went wrong on a template string nested inside a template string (observed in stage 2,, in two places in app.js).
+Returns only outermost tokens; nested ones are part of the enclosing template. Returns [(start, end, kind)], kind being one of str | tpl | comment | regex.
 """
 from __future__ import annotations
 

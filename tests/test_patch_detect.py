@@ -1,4 +1,4 @@
-"""多尺度淺色區塊偵測（app/patch_detect.py）：用合成圖確認抓得到淺色、不誤抓正常皮膚與毛髮。"""
+"""Multi-scale light-patch detection (app/patch_detect.py): uses synthetic images to confirm light patches are found and normal skin and hair are not falsely caught."""
 import sys
 import unittest
 from pathlib import Path
@@ -23,8 +23,8 @@ def lab_to_rgb(L, a, b):
 class PatchDetectTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # 800×1000 的「皮膚」：正常膚色 Lab(50, 14, 14)，中間一個淺色圓（缺色素：較亮、彩度低）Lab(60, 9, 6)，
-        # 左上一塊深色「眉毛」Lab(20, 3, 3)；加一點雜訊
+        # 800×1000 "skin": normal skin tone Lab(50, 14, 14), with a light circle in the middle (depigmented: brighter, lower chroma) Lab(60, 9, 6),
+        # a dark "eyebrow" block at upper left Lab(20, 3, 3); plus a little noise
         H, W = 1000, 800
         rng = np.random.default_rng(20261017)
         img = np.tile(lab_to_rgb(50, 14, 14), (H, W, 1))
@@ -43,7 +43,7 @@ class PatchDetectTests(unittest.TestCase):
 
     def test_normal_skin_mostly_clear(self):
         far = ~self.patch & ~self.brow
-        far &= ~np.pad(self.patch, 0)                      # 圓外
+        far &= ~np.pad(self.patch, 0)                      # outside the circle
         false = (self.mask & far).sum() / far.sum()
         self.assertLess(false, 0.05, f"正常皮膚誤抓 {false:.3f}")
 
