@@ -26,6 +26,19 @@ class DockerfileChecks(unittest.TestCase):
         self.assertRegex(DOCKERFILE, r"(?m)^USER goodglow")
         self.assertIn("HEALTHCHECK", DOCKERFILE)
 
+    def test_live_mode_needs_both_switch_and_key_and_is_capped(self):
+        cmd = DOCKERFILE[DOCKERFILE.index("CMD ["):]
+        self.assertIn('"$GOODGLOW_LIVE\\" = \\"1\\"', cmd)
+        self.assertIn('-n \\"$YOUCAM_API_KEY\\"', cmd)                           # 缺開關或缺金鑰 → 走展示模式
+        self.assertIn('-n \\"$GOODGLOW_JUDGE_USER\\"', cmd)
+        self.assertIn('-n \\"$GOODGLOW_JUDGE_PASSWORD\\"', cmd)
+        self.assertIn("--judge-live", cmd)
+        self.assertIn("--max-calls ${GOODGLOW_MAX_CALLS}", cmd)
+        self.assertIn("--budget-cap ${GOODGLOW_BUDGET_CAP}", cmd)
+        self.assertRegex(DOCKERFILE, r"GOODGLOW_MAX_CALLS=5")
+        self.assertRegex(DOCKERFILE, r"GOODGLOW_BUDGET_CAP=30")
+        self.assertIn("mkdir -p runs && chown -R goodglow:goodglow runs", DOCKERFILE)
+
     def test_image_has_no_brand_data_secrets_or_keys(self):
         for pat in ("app/partner_shades.json", "app/partner_shades_official.json", "app/brand_codes_local.json", "app/brand_alias.json", ".env"):
             self.assertIn(pat, DOCKERIGNORE, pat)

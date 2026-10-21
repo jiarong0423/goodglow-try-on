@@ -41,6 +41,7 @@ import skin_card as sc  # noqa: E402
 import face_rules  # noqa: E402
 import i18n_srv  # noqa: E402
 import brand_alias  # noqa: E402
+import judge_auth  # noqa: E402
 
 WEB_DIR = ROOT / "web"
 MAX_BODY = 16 * 1024 * 1024
@@ -682,7 +683,44 @@ class State:
 
 class Handler(BaseHTTPRequestHandler):
     state: State
+    live_state: State | None = None            # 評審登入後才用的真實呼叫狀態（--judge-live）
+    auth: "judge_auth.JudgeAuth | None" = None
     timeout = SOCKET_TIMEOUT
+
+    def _secure(self) -> bool:
+        return (self.headers.get("X-Forwarded-Proto") or "").split(",")[0].strip().lower() == "https"
+
+    def _logged_in(self) -> bool:
+        return bool(self.auth) and self.auth.valid_cookie_header(self.headers.get("Cookie"))
+
+    def _pick_state(self) -> State:
+        """未登入一律展示模式；只有帶有效評審 cookie 的請求才走真實呼叫。"""
+        return self.live_state if (self.live_state is not None and self._logged_in()) else type(self).state
+
+    def _judge_post(self, path: str):
+        """/api/judge-login、/api/judge-logout：不經照片路由、不吃運算名額。"""
+        secure = self._secure()
+        if path == "/api/judge-logout":
+            self._set_cookies = [judge_auth.clear_cookie_value(secure)]
+            return self._json(200, {"ok": True})
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except ValueError:
+            length = 0
+        if length <= 0 or length > 4096:
+            return self._json(400, {"ok": False, "error_code": "bad_length", "hint": "bad request"})
+        raw = self.rfile.read(length)
+        if self.auth.locked():
+            return self._json(429, {"ok": False, "error_code": "locked", "hint": "too many attempts"})
+        try:
+            body = json.loads(raw)
+            user, password = str(body.get("username", "")), str(body.get("password", ""))
+        except (json.JSONDecodeError, AttributeError):
+            return self._json(400, {"ok": False, "error_code": "bad_json", "hint": "bad request"})
+        if not self.auth.check(user, password):
+            return self._json(401, {"ok": False, "error_code": "bad_login", "hint": "wrong username or password"})
+        self._set_cookies = [judge_auth.set_cookie_value(self.auth.issue(), secure)]
+        return self._json(200, {"ok": True})
 
     def _security_headers(self):
         self.send_header("X-Content-Type-Options", "nosniff")
@@ -707,15 +745,32 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        for cookie in getattr(self, "_set_cookies", []):
+            self.send_header("Set-Cookie", cookie)
         self._security_headers()
         self.end_headers()
         self.wfile.write(body)
 
     def do_GET(self):
         _REQ.lang = self._lang()
+        self.state = self._pick_state()
         path = self.path.split("?")[0]
+        if path == "/judge" and self.auth:
+            page = judge_auth.login_page(self._logged_in())
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(page)))
+            self.send_header("Cache-Control", "no-store")
+            self._security_headers()
+            self.end_headers()
+            self.wfile.write(page)
+            return
         if path == "/api/status":
-            return self._json(200, self.state.status())
+            status = self.state.status()
+            if self.auth:
+                status["judge_login"] = True
+                status["judge_signed_in"] = self._logged_in()
+            return self._json(200, status)
         if path == "/api/presets":
             return self._json(200, public_view(self.state.presets))
         if path == "/api/demo-photo":
@@ -748,7 +803,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         _REQ.lang = self._lang()
+        self.state = self._pick_state()
         path = self.path.split("?")[0]
+        if self.auth and path in ("/api/judge-login", "/api/judge-logout"):
+            return self._judge_post(path)
         routes = {"/api/looks": self.state.looks, "/api/makeup": self.state.makeup, "/api/match": self.state.match,
                   "/api/skin-plan": self.state.skin_plan, "/api/card": self.state.card,
                   "/api/recommend": self.state.recommend, "/api/face": self.state.face,
@@ -801,8 +859,9 @@ class BoundedHTTPServer(ThreadingHTTPServer):
             self._slots.release()
 
 
-def make_server(host: str, port: int, state: State) -> ThreadingHTTPServer:
-    handler = type("BoundHandler", (Handler,), {"state": state})
+def make_server(host: str, port: int, state: State, live_state: State | None = None,
+                auth: "judge_auth.JudgeAuth | None" = None) -> ThreadingHTTPServer:
+    handler = type("BoundHandler", (Handler,), {"state": state, "live_state": live_state, "auth": auth})
     return BoundedHTTPServer((host, port), handler)
 
 
@@ -822,6 +881,8 @@ def main(argv=None) -> int:
     ap.add_argument("--mock", action="store_true", help="不連 YouCam、不扣點")
     ap.add_argument("--max-calls", type=int, default=20, help="本次啟動最多呼叫幾次真 API")
     ap.add_argument("--budget-cap", type=int, default=60, help="跨次啟動的點數總預算（帳本 runs/budget_ledger.json）")
+    ap.add_argument("--judge-live", action="store_true",
+                    help="公開部署：預設展示模式（免登入）；用 GOODGLOW_JUDGE_USER／GOODGLOW_JUDGE_PASSWORD 登入的評審才走真實 YouCam 呼叫（要有 YOUCAM_API_KEY）")
     ap.add_argument("--catalog", choices=("all", "demo"), default="all",
                     help="demo＝只顯示虛構示範型錄（錄影片、截圖用，畫面不出現品牌名稱）")
     ap.add_argument("--brand-alias", action="store_true",
@@ -835,17 +896,32 @@ def main(argv=None) -> int:
     if not check_api_base(args.api_base):
         print("ERROR --api-base 只能是 YouCam 的 https 主機（*.makeupar.com）或本機測試伺服器", file=sys.stderr)
         return 2
+    if args.judge_live and args.mock:
+        print("ERROR --judge-live 不能和 --mock 一起用", file=sys.stderr)
+        return 2
+    live_state = auth = None
     try:
-        state = State(args.mock, args.max_calls, args.api_base, args.budget_cap, catalog=args.catalog,
+        # --judge-live：對外的 state 固定是展示模式；真實呼叫的 state 只給登入的評審用
+        state = State(args.mock or args.judge_live, args.max_calls, args.api_base, args.budget_cap, catalog=args.catalog,
                       alias=args.brand_alias, simulate_error=args.simulate_youcam_error, max_heavy=args.max_heavy)
+        if args.judge_live:
+            auth = judge_auth.JudgeAuth.from_env()
+            if auth is None:
+                print(f"ERROR --judge-live 需要環境變數 {judge_auth.USER_ENV} 與 {judge_auth.PASSWORD_ENV}", file=sys.stderr)
+                return 2
+            live_state = State(False, args.max_calls, args.api_base, args.budget_cap, catalog=args.catalog,
+                               alias=args.brand_alias, max_heavy=args.max_heavy)
     except (FileNotFoundError, ValueError) as exc:
         print(f"ERROR 啟動參數有問題：{exc}", file=sys.stderr)
         return 2
-    if not args.mock and not state.key:
+    if not args.mock and not (live_state or state).key:
         print(f"ERROR 找不到 {nt.KEY_ENV}：設環境變數或寫進 {ROOT / '.env'}；只想看介面請加 --mock", file=sys.stderr)
         return 2
-    httpd = make_server(args.host, args.port, state)
-    mode = "mock（不扣點）" if args.mock else f"live（本次上限 {args.max_calls} 次；總預算 {state.budget.status()}）"
+    httpd = make_server(args.host, args.port, state, live_state, auth)
+    if args.judge_live:
+        mode = f"展示模式（免登入）＋評審登入後 live（本次上限 {args.max_calls} 次；總預算 {live_state.budget.status()}）"
+    else:
+        mode = "mock（不扣點）" if args.mock else f"live（本次上限 {args.max_calls} 次；總預算 {state.budget.status()}）"
     print(f"http://{args.host}:{args.port}  模式：{mode}  presets {state.presets['version']}", flush=True)
     try:
         httpd.serve_forever()
