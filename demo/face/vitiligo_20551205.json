@@ -1,0 +1,38 @@
+{
+ "error": null,
+ "results": {
+  "nose": {},
+  "agegender": {},
+  "eyelid": {
+   "left_shape": "Almond",
+   "right_shape": "Almond"
+  },
+  "eyebrow": {
+   "left_body_thickness": "Dense",
+   "left_tail_thickness": "Sparse",
+   "left_thinness": "Normal",
+   "right_body_thickness": "Average",
+   "right_tail_thickness": "Sparse",
+   "right_thinness": "Normal"
+  },
+  "color": {},
+  "face_quality": {
+   "has_face": true,
+   "area": "good",
+   "frontal": "good",
+   "lighting": "good",
+   "faceangle": "good"
+  },
+  "cheekbone": {
+   "left": "High Cheekbone",
+   "right": "High Cheekbone",
+   "overrall": "High Cheekbone"
+  },
+  "faceshape": "Square",
+  "facialratio": {},
+  "lipshape": [
+   "Average"
+  ]
+ },
+ "task_status": "success"
+}

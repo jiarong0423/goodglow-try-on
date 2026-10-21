@@ -1,0 +1,344 @@
+{
+ "version": "2026-10-16-demo",
+ "note": "示範型錄：品牌與色號全部虛構，色碼是示意值，不代表任何真實產品。用途是展示色卡比對流程；正式導入時換成品牌提供的色號資料。（10-16 補齊深色眉筆、深膚色粉底與遮瑕，讓影片示範各膚色都有對應色號；全部是虛構品牌）",
+ "products": [
+  {
+   "brand": "雪原 Snowfield",
+   "name": "極淺膚粉底液",
+   "category": "foundation",
+   "shades": [
+    {
+     "code": "C00 瓷粉",
+     "hex": "#F5E2DC",
+     "undertone": "cool"
+    },
+    {
+     "code": "C05 雪紗",
+     "hex": "#F0D8CF",
+     "undertone": "cool"
+    },
+    {
+     "code": "N00 月白",
+     "hex": "#F3E1D5",
+     "undertone": "neutral"
+    },
+    {
+     "code": "N05 象牙霧",
+     "hex": "#EED6C6",
+     "undertone": "neutral"
+    },
+    {
+     "code": "W00 奶油",
+     "hex": "#F2DEC8",
+     "undertone": "warm"
+    },
+    {
+     "code": "W05 米杏",
+     "hex": "#ECD3B9",
+     "undertone": "warm"
+    }
+   ]
+  },
+  {
+   "brand": "初色 First Hue",
+   "name": "日常粉底",
+   "category": "foundation",
+   "shades": [
+    {
+     "code": "110 粉白",
+     "hex": "#EBCFBF",
+     "undertone": "cool"
+    },
+    {
+     "code": "120 自然",
+     "hex": "#E6C6AF",
+     "undertone": "neutral"
+    },
+    {
+     "code": "130 暖象牙",
+     "hex": "#E4C3A3",
+     "undertone": "warm"
+    },
+    {
+     "code": "220 自然中",
+     "hex": "#D2A787",
+     "undertone": "neutral"
+    },
+    {
+     "code": "230 蜂蜜",
+     "hex": "#CC9E77",
+     "undertone": "warm"
+    },
+    {
+     "code": "320 焦糖",
+     "hex": "#B07E5C",
+     "undertone": "neutral"
+    },
+    {
+     "code": "420 可可",
+     "hex": "#8A5D41",
+     "undertone": "neutral"
+    },
+    {
+     "code": "430 深可可",
+     "hex": "#8C5E44",
+     "undertone": "cool"
+    },
+    {
+     "code": "440 深焦糖",
+     "hex": "#94653F",
+     "undertone": "warm"
+    },
+    {
+     "code": "520 濃可可",
+     "hex": "#7A5440",
+     "undertone": "neutral"
+    },
+    {
+     "code": "610 黑巧克力",
+     "hex": "#4A2E22",
+     "undertone": "neutral"
+    }
+   ]
+  },
+  {
+   "brand": "月光實驗室 Lumen Lab",
+   "name": "高遮瑕遮瑕膏",
+   "category": "concealer",
+   "shades": [
+    {
+     "code": "L1 冷瓷",
+     "hex": "#F3DED6",
+     "undertone": "cool"
+    },
+    {
+     "code": "L2 中性淺",
+     "hex": "#EDD4C4",
+     "undertone": "neutral"
+    },
+    {
+     "code": "L3 暖淺",
+     "hex": "#E9CDB2",
+     "undertone": "warm"
+    },
+    {
+     "code": "M1 冷中",
+     "hex": "#D9B19F",
+     "undertone": "cool"
+    },
+    {
+     "code": "M2 中性中",
+     "hex": "#D3A88C",
+     "undertone": "neutral"
+    },
+    {
+     "code": "M3 暖中",
+     "hex": "#CFA27C",
+     "undertone": "warm"
+    },
+    {
+     "code": "D1 中性深",
+     "hex": "#9C6B4D",
+     "undertone": "neutral"
+    },
+    {
+     "code": "D2 暖深",
+     "hex": "#8F6040",
+     "undertone": "warm"
+    },
+    {
+     "code": "D3 深可可",
+     "hex": "#6E4632",
+     "undertone": "neutral"
+    },
+    {
+     "code": "M4 冷中深",
+     "hex": "#B4876C",
+     "undertone": "cool"
+    },
+    {
+     "code": "D4 冷深",
+     "hex": "#8E5F4B",
+     "undertone": "cool"
+    },
+    {
+     "code": "D5 濃深",
+     "hex": "#7A5440",
+     "undertone": "neutral"
+    }
+   ]
+  },
+  {
+   "brand": "月光實驗室 Lumen Lab",
+   "name": "修色棒",
+   "category": "corrector",
+   "shades": [
+    {
+     "code": "綠 修泛紅",
+     "hex": "#BFD6AE",
+     "purpose": "neutralize_red"
+    },
+    {
+     "code": "蜜桃 修暗沉",
+     "hex": "#F1C2A8",
+     "purpose": "warm_light"
+    },
+    {
+     "code": "橘 修深色差",
+     "hex": "#E3A07C",
+     "purpose": "warm_deep"
+    }
+   ]
+  },
+  {
+   "brand": "雪原 Snowfield",
+   "name": "細芯眉筆",
+   "category": "brow",
+   "shades": [
+    {
+     "code": "01 淺金",
+     "hex": "#CBB596"
+    },
+    {
+     "code": "02 淺金棕",
+     "hex": "#A38C72"
+    },
+    {
+     "code": "03 灰褐",
+     "hex": "#7D695C"
+    },
+    {
+     "code": "04 冷燕麥灰",
+     "hex": "#998F87"
+    },
+    {
+     "code": "05 灰棕",
+     "hex": "#6C5C53"
+    },
+    {
+     "code": "06 深棕",
+     "hex": "#4E3D34"
+    },
+    {
+     "code": "07 黑棕",
+     "hex": "#2E2626"
+    },
+    {
+     "code": "08 自然黑",
+     "hex": "#1F1D1E"
+    }
+   ]
+  },
+  {
+   "brand": "初色 First Hue",
+   "name": "染眉膏",
+   "category": "brow",
+   "shades": [
+    {
+     "code": "淺棕",
+     "hex": "#8E745F"
+    },
+    {
+     "code": "自然棕",
+     "hex": "#6B513F"
+    }
+   ]
+  },
+  {
+   "brand": "月光實驗室 Lumen Lab",
+   "name": "睫毛膏",
+   "category": "lash",
+   "shades": [
+    {
+     "code": "香檳淡金",
+     "hex": "#D6C5A3"
+    },
+    {
+     "code": "淡棕灰",
+     "hex": "#6D5C52"
+    },
+    {
+     "code": "棕",
+     "hex": "#583F33"
+    },
+    {
+     "code": "黑",
+     "hex": "#1E1919"
+    },
+    {
+     "code": "白",
+     "hex": "#F5F2EC"
+    }
+   ]
+  },
+  {
+   "brand": "雪原 Snowfield",
+   "name": "霜狀腮紅",
+   "category": "blush",
+   "shades": [
+    {
+     "code": "玫瑰",
+     "hex": "#E6A3B6"
+    },
+    {
+     "code": "薰衣草玫瑰",
+     "hex": "#D9B0CF"
+    },
+    {
+     "code": "乾燥玫瑰",
+     "hex": "#DD978A"
+    },
+    {
+     "code": "蜜桃",
+     "hex": "#E8A48B"
+    },
+    {
+     "code": "杏",
+     "hex": "#E7A07E"
+    }
+   ]
+  },
+  {
+   "brand": "月光實驗室 Lumen Lab",
+   "name": "潤色護唇",
+   "category": "lip",
+   "shades": [
+    {
+     "code": "透玫瑰",
+     "hex": "#C77B8D"
+    },
+    {
+     "code": "透裸",
+     "hex": "#C6837A"
+    },
+    {
+     "code": "無花果",
+     "hex": "#C47E70"
+    }
+   ]
+  },
+  {
+   "brand": "初色 First Hue",
+   "name": "唇彩",
+   "category": "lip",
+   "shades": [
+    {
+     "code": "莓果水光",
+     "hex": "#C23E57"
+    },
+    {
+     "code": "冷櫻桃",
+     "hex": "#A11B31"
+    },
+    {
+     "code": "深紅寶石",
+     "hex": "#7C1426"
+    },
+    {
+     "code": "經典正紅（暖）",
+     "hex": "#C8142F"
+    }
+   ]
+  }
+ ]
+}

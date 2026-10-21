@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="google" content="notranslate">
+  <meta name="theme-color" content="#fbf3f1">
+  <title>How a look is built · Good Glow Try-On</title>
+  <link rel="icon" href="../web/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../web/style.css">
+  <link rel="stylesheet" href="process.css">
+</head>
+<body>
+  <main class="pr" id="pr">
+    <header class="pr-bar">
+      <a class="pr-back" id="pr-back" href="../README.en.md">←</a>
+      <span class="pr-logo" id="pr-logo"></span>
+      <button class="icon-toggle lang-btn" id="lang-toggle" type="button">EN</button>
+    </header>
+
+    <section class="pr-intro">
+      <h1 id="pr-title"></h1>
+      <p class="sub" id="pr-lead"></p>
+      <p class="pr-sim" id="pr-sim"></p>
+      <div class="pr-pills" id="pr-pills"></div>
+    </section>
+
+    <section class="pr-tiers-sec">
+      <h2 id="pr-tiers-h"></h2>
+      <div class="pr-cards" id="pr-tiers"></div>
+    </section>
+
+    <div class="pr-tabs" id="pr-tabs" role="tablist"></div>
+
+    <section class="pr-viewer" aria-live="polite">
+      <div class="pr-summary" id="pr-summary"></div>
+      <div class="pr-stage" id="pr-stage">
+        <img id="pr-img-a" alt="" class="on">
+        <img id="pr-img-b" alt="">
+        <span class="pr-badge" id="pr-badge"></span>
+        <span class="pr-tag" id="pr-tag"></span>
+      </div>
+      <div class="pr-count" id="pr-count"></div>
+      <h2 class="pr-step" id="pr-step"></h2>
+      <p class="pr-tech" id="pr-tech"></p>
+      <p class="pr-metric" id="pr-metric"></p>
+      <div class="pr-ctrl">
+        <button class="btn ghost" id="pr-prev" type="button"></button>
+        <button class="btn primary" id="pr-play" type="button"></button>
+        <button class="btn ghost" id="pr-next" type="button"></button>
+      </div>
+      <input class="pr-range" id="pr-range" type="range" min="0" max="1" value="0" step="1">
+      <div class="pr-opts"><button class="chip" id="pr-diff" type="button" aria-pressed="false"></button></div>
+      <div class="pr-thumbs" id="pr-thumbs" role="listbox"></div>
+      <p class="muted small" id="pr-note"></p>
+      <p class="credit" id="pr-credit"></p>
+    </section>
+
+    <section class="pr-tech-sec">
+      <h2 id="pr-assist-h"></h2>
+      <div class="pr-cards" id="pr-assist-cards"></div>
+      <h2 id="pr-tech-h"></h2>
+      <div class="pr-cards" id="pr-tech-cards"></div>
+      <h2 id="pr-cross-h"></h2>
+      <div class="pr-cards" id="pr-cross-cards"></div>
+      <p class="muted small" id="pr-foot"></p>
+      <a class="btn primary big pr-open" id="pr-open" href="../README.en.md"></a>
+    </section>
+  </main>
+  <script src="../web/i18n/en.js"></script>
+  <script src="../web/i18n.js"></script>
+  <script src="process.js"></script>
+</body>
+</html>

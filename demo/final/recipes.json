@@ -1,0 +1,176 @@
+{
+ "albinism_F": {
+  "title": "粉嫩好氣色",
+  "label": "模擬",
+  "credit": "照片：Pexels（Pexels License，可修改）https://www.pexels.com/photo/5273693/",
+  "images": {
+   "base": "albinism_F_base.jpg",
+   "official": "albinism_F_official.jpg",
+   "final": "albinism_F_final.jpg"
+  },
+  "steps": [
+   {
+    "item": "粉底",
+    "where": "全臉薄薄一層，保留雀斑與毛孔",
+    "hex": "#D6B59C"
+   },
+   {
+    "item": "遮瑕",
+    "where": "只點在泛紅的小點上，拍開邊緣",
+    "hex": "#E1BFAD"
+   },
+   {
+    "item": "眼下遮瑕",
+    "where": "靠下眼瞼最濃、往下淡出，不成一條帶",
+    "hex": "#E1BFAD"
+   },
+   {
+    "item": "淚溝遮瑕",
+    "where": "只補內眼角往外下那條凹線的暗處",
+    "hex": null
+   },
+   {
+    "item": "修容",
+    "where": "顴骨下、太陽穴、下顎角，只上皮膚",
+    "hex": "#B0988D"
+   },
+   {
+    "item": "打亮",
+    "where": "顴骨上緣、額頭中間、鼻樑、下巴，輕輕帶過",
+    "hex": "#D5BAB0"
+   },
+   {
+    "item": "鼻影",
+    "where": "鼻樑兩側兩條淡淡的平行線",
+    "hex": "#B39A8F"
+   },
+   {
+    "item": "腮紅",
+    "where": "顴骨上、往太陽穴斜刷，避開眼下",
+    "hex": "#DF9299"
+   },
+   {
+    "item": "眼影",
+    "where": "上眼皮薄薄一層",
+    "hex": "#D99676"
+   },
+   {
+    "item": "睫毛膏",
+    "where": "深咖啡色，刷根部",
+    "hex": "#3E2A22"
+   },
+   {
+    "item": "唇",
+    "where": "收在原本唇線內，保留唇紋",
+    "hex": "#C77572"
+   }
+  ],
+  "source_sha256": {
+   "base": "dff68e1dd1535032bd094c862a4a66c1059e02182281b5429238393469e0341b",
+   "official": "5717debc030c487752212f4808bee63caa131647c6cd6d70679b6b04ae43de61",
+   "final": "fe1026c44555cbedfabcc51fa7b2c6862ba5978e901d9ff8a7fbd71e0bc6d220"
+  }
+ },
+ "albinism_M": {
+  "title": "柔和・極簡",
+  "label": "模擬",
+  "credit": "照片：Pexels（Pexels License，可修改）https://www.pexels.com/photo/5273693/",
+  "images": {
+   "base": "albinism_M_base.jpg",
+   "official": "albinism_M_official.jpg",
+   "final": "albinism_M_final.jpg"
+  },
+  "steps": [
+   {
+    "item": "粉底",
+    "where": "全臉薄薄一層，保留雀斑與毛孔",
+    "hex": "#E7B79C"
+   },
+   {
+    "item": "遮瑕",
+    "where": "只點在泛紅的小點上，拍開邊緣",
+    "hex": "#E1BFAD"
+   },
+   {
+    "item": "眼下遮瑕",
+    "where": "靠下眼瞼最濃、往下淡出，不成一條帶",
+    "hex": "#E1BFAD"
+   },
+   {
+    "item": "唇",
+    "where": "收在原本唇線內，保留唇紋",
+    "hex": "#BF7D6E"
+   },
+   {
+    "item": "妝前柔焦",
+    "where": "兩頰毛孔與痘疤處薄拍，鬍子區不碰",
+    "hex": null
+   }
+  ],
+  "source_sha256": {
+   "base": "ac181cd661fd31a490969568c722b206fd0d4af3c4b4b15373b8d730e0b2fa8c",
+   "official": "d5966ab066e1b178341c360699241a10edeb615d510c9de22d5bccfe147a80f7",
+   "final": "c2ce9994c8ca516e68f6ef7535d1bfddb6b728cc0ed7c6a5626fd83ee8392eed"
+  }
+ },
+ "vitiligo_M": {
+  "title": "膚色均勻・自然",
+  "label": "模擬",
+  "credit": "照片：Pexels（Pexels License，可修改）https://www.pexels.com/photo/20551205/",
+  "images": {
+   "base": "vitiligo_M_base.jpg",
+   "official": "vitiligo_M_official.jpg",
+   "final": "vitiligo_M_official.jpg"
+  },
+  "steps": [
+   {
+    "item": "遮瑕",
+    "where": "淺色區塊分區上色，交界拍開",
+    "hex": null
+   },
+   {
+    "item": "粉底",
+    "where": "全臉薄薄一層，讓膚色一致",
+    "hex": null
+   },
+   {
+    "item": "淡妝",
+    "where": "修容、腮紅一點點，看不出化妝",
+    "hex": null
+   }
+  ],
+  "source_sha256": {
+   "base": "c9064386c8e71565102d7724a9001517ae507d33ac10c977f3570d261fc91072",
+   "official": "a819ecd2164fbc10bb44b6ac1d9681aae496778d252886528425cc8afccf717c",
+   "final": "a819ecd2164fbc10bb44b6ac1d9681aae496778d252886528425cc8afccf717c"
+  }
+ },
+ "vitiligo_F": {
+  "title": "局部輕遮瑕",
+  "label": "模擬",
+  "credit": "照片：模擬・由 AI 生成的轉向示意圖，非本人原照（原照來源：Unsplash，可修改授權）https://unsplash.com/photos/uCt9uA9r1Rw",
+  "images": {
+   "base": "vitiligo_F_base.jpg",
+   "official": "vitiligo_F_official.jpg",
+   "final": "vitiligo_F_official.jpg"
+  },
+  "steps": [
+   {
+    "item": "遮瑕",
+    "where": "只在看得出的淺色區塊小範圍點蓋、拍開",
+    "hex": null
+   },
+   {
+    "item": "粉底",
+    "where": "其他地方維持原本膚色，不全臉厚塗",
+    "hex": null
+   }
+  ],
+  "source_sha256": {
+   "base": "e6085ea0de4b0ab782771844c1a87306d97386347ad18aa25b38909aab0a9884",
+   "official": "6c0c584ec55b091ec5b3e225e6637e7995c41550b809ee89736a499bbde0bc40",
+   "final": "6c0c584ec55b091ec5b3e225e6637e7995c41550b809ee89736a499bbde0bc40"
+  },
+  "source_note": "原照 Unsplash uCt9uA9r1Rw（側臉）→ AI 影像工具（AI）轉成正面示意圖（非本人原照，輪廓未驗證）→ 本地逐層 F_C4 → 官方腮紅＋眼影（磨皮 0）；畫面標「模擬」"
+ }
+}

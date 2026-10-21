@@ -1,0 +1,121 @@
+{
+ "version": "2026-10-16",
+ "note": "完整妝容：入口×妝感的基本表，再依色卡級數與冷暖、敏感程度調整。內容由 外部建議構想，選項已對到 presets.json；來源名稱尚未查證，畫面標「待查證」。兩處依既有規則調整：白斑症自然款唇色由水光莓紅改水光自然色（紅唇只在精緻）；白化症精緻款腮紅由一點血色改淡（精緻款沒有一點血色）。 白斑症理容改成只上一層薄底妝（像 BB 霜），其他彩妝都不加（參考白斑症男性理容影片：整臉均勻、看不出化妝）。 （白化症男生）：「讓膚色一致性提高」→ 白化症理容也改成只上一層薄底妝。 → 白化症理容＝薄底妝＋潤色護唇。 白化症理容底妝改用「自然」（實測紅度不均 3.77→3.11、雀斑仍保留，均勻與保留膚質較平衡）。 10-16 照經驗建議：白化症理容唇改裸粉潤唇（#D99B9B，看不出明顯紅色）。",
+ "base": {
+  "albinism": {
+   "grooming": {
+    "foundation": "medium",
+    "contour": "keep",
+    "highlight": "keep",
+    "brow": "keep",
+    "lash": "keep",
+    "blush": "keep",
+    "lip": "nude_balm",
+    "why": "底妝用「自然」讓泛紅和膚色不均變勻、仍保留部分雀斑，加裸粉潤唇提亮嘴唇；其他彩妝都不加。"
+   },
+   "natural": {
+    "foundation": "light",
+    "contour": "keep",
+    "highlight": "center",
+    "brow": "photo_soft",
+    "lash": "champagne",
+    "blush": "soft",
+    "lip": "natural_gloss",
+    "why": "輕薄底妝修飾泛紅、保留膚質；面中柔和提亮不刺眼；眉睫照原生淡色微補。"
+   },
+   "polished": {
+    "foundation": "veil",
+    "contour": "soft",
+    "highlight": "lift",
+    "brow": "photo_defined",
+    "lash": "translucent_brown",
+    "blush": "soft",
+    "lip": "red2",
+    "why": "薄透水光加極淡冷灰修容；眉略深半階；棕灰睫毛取代純黑；冷調紅唇做亮點。"
+   }
+  },
+  "vitiligo": {
+   "grooming": {
+    "foundation": "light",
+    "contour": "keep",
+    "highlight": "keep",
+    "brow": "keep",
+    "lash": "keep",
+    "blush": "keep",
+    "lip": "keep",
+    "why": "只上一層薄底妝（像 BB 霜），把膚色統一、看不出化妝；其他彩妝都不加。"
+   },
+   "natural": {
+    "foundation": "medium",
+    "contour": "soft",
+    "highlight": "nose",
+    "brow": "taupe",
+    "lash": "brown",
+    "blush": "medium",
+    "lip": "natural_gloss",
+    "why": "底妝對齊周圍膚色、淺色區塊局部校色；鼻樑微光把視線拉到中央；柔和修容弱化兩側色差。"
+   },
+   "polished": {
+    "foundation": "max",
+    "contour": "defined",
+    "highlight": "tzone",
+    "brow": "taupe_deep",
+    "lash": "black",
+    "blush": "apricot",
+    "lip": "red3",
+    "why": "校色加全覆蓋平衡全臉；重建骨相；暖杏腮紅過渡遮瑕底妝；霧面深紅當焦點。"
+   }
+  }
+ },
+ "steps": [
+  {
+   "step": 1,
+   "title": "溫和保濕",
+   "tip": "輕拍保濕，不要用力搓揉",
+   "source": "一般衛教資料整理（尚未逐條查證）"
+  },
+  {
+   "step": 2,
+   "title": "廣譜防曬",
+   "tip": "均勻厚塗，保護怕光肌膚",
+   "source": "一般衛教資料整理（尚未逐條查證）"
+  },
+  {
+   "step": 3,
+   "title": "局部校色",
+   "tip": "淺色區塊處輕點校色，順平周圍膚色",
+   "source": "一般衛教資料整理（尚未逐條查證）",
+   "only": "vitiligo"
+  },
+  {
+   "step": 4,
+   "title": "均勻底妝",
+   "tip": "粉撲輕壓對齊原膚色，不來回擦",
+   "source": "輕壓上妝衛教（待查證）"
+  },
+  {
+   "step": 5,
+   "title": "柔和眉部",
+   "tip": "順著毛流補色，不畫生硬外框",
+   "source": "經驗建議"
+  },
+  {
+   "step": 6,
+   "title": "修容打亮",
+   "tip": "極少量輕掃，避開泛紅處",
+   "source": "經驗建議"
+  },
+  {
+   "step": 7,
+   "title": "睫毛腮紅",
+   "tip": "輕刷睫毛，雙頰點一點氣色",
+   "source": "經驗建議"
+  },
+  {
+   "step": 8,
+   "title": "保濕潤唇",
+   "tip": "輕塗保濕唇彩，增添光澤",
+   "source": "經驗建議"
+  }
+ ]
+}

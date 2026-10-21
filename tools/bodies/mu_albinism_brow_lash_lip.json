@@ -1,0 +1,6 @@
+{"version": "1.0", "effects": [
+  {"category": "skin_smooth", "skinSmoothStrength": 0, "skinSmoothColorIntensity": 0},
+  {"category": "eyebrows", "pattern": {"type": "color"}, "palettes": [{"color": "#9c7b5c", "colorIntensity": 45, "texture": "matte"}]},
+  {"category": "eyelashes", "pattern": {"name": "Natural1"}, "palettes": [{"color": "#7a5c45", "colorIntensity": 50}]},
+  {"category": "lip_color", "shape": {"name": "original"}, "palettes": [{"color": "#c46a6a", "texture": "matte", "colorIntensity": 40}], "style": {"type": "full"}}
+]}

@@ -1,0 +1,4 @@
+{"version": "1.0", "effects": [
+  {"category": "skin_smooth", "skinSmoothStrength": 0, "skinSmoothColorIntensity": 0},
+  {"category": "eyelashes", "pattern": {"name": "Natural1"}, "palettes": [{"color": "#1c1717", "colorIntensity": 70}]}
+]}

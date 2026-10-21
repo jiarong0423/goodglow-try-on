@@ -1,0 +1,713 @@
+{
+  "version": "2026-10-15-r3+brow_photo+foundation+highlight",
+  "skin_smooth": {
+    "skinSmoothStrength": 0,
+    "skinSmoothColorIntensity": 0
+  },
+  "undertones": {
+    "pink_cool": {
+      "label": "粉冷調",
+      "blush": "#E8A5B8",
+      "lip": "#C97A8E",
+      "contour": "#A89F99"
+    },
+    "neutral": {
+      "label": "中性",
+      "blush": "#DF988B",
+      "lip": "#C8827A",
+      "contour": "#A3998E"
+    },
+    "warm_ivory": {
+      "label": "暖象牙",
+      "blush": "#EAA58C",
+      "lip": "#C67D6F",
+      "contour": "#A79A8B"
+    }
+  },
+  "blush": {
+    "pattern": "Oblique1",
+    "levels": [
+      {
+        "id": "keep",
+        "label": "不加"
+      },
+      {
+        "id": "flush",
+        "label": "一點血色",
+        "intensity": 45,
+        "unverified": true
+      },
+      {
+        "id": "soft",
+        "label": "淡",
+        "intensity": 55
+      },
+      {
+        "id": "medium",
+        "label": "中",
+        "intensity": 70
+      },
+      {
+        "id": "apricot",
+        "label": "暖杏好氣色",
+        "intensity": 25,
+        "color": "#C48B7B",
+        "unverified": true
+      }
+    ]
+  },
+  "lip": [
+    {
+      "id": "keep",
+      "label": "保留原樣"
+    },
+    {
+      "id": "tinted_balm",
+      "label": "潤色護唇",
+      "use_undertone_color": true,
+      "texture": "satin",
+      "intensity": 20,
+      "unverified": true
+    },
+    {
+      "id": "nude_balm",
+      "label": "裸粉潤唇",
+      "color": "#D99B9B",
+      "texture": "satin",
+      "intensity": 22
+    },
+    {
+      "id": "natural_gloss",
+      "label": "水光自然色",
+      "use_undertone_color": true,
+      "texture": "gloss",
+      "intensity": 38,
+      "gloss": 60,
+      "transparencyIntensity": 40
+    },
+    {
+      "id": "red1",
+      "label": "水光莓紅",
+      "color": "#C43D56",
+      "texture": "gloss",
+      "intensity": 45,
+      "gloss": 60,
+      "transparencyIntensity": 35
+    },
+    {
+      "id": "red2",
+      "label": "緞面冷櫻桃",
+      "color": "#A31930",
+      "texture": "satin",
+      "intensity": 65
+    },
+    {
+      "id": "red3",
+      "label": "霧面深紅",
+      "color": "#7E1325",
+      "texture": "matte",
+      "intensity": 80,
+      "suggest_balance": true
+    }
+  ],
+  "brow": [
+    {
+      "id": "keep",
+      "label": "保留原樣"
+    },
+    {
+      "id": "photo_soft",
+      "label": "照原眉色補一點",
+      "from_photo": "soft"
+    },
+    {
+      "id": "photo_defined",
+      "label": "照原眉色略深（立體）",
+      "from_photo": "defined"
+    },
+    {
+      "id": "fill_light",
+      "label": "只補一點",
+      "color": "#A08A70",
+      "intensity": 35,
+      "unverified": true
+    },
+    {
+      "id": "light_brown",
+      "label": "淺金棕",
+      "color": "#A08A70",
+      "intensity": 50
+    },
+    {
+      "id": "taupe",
+      "label": "灰褐",
+      "color": "#7F6A5D",
+      "intensity": 50,
+      "default": true
+    },
+    {
+      "id": "taupe_deep",
+      "label": "灰褐深一階",
+      "color": "#605852",
+      "intensity": 65
+    },
+    {
+      "id": "greige",
+      "label": "冷燕麥灰",
+      "color": "#9A9088",
+      "intensity": 50
+    }
+  ],
+  "lash": [
+    {
+      "id": "keep",
+      "label": "保留原樣"
+    },
+    {
+      "id": "translucent_brown",
+      "label": "淡棕灰",
+      "color": "#6B5A50",
+      "intensity": 50
+    },
+    {
+      "id": "brown",
+      "label": "棕",
+      "color": "#5A4033",
+      "intensity": 70
+    },
+    {
+      "id": "black",
+      "label": "黑",
+      "color": "#1C1717",
+      "intensity": 70
+    },
+    {
+      "id": "champagne",
+      "label": "香檳淡金",
+      "color": "#D8C7A5",
+      "intensity": 48
+    },
+    {
+      "id": "fine_black",
+      "label": "極細自然黑",
+      "color": "#1C1717",
+      "intensity": 45
+    }
+  ],
+  "lash_pattern": "Natural1",
+  "contour": [
+    {
+      "id": "keep",
+      "label": "不加"
+    },
+    {
+      "id": "soft",
+      "label": "柔和修容",
+      "pattern": "HeartFace2",
+      "intensity": 65,
+      "color_from_foundation": true,
+      "unverified": true,
+      "dL": -32,
+      "ka": 0.88,
+      "kb": 0.8
+    },
+    {
+      "id": "defined",
+      "label": "修容明顯一點",
+      "pattern": "HeartFace2",
+      "intensity": 70,
+      "color_from_foundation": true,
+      "unverified": true,
+      "dL": -32,
+      "ka": 0.88,
+      "kb": 0.8
+    }
+  ],
+  "styles": {
+    "grooming": {
+      "label": "理容",
+      "description": "看不出有化妝：補一點眉、潤色護唇，皮膚保持原樣",
+      "quick": {
+        "glow": {
+          "foundation": "sheer",
+          "highlight": "center",
+          "lip": "tinted_balm"
+        },
+        "clear": {
+          "foundation": "sheer",
+          "highlight": "center",
+          "lip": "tinted_balm",
+          "brow": "fill_light",
+          "lash": "translucent_brown"
+        }
+      },
+      "options": {
+        "blush": [
+          "keep",
+          "flush"
+        ],
+        "lip": [
+          "keep",
+          "nude_balm",
+          "tinted_balm"
+        ],
+        "brow": [
+          "keep",
+          "photo_soft",
+          "fill_light",
+          "light_brown"
+        ],
+        "lash": [
+          "keep",
+          "translucent_brown"
+        ],
+        "foundation": [
+          "keep",
+          "sheer",
+          "bb",
+          "light",
+          "veil",
+          "medium",
+          "full",
+          "max"
+        ],
+        "highlight": [
+          "keep",
+          "center",
+          "lift",
+          "nose",
+          "tzone"
+        ],
+        "contour": [
+          "keep",
+          "soft"
+        ]
+      }
+    },
+    "natural": {
+      "label": "自然",
+      "description": "淡淡的好氣色：腮紅、水光唇、照原眉色補眉",
+      "quick": {
+        "glow": {
+          "foundation": "medium",
+          "highlight": "center",
+          "blush": "soft",
+          "lip": "natural_gloss"
+        },
+        "clear": {
+          "foundation": "medium",
+          "highlight": "center",
+          "blush": "soft",
+          "lip": "natural_gloss",
+          "brow": "taupe",
+          "lash": "translucent_brown"
+        }
+      },
+      "options": {
+        "blush": [
+          "keep",
+          "flush",
+          "soft",
+          "medium",
+          "apricot"
+        ],
+        "lip": [
+          "keep",
+          "nude_balm",
+          "tinted_balm",
+          "natural_gloss"
+        ],
+        "brow": [
+          "keep",
+          "photo_soft",
+          "photo_defined",
+          "fill_light",
+          "light_brown",
+          "taupe",
+          "greige"
+        ],
+        "lash": [
+          "keep",
+          "fine_black",
+          "translucent_brown",
+          "brown",
+          "champagne"
+        ],
+        "foundation": [
+          "keep",
+          "sheer",
+          "light",
+          "veil",
+          "medium",
+          "full",
+          "max"
+        ],
+        "highlight": [
+          "keep",
+          "center",
+          "lift",
+          "nose",
+          "tzone"
+        ],
+        "contour": [
+          "keep",
+          "soft"
+        ]
+      }
+    },
+    "polished": {
+      "label": "精緻",
+      "description": "有妝感：可以加深眉睫、選紅唇；建議只放一個焦點",
+      "quick": {
+        "glow": {
+          "foundation": "medium",
+          "highlight": "center",
+          "blush": "medium",
+          "lip": "natural_gloss"
+        },
+        "clear": {
+          "foundation": "medium",
+          "highlight": "center",
+          "blush": "medium",
+          "lip": "natural_gloss",
+          "brow": "taupe",
+          "lash": "brown"
+        }
+      },
+      "options": {
+        "blush": [
+          "keep",
+          "soft",
+          "medium",
+          "apricot"
+        ],
+        "lip": [
+          "keep",
+          "natural_gloss",
+          "red1",
+          "red2",
+          "red3"
+        ],
+        "brow": [
+          "keep",
+          "photo_soft",
+          "photo_defined",
+          "fill_light",
+          "light_brown",
+          "taupe",
+          "taupe_deep",
+          "greige"
+        ],
+        "lash": [
+          "keep",
+          "fine_black",
+          "translucent_brown",
+          "brown",
+          "black",
+          "champagne"
+        ],
+        "foundation": [
+          "keep",
+          "sheer",
+          "light",
+          "veil",
+          "medium",
+          "full",
+          "max"
+        ],
+        "highlight": [
+          "keep",
+          "center",
+          "lift",
+          "nose",
+          "tzone"
+        ],
+        "contour": [
+          "keep",
+          "soft",
+          "defined"
+        ]
+      }
+    }
+  },
+  "brow_photo_map": {
+    "fill_light": "photo_soft",
+    "light_brown": "photo_soft",
+    "taupe": "photo_defined",
+    "taupe_deep": "photo_defined",
+    "greige": "photo_defined"
+  },
+  "foundation": [
+    {
+      "id": "keep",
+      "label": "保留原樣"
+    },
+    {
+      "id": "sheer",
+      "label": "薄透",
+      "colorIntensity": 30,
+      "coverageIntensity": 30,
+      "glowIntensity": 10,
+      "unverified": true
+    },
+    {
+      "id": "bb",
+      "label": "BB 霜（快速勻膚）",
+      "colorIntensity": 35,
+      "coverageIntensity": 35,
+      "glowIntensity": 10,
+      "unverified": true,
+      "limits": "BB 霜用手指推開就好、比粉底快，常附防曬與保濕，看起來比較不像化妝。限制：色號通常只有淺、中、深幾色，膚色很淺或很深可能找不到接近的；遮蓋輕，淺色區塊、明顯泛紅還是要局部遮瑕；附的 SPF 不夠，防曬照樣另外擦。試色一樣在下顎線、自然光下等 15–30 分鐘再看。"
+    },
+    {
+      "id": "light",
+      "label": "輕薄（保留膚質）",
+      "colorIntensity": 25,
+      "coverageIntensity": 22,
+      "glowIntensity": 10,
+      "unverified": true,
+      "toward_skin": 0.75
+    },
+    {
+      "id": "veil",
+      "label": "薄透水光",
+      "colorIntensity": 28,
+      "coverageIntensity": 20,
+      "glowIntensity": 40,
+      "toward_skin": 0.85,
+      "unverified": true
+    },
+    {
+      "id": "medium",
+      "label": "自然",
+      "colorIntensity": 50,
+      "coverageIntensity": 60,
+      "glowIntensity": 10,
+      "unverified": true
+    },
+    {
+      "id": "full",
+      "label": "遮蓋較高",
+      "colorIntensity": 70,
+      "coverageIntensity": 90,
+      "glowIntensity": 5,
+      "unverified": true
+    },
+    {
+      "id": "max",
+      "label": "全覆蓋",
+      "colorIntensity": 100,
+      "coverageIntensity": 100,
+      "glowIntensity": 0,
+      "with_concealer": {
+        "colorIntensity": 100,
+        "colorUnderEyeIntensity": 100,
+        "coverageLevel": 100
+      }
+    }
+  ],
+  "highlight": [
+    {
+      "id": "keep",
+      "label": "保留原樣"
+    },
+    {
+      "id": "center",
+      "label": "面中打亮",
+      "colorIntensity": 45,
+      "glowIntensity": 35,
+      "shimmerIntensity": 10,
+      "shimmerDensity": 20,
+      "shimmerSize": 10,
+      "unverified": true
+    },
+    {
+      "id": "lift",
+      "label": "顴骨打亮（修容上方）",
+      "pattern": "OvalFace4",
+      "colorIntensity": 40,
+      "glowIntensity": 35,
+      "shimmerIntensity": 10,
+      "shimmerDensity": 20,
+      "shimmerSize": 10,
+      "unverified": true
+    },
+    {
+      "id": "tzone",
+      "label": "T 字打亮",
+      "pattern": "OvalFace61",
+      "colorIntensity": 22,
+      "glowIntensity": 65,
+      "shimmerIntensity": 0,
+      "shimmerDensity": 0,
+      "shimmerSize": 0,
+      "unverified": true,
+      "lift_L": 23,
+      "chroma": 1.0
+    },
+    {
+      "id": "nose",
+      "label": "鼻樑微光",
+      "pattern": "OvalFace38",
+      "colorIntensity": 20,
+      "glowIntensity": 25,
+      "shimmerIntensity": 0,
+      "shimmerDensity": 0,
+      "shimmerSize": 0,
+      "unverified": true,
+      "lift_L": 15,
+      "chroma": 0.55
+    }
+  ],
+  "highlight_patterns": {
+    "Square": "SquareFace5",
+    "Oval": "OvalFace2",
+    "Round": "RoundFace3",
+    "Heart": "HeartFace4",
+    "Oblong": "Oblong11",
+    "InvTriangle": "Invtriangle2",
+    "Triangle": "TriangleFace3",
+    "Diamond": "OvalFace2",
+    "default": "OvalFace2"
+  },
+  "condition_quick": {
+    "albinism": {
+      "grooming": {
+        "foundation": "light",
+        "contour": "soft",
+        "highlight": "nose",
+        "brow": "photo_soft"
+      },
+      "natural": {
+        "foundation": "light",
+        "contour": "soft",
+        "highlight": "nose",
+        "brow": "photo_defined",
+        "blush": "apricot"
+      },
+      "polished": {
+        "foundation": "light",
+        "contour": "defined",
+        "highlight": "nose",
+        "brow": "photo_defined",
+        "blush": "apricot"
+      }
+    },
+    "vitiligo": {
+      "grooming": {
+        "foundation": "veil",
+        "highlight": "tzone"
+      },
+      "natural": {
+        "foundation": "veil",
+        "highlight": "tzone"
+      },
+      "polished": {
+        "foundation": "veil",
+        "highlight": "tzone"
+      }
+    }
+  },
+  "depth_colors": {
+    "bands": [
+      {
+        "levels": [
+          1,
+          2
+        ],
+        "pink_cool": {
+          "blush": "#F0B2C0",
+          "blush_i": 25,
+          "lip": "#C97A8E",
+          "lip_i": 35
+        },
+        "neutral": {
+          "blush": "#E8AFA6",
+          "blush_i": 20,
+          "lip": "#BF7B73",
+          "lip_i": 30
+        },
+        "warm_ivory": {
+          "blush": "#E8B49B",
+          "blush_i": 25,
+          "lip": "#B87463",
+          "lip_i": 30
+        }
+      },
+      {
+        "levels": [
+          3,
+          4,
+          5
+        ],
+        "pink_cool": {
+          "blush": "#E8A5B8",
+          "blush_i": 45,
+          "lip": "#B84362",
+          "lip_i": 55
+        },
+        "neutral": {
+          "blush": "#DF988B",
+          "blush_i": 45,
+          "lip": "#A8534C",
+          "lip_i": 50
+        },
+        "warm_ivory": {
+          "blush": "#EAA58C",
+          "blush_i": 45,
+          "lip": "#A35338",
+          "lip_i": 50
+        }
+      },
+      {
+        "levels": [
+          6,
+          7,
+          8
+        ],
+        "pink_cool": {
+          "blush": "#C75D7D",
+          "blush_i": 60,
+          "lip": "#8A2542",
+          "lip_i": 65
+        },
+        "neutral": {
+          "blush": "#B55E52",
+          "blush_i": 60,
+          "lip": "#7A2D27",
+          "lip_i": 65
+        },
+        "warm_ivory": {
+          "blush": "#BF633F",
+          "blush_i": 60,
+          "lip": "#7B3117",
+          "lip_i": 65
+        }
+      },
+      {
+        "levels": [
+          9,
+          10
+        ],
+        "pink_cool": {
+          "blush": "#96284F",
+          "blush_i": 85,
+          "lip": "#571025",
+          "lip_i": 80
+        },
+        "neutral": {
+          "blush": "#822B22",
+          "blush_i": 85,
+          "lip": "#471510",
+          "lip_i": 80
+        },
+        "warm_ivory": {
+          "blush": "#8F3714",
+          "blush_i": 85,
+          "lip": "#4A1B07",
+          "lip_i": 80
+        }
+      }
+    ]
+  }
+}

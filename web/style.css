@@ -1,0 +1,441 @@
+/* 好氣色試妝：淺粉色系（參考美妝相機 App：照片滿版、底部工具列、大按鈕）；白化症預設暗色（怕光） */
+:root {
+  --bg: #fbf3f1; --card: #ffffff; --ink: #2a1f22; --muted: #7a6a6e; --line: #f1dfdc;
+  --accent: #d9577a; --accent-2: #f39bb0; --accent-ink: #fff; --soft: #fde9ee; --warn: #b8455f; --ok: #3f7a5c;
+  --shadow: 0 6px 24px rgba(160, 70, 95, .10);
+  --radius: 20px;
+  font-family: -apple-system, "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
+  font-size: 18px;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141114; --card: #1f1a1e; --ink: #f6edf0; --muted: #bba9b0; --line: #342a30;
+    --accent: #f08aa4; --accent-2: #b8556f; --accent-ink: #1b0f14; --soft: #2c2127; --warn: #f4a3b6; --ok: #8fd0ab;
+    --shadow: 0 6px 24px rgba(0, 0, 0, .35);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141114; --card: #1f1a1e; --ink: #f6edf0; --muted: #bba9b0; --line: #342a30;
+  --accent: #f08aa4; --accent-2: #b8556f; --accent-ink: #1b0f14; --soft: #2c2127; --warn: #f4a3b6; --ok: #8fd0ab;
+  --shadow: 0 6px 24px rgba(0, 0, 0, .35);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { min-height: 100dvh; -webkit-tap-highlight-color: transparent; line-height: 1.55; }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.center { text-align: center; }
+
+.view { max-width: 560px; margin: 0 auto; padding: 16px 16px 132px; }
+.sub, .muted { color: var(--muted); }
+.small { font-size: 15px; }
+h2 { font-size: 24px; margin: 6px 0 14px; letter-spacing: .02em; }
+h3 { font-size: 19px; margin: 0 0 10px; }
+.q { font-size: 19px; margin: 0 0 10px; font-weight: 600; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin: 14px 0; box-shadow: var(--shadow); }
+.banner { position: sticky; top: 0; z-index: 30; background: var(--soft); color: var(--accent); text-align: center; font-size: 14px; padding: 5px 12px; font-weight: 600; }
+
+/* ---------- 封面 */
+.start { padding-top: 10px; }
+.brandbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 19px; color: var(--accent); }
+.logo img { width: 30px; height: 30px; border-radius: 9px; }
+.toggles { display: flex; gap: 8px; }
+.icon-toggle { position: relative; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--card);
+  border: 1px solid var(--line); box-shadow: var(--shadow); cursor: pointer; font-size: 19px; }
+.icon-toggle input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.icon-toggle:has(input:checked) { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.icon-toggle:has(input:focus-visible) { outline: 3px solid var(--accent-2); }
+.hero h1 { font-size: 31px; line-height: 1.25; margin: 14px 0 8px; letter-spacing: .02em; }
+.hero .sub { margin: 0 0 16px; font-size: 16px; }
+.cover-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cover-card { position: relative; padding: 0; border: 0; border-radius: 22px; overflow: hidden; cursor: pointer; aspect-ratio: 3 / 4.3;
+  background: var(--soft); box-shadow: var(--shadow); font: inherit; color: #fff; text-align: left; }
+.cover-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cover-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(40,10,20,.78)); }
+.cc-text { position: absolute; z-index: 1; left: 12px; right: 12px; bottom: 12px; display: grid; gap: 2px; }
+.cc-text strong { font-size: 23px; }
+.cc-text span { font-size: 13px; line-height: 1.35; opacity: .92; }
+.cc-text em { font-style: normal; margin-top: 8px; justify-self: start; background: var(--accent); color: #fff; border-radius: 999px; padding: 6px 14px; font-size: 15px; font-weight: 700; }
+.cover-card:active { transform: scale(.98); }
+.cover-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.credit { font-size: 12px; color: var(--muted); margin: 8px 2px 0; }
+.how { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; position: relative; }
+.how::before { content: ""; position: absolute; top: 16px; left: 10%; right: 10%; height: 2px; background: var(--line); }
+.how li { position: relative; text-align: center; font-size: 13px; color: var(--muted); }
+.how b { display: grid; place-items: center; width: 32px; height: 32px; margin: 0 auto 4px; border-radius: 50%; background: var(--card); border: 2px solid var(--accent-2); color: var(--accent); font-size: 15px; }
+
+/* ---------- 開場提醒彈窗 */
+.modal { position: fixed; inset: 0; z-index: 70; background: rgba(30, 10, 18, .45); display: grid; place-items: end center; padding: 16px; }
+.modal-card { width: 100%; max-width: 480px; background: var(--card); border-radius: 26px; padding: 22px 20px calc(18px + env(safe-area-inset-bottom)); box-shadow: 0 12px 40px rgba(0,0,0,.25); animation: up .25s ease-out; }
+@keyframes up { from { transform: translateY(30px); opacity: 0; } }
+.modal-card h2 { margin: 0 0 12px; }
+.warn-list { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 10px; }
+.warn-list li { display: flex; align-items: center; gap: 12px; font-size: 19px; font-weight: 600; background: var(--soft); border-radius: 14px; padding: 12px 14px; }
+.ico { font-size: 22px; width: 28px; text-align: center; flex: none; }
+.src { font-size: 13px; color: var(--muted); margin: 6px 2px 14px; }
+
+/* ---------- 步驟條 */
+.stepper { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; margin: 2px 0 10px; position: relative; }
+.stepper::before { content: ""; position: absolute; top: 12px; left: 7%; right: 7%; height: 2px; background: var(--line); }
+.stepper span, .stepper button { position: relative; text-align: center; }
+.stepper button { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; min-height: 44px; }
+.stepper button:focus-visible b { outline: 3px solid var(--accent); }
+.stepper b { display: grid; place-items: center; width: 24px; height: 24px; margin: 0 auto; border-radius: 50%; font-size: 12px; background: var(--card); border: 2px solid var(--line); color: var(--muted); }
+.stepper em { display: block; font-style: normal; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.stepper .done b { background: var(--accent-2); border-color: var(--accent-2); color: #fff; }
+.stepper .on b { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); transform: scale(1.12); }
+.stepper .on em { color: var(--accent); font-weight: 700; }
+
+/* ---------- 拍照或上傳 */
+.tips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.tips div { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 10px 6px; text-align: center; font-size: 13px; color: var(--muted); }
+.tips .ico { display: block; margin: 0 auto 4px; width: auto; }
+.capture-actions { display: grid; gap: 12px; }
+.big-action { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center; text-align: left;
+  border: 0; border-radius: 22px; padding: 18px; cursor: pointer; font: inherit; color: var(--ink); background: var(--card); box-shadow: var(--shadow); border: 2px solid var(--line); }
+.big-action:first-child { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border-color: transparent; }
+.big-action .ico { grid-row: 1 / 3; font-size: 34px; width: 56px; height: 56px; display: grid; place-items: center; background: rgba(255,255,255,.22); border-radius: 16px; }
+.big-action:not(:first-child) .ico { background: var(--soft); }
+.big-action b { font-size: 21px; }
+.big-action > span:last-of-type { font-size: 14px; opacity: .85; }
+
+/* ---------- 選項 */
+.chips, .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 2px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 9px 16px; font: inherit; font-size: 17px; cursor: pointer; min-height: 46px; }
+.chip[aria-checked="true"], .chip[aria-selected="true"], .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.chip .sw { display: inline-block; width: 16px; height: 16px; border-radius: 50%; vertical-align: -2px; margin-right: 6px; border: 1px solid rgba(0,0,0,.2); }
+.tabs { margin: 14px 0 10px; }
+
+.btn { border: 0; border-radius: 999px; padding: 14px 22px; font: inherit; font-weight: 700; cursor: pointer; min-height: 54px; }
+.btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: 0 6px 18px rgba(217, 87, 122, .3); }
+:root[data-theme="dark"] .btn.primary { color: var(--accent-ink); }
+.btn.ghost { background: var(--card); color: var(--ink); border: 2px solid var(--line); }
+.btn.link { background: none; color: var(--muted); font-weight: 500; text-decoration: underline; display: block; margin: 12px auto 0; min-height: 44px; }
+.btn.big { width: 100%; font-size: 20px; }
+.btn:disabled { opacity: .45; box-shadow: none; }
+.dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, var(--bg) 28%); display: flex; gap: 10px; justify-content: center; }
+.dock .btn { flex: 1; max-width: 270px; }
+.row { display: flex; gap: 10px; margin-top: 16px; }
+.dock.row { margin-top: 0; }
+.row .btn { flex: 1; }
+.row.wrap { flex-wrap: wrap; }
+.row.wrap .btn { flex: 1 1 45%; }
+
+/* ---------- 取膚色 */
+.photo-stage { background: #000; border-radius: var(--radius); overflow: hidden; display: block; box-shadow: var(--shadow); }
+/* 照片寬度＝容器寬，但高度不超過 56vh（用照片長寬比算寬度上限）；不用 inline-block，避免某些寬度下寬度循環計算縮成 2px */
+.photo-wrap { position: relative; width: min(100%, max(240px, calc(56vh * var(--ar, 0.75)))); margin: 0 auto; }
+.photo-wrap img { display: block; width: 100%; height: auto; cursor: crosshair; }
+.sample-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; margin-top: 12px; box-shadow: var(--shadow); }
+.msgs p { margin: 10px 0 0; font-size: 15px; }
+.msgs .warn { color: var(--warn); font-weight: 600; }
+.msgs .ok { color: var(--ok); font-weight: 600; }
+.sample-dot { position: absolute; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px #000; transform: translate(-50%, -50%); pointer-events: none; }
+.skin-sample { display: flex; gap: 10px; align-items: center; margin: 6px 0; }
+.small-sw { width: 36px; height: 36px; border-radius: 12px; border: 1px solid rgba(0,0,0,.15); display: inline-block; flex: none; }
+.auto-dots { position: absolute; inset: 0; pointer-events: none; }
+.auto-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; transform: translate(-50%, -50%); border: 1.5px solid #fff; }
+.auto-dot.skin { background: #3f7a5c; }
+.auto-dot.patch { background: #f0c419; }
+.auto-dot.brow { background: var(--accent); }
+.auto-status { color: var(--muted); margin: 8px 2px 0; }
+
+.brow-dot { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--accent);
+  color: #fff; font-size: 12px; font-weight: 800; display: grid; place-items: center; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
+.brow-tip { background: var(--soft); border-radius: 12px; padding: 8px 10px; margin: 8px 0 0; font-weight: 600; }
+
+/* ---------- 色卡與色號 */
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 4px 0 10px; }
+.pair figure { margin: 0; text-align: center; }
+.pair .big-sw { display: block; width: 100%; height: 76px; border-radius: 18px; border: 1px solid rgba(0,0,0,.12); box-shadow: var(--shadow); }
+.pair figcaption { color: var(--muted); font-size: 15px; margin-top: 6px; }
+.pair .hex { font-family: ui-monospace, Menlo, monospace; }
+.sk-summary { font-size: 18px; font-weight: 700; margin: 6px 0 12px; }
+.color-card { display: grid; gap: 10px; }
+.color-row { display: grid; grid-template-columns: 60px 1fr; gap: 12px; align-items: start; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 12px; box-shadow: var(--shadow); }
+.color-row .big-sw { width: 60px; height: 60px; border-radius: 16px; border: 1px solid rgba(0,0,0,.12); }
+.color-row .k { color: var(--muted); font-size: 14px; }
+.color-row .v { font-size: 20px; font-weight: 800; }
+.color-row .hex { font-family: ui-monospace, Menlo, monospace; color: var(--muted); font-size: 14px; }
+.match { margin-top: 6px; font-size: 15px; }
+.match .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--soft); margin-left: 6px; font-size: 12px; color: var(--accent); }
+.match .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; border: 1px solid rgba(0,0,0,.2); }
+.strip { margin: 8px 0 4px; }
+.strip-label { font-size: 14px; font-weight: 700; }
+.strip-row { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; margin-top: 4px; max-width: 320px; }
+.strip-cell { height: 20px; border-radius: 6px; border: 1px solid rgba(0,0,0,.1); }
+.strip-cell.on { outline: 3px solid var(--accent); outline-offset: 1px; }
+.mix { color: var(--muted); font-size: 14px; margin-left: 20px; }
+.stripes { margin-top: 8px; padding: 8px 10px; border-radius: 12px; background: var(--soft); }
+.stripes-k { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.stripes-row { display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 14px; }
+.stripe { display: inline-flex; align-items: center; gap: 6px; }
+.stripe-sw { width: 22px; height: 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,.2); display: inline-block; }
+
+/* ---------- 預期妝容 */
+.expect-stage { position: relative; background: #000; border-radius: var(--radius); overflow: hidden; display: grid; place-items: center; box-shadow: var(--shadow); }
+.expect-stage img { display: block; max-width: 100%; max-height: 56vh; }
+.sim-tag { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,.6); color: #fff; font-size: 14px; font-weight: 700; border-radius: 999px; padding: 4px 12px; }
+.center-row { justify-content: center; margin: 10px 0 4px; }
+.zone-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0 12px; }
+.zone { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 10px 8px; text-align: center; box-shadow: var(--shadow); display: grid; gap: 2px; justify-items: center; }
+.zone-sw { width: 44px; height: 44px; border-radius: 12px; border: 1px solid rgba(0,0,0,.12); }
+.zone b { font-size: 13px; }
+.zone span:last-child { font-size: 13px; color: var(--muted); }
+
+/* ---------- 自己選膚色色卡 */
+.pick-card h3 { margin-bottom: 4px; }
+.pick-card #pick-tone { margin: 8px 0 10px; }
+.pick-strip { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; padding-top: 10px; }
+.pick-cell { position: relative; height: 48px; min-width: 0; border-radius: 9px; border: 1px solid rgba(0,0,0,.12); cursor: pointer; padding: 0; }
+.pick-cell span { position: absolute; left: 0; right: 0; bottom: 2px; font-size: 11px; font-weight: 700; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,.6); }
+.pick-cell em { position: absolute; left: 50%; top: -9px; transform: translateX(-50%); font-style: normal; font-size: 10px; background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 0 5px; white-space: nowrap; }
+.pick-cell[aria-checked="true"] { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.care-tip { background: var(--soft); border-radius: 14px; padding: 10px 12px; font-size: 15px; font-weight: 600; margin: 0 0 12px; }
+
+/* ---------- 三題 */
+.qcard { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin: 12px 0; box-shadow: var(--shadow); }
+
+/* ---------- 建議 */
+.personal { background: var(--soft); border-color: transparent; }
+.personal p { margin: 0 0 6px; font-weight: 600; }
+.personal p:last-child { margin: 0; }
+.timeline { list-style: none; counter-reset: s; margin: 0; padding: 0; }
+.timeline li { counter-increment: s; position: relative; padding: 0 0 14px 44px; }
+.timeline li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: 15px; }
+.timeline li::after { content: ""; position: absolute; left: 14px; top: 32px; bottom: 2px; width: 2px; background: var(--line); }
+.timeline li:last-child::after { display: none; }
+.timeline b { display: block; }
+.why { display: block; color: var(--muted); font-size: 14px; font-weight: 400; }
+.sensitive { border-left: 6px solid var(--accent); }
+.sensitive h3 { margin: 0 0 8px; font-size: 18px; }
+.steps { margin: 0; padding-left: 22px; }
+.steps li { margin-bottom: 8px; }
+.look-card #adv-styles { margin-bottom: 10px; }
+.look-list { list-style: none; padding: 0; margin: 10px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.look-list li { display: flex; align-items: center; gap: 6px; background: var(--soft); border-radius: 12px; padding: 8px 10px; font-size: 15px; }
+.look-list li.off { opacity: .55; }
+.look-list .lk { font-weight: 700; min-width: 2.6em; }
+.look-list .sw { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,.2); flex: none; }
+.adj-list { margin: 10px 0 0; padding-left: 20px; font-size: 14px; color: var(--muted); }
+
+/* ---------- 試試看：底部工具列（美妝相機式） */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.compare figure { margin: 0; }
+.compare img { width: 100%; border-radius: 18px; aspect-ratio: 3/4; object-fit: cover; background: var(--soft); box-shadow: var(--shadow); }
+.compare figcaption { text-align: center; color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+/* 翻面卡片（試妝頁、逐項調整頁）：兩張圖疊在一起，淡入淡出；只動 opacity，怕動態的人直接換 */
+.flipcard { max-width: min(360px, calc((100dvh - 470px) * 0.75)); min-width: 220px; margin: 0 auto; }      /* 卡片加提示加按鈕要同一屏看得到：高度扣掉標題、步驟條與底部按鈕列 */
+.fc-stage { position: relative; width: 100%; aspect-ratio: 3 / 4; cursor: pointer; }
+.fc-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 18px; background: var(--soft); box-shadow: var(--shadow); opacity: 0; transition: opacity .4s ease; }
+.fc-stage img.on { opacity: 1; }
+.fc-hint { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); max-width: 90%; padding: 7px 14px; border-radius: 999px; background: rgba(30, 20, 24, .66); color: #fff; font-size: 14px; font-weight: 700; text-align: center; pointer-events: none; z-index: 2; }
+.fc-cap { text-align: center; color: var(--muted); font-size: 14px; margin: 6px 0 4px; }
+@media (prefers-reduced-motion: reduce) { .fc-stage img { transition: none; } }
+
+.toolstrip { display: flex; gap: 8px; overflow-x: auto; padding: 12px 2px 6px; scroll-snap-type: x mandatory; }
+.tool { flex: none; scroll-snap-align: start; display: grid; justify-items: center; gap: 2px; min-width: 76px; padding: 10px 8px; border-radius: 18px;
+  border: 2px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+.tool .ico { font-size: 22px; width: auto; }
+.tool[aria-pressed="true"] { border-color: var(--accent); background: var(--soft); color: var(--accent); font-weight: 700; }
+.advice { padding: 12px; border-radius: 14px; background: var(--soft); }
+details.card summary { font-weight: 700; cursor: pointer; }
+
+.quick-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.quick-card { border: 2px solid var(--line); border-radius: 18px; background: var(--card); padding: 6px; cursor: pointer; font: inherit; color: var(--ink); text-align: center; display: flex; flex-direction: column; }
+.quick-card img { width: 100%; border-radius: 12px; display: block; aspect-ratio: 3/4; object-fit: cover; }
+.quick-card strong { display: block; margin-top: 6px; font-size: 17px; }
+.quick-card span { display: block; font-size: 13px; line-height: 1.4; color: var(--muted); }
+@media (max-width: 420px) { .quick-cards { grid-template-columns: 1fr 1fr; } }
+.layer-strip { display: grid; grid-auto-flow: column; grid-auto-columns: 42%; gap: 8px; overflow-x: auto; margin-top: 10px; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+.layer-strip figure { margin: 0; scroll-snap-align: start; }
+.layer-strip img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 12px; display: block; }
+.layer-strip figcaption { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.care h3 { margin: 0 0 10px; }
+
+.staff { position: fixed; inset: 0; z-index: 50; background: #fff; color: #111; padding: 24px; overflow: auto; display: grid; gap: 16px; align-content: start; }
+.staff .color-row { background: #fff; border-color: #ccc; box-shadow: none; }
+.staff .color-row .v { font-size: 28px; }
+.staff .color-row .k, .staff .color-row .hex { color: #444; font-size: 20px; }
+
+.loading { position: fixed; inset: 0; z-index: 80; background: rgba(30, 10, 18, .55); color: #fff; display: grid; place-content: center; text-align: center; }
+.spinner { width: 46px; height: 46px; border-radius: 50%; border: 4px solid rgba(255,255,255,.3); border-top-color: #fff; animation: spin .9s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- 取景（相機） */
+.mirror { max-width: none; padding: 0; height: calc(100dvh - var(--banner-h, 0px)); min-height: 0; background: #000; position: relative; overflow: hidden; }   /* 扣掉上方「展示模式」橫條的高度，底下的按鈕才在可見畫面內 */
+.hint { position: absolute; z-index: 20; top: calc(14px + env(safe-area-inset-top)); left: 16px; right: 16px; text-align: center;
+  background: rgba(0,0,0,.6); color: #fff; border-radius: 16px; padding: 12px 14px; font-size: 20px; font-weight: 700; }
+.hint.ok { background: rgba(63,122,92,.92); }
+.checks { position: absolute; z-index: 20; top: calc(84px + env(safe-area-inset-top)); left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
+.chk { font-size: 14px; padding: 4px 10px; border-radius: 999px; background: rgba(0,0,0,.5); color: #ddd; }
+.chk.good { background: rgba(63,122,92,.92); color: #fff; }
+.chk.bad { background: rgba(184,69,95,.92); color: #fff; }
+#YMK-module { display: flex; justify-content: center; }
+#native-cam { position: relative; width: 100%; height: 100%; }
+#video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+.oval { position: absolute; left: 50%; top: 46%; width: 64%; aspect-ratio: 3/4; transform: translate(-50%,-50%); border: 3px dashed rgba(255,255,255,.75); border-radius: 50%; pointer-events: none; }
+.mirror-bar { position: absolute; z-index: 20; left: 0; right: 0; bottom: 0; display: flex; gap: 10px; justify-content: center; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); }
+.mirror-bar .btn.ghost { background: rgba(0,0,0,.55); color: #fff; border-color: rgba(255,255,255,.3); }
+.file { display: inline-flex; align-items: center; }
+
+/* 底妝預覽 */
+.pv-wrap { margin: 8px auto; }
+.pv-wrap img { cursor: default; }
+.pv-wrap.picking img { cursor: crosshair; }
+.pv-cov { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-size: 15px; }
+.pv-cov input { flex: 1; }
+#pv-shades .chip .sw { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 6px; vertical-align: -2px; border: 1px solid rgba(0,0,0,.2); }
+.pv-svg { position: absolute; inset: 0; pointer-events: none; }
+.pv-svg svg { width: 100%; height: 100%; display: block; }
+.camo-wrap img { cursor: default; }
+.camo-stage { position: absolute; inset: 0; }
+.camo-stage canvas { touch-action: none; }
+.camo-guide { list-style: none; padding: 0; margin: 8px 0; counter-reset: step; }
+.camo-guide li { display: grid; grid-template-columns: 112px 1fr; gap: 10px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line, rgba(0,0,0,.1)); counter-increment: step; }
+.camo-guide li img { width: 112px; border-radius: 8px; display: block; }
+.camo-guide li b::before { content: counter(step) ". "; }
+.camo-guide li p { margin: 4px 0 0; font-size: 14px; line-height: 1.5; }
+.camo-guide .shade { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; margin-top: 4px; }
+.camo-guide .shade i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid rgba(0,0,0,.2); }
+.camo-guide .de { font-size: 12px; opacity: .75; }
+
+/* 定案妝容（模擬）卡片 */
+.final-card #final-who { margin-bottom: 10px; }
+.final-fig { margin: 0; position: relative; }   /* 「模擬」標籤沿用既有 .sim-tag（圖左上角） */
+.final-fig img { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--soft); }
+.final-fig figcaption { margin-top: 6px; }
+.final-steps { margin: 12px 0 0; padding-left: 1.4em; display: grid; gap: 6px; }
+.final-steps li { font-size: 15px; }
+.final-steps .sw { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: -2px; margin-right: 6px; border: 1px solid rgba(0,0,0,.2); }
+.final-steps .why { display: block; color: var(--muted); font-size: 14px; }
+.final-flow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.final-stage { min-width: 0; }
+.stage-h { font-weight: 700; font-size: 15px; margin: 4px 0 6px; }
+#final-off-note { margin-top: 6px; }
+
+/* 翻頁特效：滑動換頁，速度放慢。要調整只改下面三個常數。
+   新頁往後一步從右滑入、往前一步從左滑入；怕光模式或系統減少動態效果只淡入，不滑動、不閃動、不彈跳。
+   用 left 不用 transform：頁內有 position: fixed 的底部按鈕列，transform 會讓它在動畫期間跟著跑掉。html／body 用 overflow-x: clip，滑入時不會出現橫向捲軸。 */
+:root { --vt-slide-time: .8s; --vt-fade-time: .6s; --vt-distance: 35vw; }
+.view.vt-fwd { animation: vt-in-right var(--vt-slide-time) ease-in-out both; }
+.view.vt-back { animation: vt-in-left var(--vt-slide-time) ease-in-out both; }
+.view.vt-fade { animation: vt-fade-in var(--vt-fade-time) ease-in-out both; }
+.view.vt-fwd, .view.vt-back { position: relative; }
+@keyframes vt-in-right { from { left: var(--vt-distance); opacity: .2; } to { left: 0; opacity: 1; } }
+@keyframes vt-in-left { from { left: calc(-1 * var(--vt-distance)); opacity: .2; } to { left: 0; opacity: 1; } }
+@keyframes vt-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .view.vt-fwd, .view.vt-back { animation: vt-fade-in var(--vt-fade-time) ease-in-out both; } }
+html, body { overflow-x: clip; }   /* 滑入時內容暫時超出右邊，clip 不產生捲軸 */
+
+/* ===== 官網風格 第 1 步（docs/design/STYLE_GUIDE_20261021.md；使用者「你就按照官網風格調整」）=====
+   只改顏色、字級、圓角、陰影、間距，不動版面結構。只借設計參數，色碼是自選的。
+   內文維持 18px，沒有照指南降到 16px：使用者的視力可能較弱，字小會不好讀。 */
+:root {
+  --bg: #ffffff; --card: #ffffff; --ink: #212529; --muted: #5f6770; --line: #e9e2e5;
+  --accent: #c2386b; --accent-2: #e9a3bb; --accent-ink: #ffffff; --soft: #faf6f7; --warn: #a8325a; --ok: #2f6b4c;
+  --shadow: 0 6px 20px rgba(0, 0, 0, .08);
+  --radius: 14px; --btn-radius: 10px;
+  font-family: "PingFang TC", "Noto Sans TC", Roboto, -apple-system, system-ui, sans-serif;
+}
+/* 怕光模式（暗色）：降低亮度與飽和，不用純白大面積 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121012; --card: #1b181a; --ink: #e6dfe2; --muted: #a99ca1; --line: #2e282b;
+    --accent: #c98a9d; --accent-2: #7a4f5d; --accent-ink: #140c10; --soft: #241e21; --warn: #d9a0b0; --ok: #8cbfa2;
+    --shadow: 0 6px 20px rgba(0, 0, 0, .35);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121012; --card: #1b181a; --ink: #e6dfe2; --muted: #a99ca1; --line: #2e282b;
+  --accent: #c98a9d; --accent-2: #7a4f5d; --accent-ink: #140c10; --soft: #241e21; --warn: #d9a0b0; --ok: #8cbfa2;
+  --shadow: 0 6px 20px rgba(0, 0, 0, .35);
+}
+body { line-height: 1.6; }
+h2 { font-size: 28px; font-weight: 700; line-height: 1.3; letter-spacing: 0; margin: 8px 0 16px; }
+.hero h1 { font-size: 30px; font-weight: 700; line-height: 1.3; letter-spacing: 0; }
+h3, .q { line-height: 1.35; }
+.card, .qcard, .sample-card { border-radius: var(--radius); margin: 20px 0; }
+.cover-card, .compare img, .color-row, .zone, .pair .big-sw { border-radius: var(--radius); }
+/* 按鈕：圓角 10px；主要＝強調色實心＋白字（不用漸層）；次要＝白底強調色外框 */
+.btn { border-radius: var(--btn-radius); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 4px 14px rgba(0, 0, 0, .12); }
+.btn.ghost { background: var(--card); color: var(--accent); border: 1.5px solid var(--accent); }
+:root[data-theme="dark"] .btn.primary { color: var(--accent-ink); }
+/* 分頁與子導覽：膠囊 */
+.chip { border-radius: 999px; border-width: 1.5px; }
+.cc-text em { border-radius: 999px; }
+/* 封面「開始」膠囊：暗色時強調色變淡，字改深色維持 AA（白字只有 2.7:1） */
+.cc-text em { color: var(--accent-ink); }
+/* 已完成步驟圓點、拍照大按鈕：改強調色實心＋對應字色（原本白字壓淺粉，不到 AA） */
+.stepper .done b { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.big-action:first-child { background: var(--accent); color: var(--accent-ink); }
+.big-action:first-child .sub, .big-action:first-child span { color: inherit; }
+
+/* ===== 官網風格第 2 步：首屏版面＋一排大數字（STYLE_STEP2_CHANGELIST_20261021.md）===== */
+.start-grid { display: grid; grid-template-areas: "hero" "visual" "how"; }
+.start-grid .hero { grid-area: hero; }
+.start-visual { grid-area: visual; }
+.start-grid .how { grid-area: how; margin-top: 48px; }   /* 章節間距：手機 48px、桌機 80px（欄距） */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 4px 0 24px; }
+.stats > div { margin: 0; min-width: 0; }
+.stats dt { color: var(--accent); line-height: 1.1; white-space: nowrap; }
+.stats dt b { font-size: 40px; font-weight: 700; letter-spacing: -.02em; }
+.stats dt small { font-size: 18px; font-weight: 300; margin-left: 2px; }
+.stats dd { margin: 4px 0 0; font-size: 14px; line-height: 1.4; color: var(--muted); }
+/* 平板直式（768）兩欄太擠（入口卡只剩 160px、數字會撞在一起）→ 768–899 維持單欄但放寬；900 以上才左右兩欄 */
+@media (min-width: 768px) {
+  .view.start { max-width: 640px; padding-left: 24px; padding-right: 24px; }
+  .stats dt b { font-size: 48px; }
+  .stats dt small { font-size: 20px; }
+}
+@media (min-width: 900px) {
+  .view.start { max-width: 1120px; padding-left: 32px; padding-right: 32px; }
+  .start-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "visual hero" "visual how"; column-gap: 56px; align-items: start; margin-top: 32px; }
+  .start-grid .hero h1 { margin-top: 8px; }
+  .start-grid .how { margin-top: 8px; align-self: start; }
+}
+@media (min-width: 1200px) {
+  .start-grid { column-gap: 80px; margin-top: 48px; }
+  .stats dt b { font-size: 52px; }
+}
+
+/* 拍攝小幫手卡：通過／提醒／換一張；柔和色，不用刺眼紅 */
+.guide { margin-top: 4px; }
+.guide-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.guide-head h3 { margin: 0; }
+.guide-chip { font-size: 14px; font-weight: 700; border-radius: 999px; padding: 3px 12px; background: var(--soft); color: var(--ink); white-space: nowrap; }
+.guide[data-state="pass"] .guide-chip { color: var(--ok); }
+.guide[data-state="warn"] .guide-chip, .guide[data-state="block"] .guide-chip { color: var(--accent); }
+.guide-sum { margin: 10px 0 4px; font-size: 16px; }
+.guide-list { margin: 6px 0 12px; padding-left: 1.2em; }
+.guide-list li { margin: 4px 0; font-size: 16px; line-height: 1.5; }
+.guide .btn { width: 100%; }
+
+/* ===== 統一風格（手機實測後）：線條圖示取代 emoji、底部按鈕列用實底、大按鈕圓角跟卡片一致 ===== */
+.i { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; display: block; }
+.ico { display: inline-grid; place-items: center; color: var(--accent); }
+.tips .ico { display: grid; margin: 0 auto 4px; }
+.big-action:first-child .ico { color: inherit; }
+.icon-toggle .i { font-size: 20px; }
+.dock { background: var(--bg); border-top: 1px solid var(--line); box-shadow: 0 -6px 18px rgba(0, 0, 0, .06); }
+.big-action { border-radius: var(--radius); }
+#btn-warn-dark { margin-top: 10px; }
+
+/* ===== 中英切換鈕 ===== */
+.lang-btn { font: inherit; font-size: 15px; font-weight: 700; color: var(--ink); padding: 0; line-height: 1; }
+/* 英文字比中文寬：標題與 logo 略縮，避免孤字換行 */
+html[lang="en"] .logo { font-size: 17px; white-space: nowrap; }
+html[lang="en"] .hero h1 { font-size: 26px; }
+
+/* 鏡頭頁：提示與四個檢查標籤放同一個直向容器，提示換行（英文較長）也不會壓到標籤 */
+.mirror-top { position: absolute; z-index: 20; bottom: calc(132px + env(safe-area-inset-bottom)); left: 16px; right: 16px; display: flex; flex-direction: column; gap: 10px; }
+.mirror-top .hint, .mirror-top .checks { position: static; }
+.mirror-top .checks { flex-wrap: wrap; }
+

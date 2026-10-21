@@ -1,0 +1,926 @@
+id,zh,en,context,where
+s0001,好氣色試妝,Good Glow Try-On,html text,web/index.html:9 web/index.html:21
+s0002,怕光模式,Light-sensitive mode,<label title>,web/index.html:24
+s0003,怕光模式（暗色畫面）,Light-sensitive mode (dark screen),html text,web/index.html:24
+s0005,先找到你的膚色，,"Find your skin tone first,",html text,web/index.html:30
+s0006,再談妝容,then talk makeup,html text,web/index.html:30
+s0007,每一種膚色都有自己的好氣色：拍一張照片，取膚色、對色號，再給保養、防曬和一套完整妝容。只加妝；YouCam 的磨皮固定為 0。,"Every skin tone has its own good glow: take a photo, pick your skin tone, match a shade, then get skincare, sun protection and a full makeup look. We only add makeup; YouCam's smoothing is fixed at 0.",html text,web/index.html:31
+s0008,個,,html text,web/index.html:34 web/index.html:35
+s0009,專櫃現行色號可對照,current counter shades you can match against,html text,web/index.html:34
+s0010,品牌,brands,html text,web/index.html:35
+s0011,級,levels,html text,web/index.html:36
+s0012,膚色色卡，分冷中暖,"skin tone cards, split into cool, neutral and warm",html text,web/index.html:36
+s0013,入口,Starting point,<div aria-label>,web/index.html:40
+s0014,封面照片：Pexels（示意，照片中人與本作品無關）,Cover photo: Pexels (for illustration only; the people in the photos have no connection to this project),html text,web/index.html:41
+s0015,拍照,Photo,html text,web/index.html:44 web/index.html:74 web/app.js:31
+s0016,取膚色,Pick skin tone,html text,web/index.html:44 web/index.html:108
+s0017,對色號,Match shade,html text,web/index.html:44
+s0018,保養建議,Skincare tips,html text,web/index.html:44
+s0019,試妝,Try-on,html text,web/index.html:44 web/app.js:31
+s0020,開始前提醒,Before you start,html text,web/index.html:52
+s0021,照光治療當天不上妝,No makeup on light-therapy days,html text,web/index.html:54 app/color_engine.py:447 app/color_engine.py:447
+s0022,新產品先在耳後小範圍試,Patch test new products on a small area behind the ear first,html text,web/index.html:55
+s0023,出門前先擦防曬,Apply sunscreen before you head out,html text,web/index.html:56
+s0025,我知道了,Got it,html text,web/index.html:59
+s0026,怕光？改成暗色畫面,Light-sensitive? Switch to a dark screen,html text,web/index.html:60 web/app.js:190
+s0027,拍一張，或上傳一張,"Take a photo, or upload one",html text,web/index.html:67
+s0028,正面、整張臉入鏡,"Front-facing, whole face in the frame",html text,web/index.html:69
+s0029,窗邊柔和自然光,Soft natural light by a window,html text,web/index.html:70
+s0031,像照鏡子一樣，自動拍,"Like looking in a mirror, it takes the photo automatically",html text,web/index.html:74
+s0032,上傳照片,Upload photo,html text,web/index.html:75
+s0033,從相簿選一張正面照,Pick a front-facing photo from your album,html text,web/index.html:75
+s0034,先用示範照片看看,Try a demo photo first,html text,web/index.html:77
+s0035,照片在手機上取膚色；遮罩與試妝由伺服器在記憶體中處理、不會存檔（真實模式下試妝會把照片送到 YouCam）。,Skin tone is picked from your photo on your phone; the mask and try-on are handled by the server in memory and never saved (in live mode the try-on photo is sent to YouCam).,html text,web/index.html:78
+s0036,返回,Back,html text,web/index.html:79 web/index.html:99
+s0037,準備鏡頭中…,Getting the camera ready…,html text,web/index.html:85 web/app.js:243
+s0038,臉,Face,html text,web/index.html:87
+s0039,距離,Distance,html text,web/index.html:88
+s0040,正面,Front,html text,web/index.html:89
+s0041,光線,Lighting,html text,web/index.html:90
+s0042,相簿,Album,html text,web/index.html:100
+s0043,拍,Capture,html text,web/index.html:101
+s0044,拍攝小幫手,Photo helper,html text,web/index.html:111
+s0045,重拍或換一張,Retake or choose another,html text,web/index.html:114
+s0046,你的照片，點一下可以改取色位置,Your photo; tap to change where the color is picked,<img alt>,web/index.html:118
+s0047,膚色：自動取色中…,Skin tone: picking automatically…,html text,web/index.html:126
+s0048,淺色區塊：還沒取,Lighter patch: not picked yet,html text,web/index.html:127
+s0049,眉色：還沒取,Brow color: not picked yet,html text,web/index.html:128
+s0050,點照片要取哪一個顏色,Which color to pick when you tap the photo,<div aria-label>,web/index.html:129
+s0051,點照片取膚色,Tap photo to pick skin tone,html text,web/index.html:130 web/app.js:453
+s0052,點照片取淺色區塊,Tap photo to pick lighter patch,html text,web/index.html:131
+s0053,點照片取眉色,Tap photo to pick brow color,html text,web/index.html:132
+s0054,點眉形（眉頭→眉峰→眉尾）,Tap brow shape (inner end → arch → outer end),html text,web/index.html:133
+s0055,你的眉毛顏色很淡：自動試妝抓不準眉毛位置，所以試妝不畫眉，眉毛保留原樣。,"Your brow color is very light: the automatic try-on cannot locate your brows accurately, so the try-on does not draw brows and leaves them as they are.",html text,web/index.html:135
+s0056,重拍,Retake,html text,web/index.html:140
+s0057,看我的色號,See my shade,html text,web/index.html:141 web/app.js:454
+s0058,預期妝容,Expected look,html text,web/index.html:148
+s0059,預期妝容（模擬）,Expected look (simulated),<img alt>,web/index.html:150
+s0060,模擬,Simulated,html text,web/index.html:151 web/index.html:287 web/index.html:289 web/index.html:293 web/app.js:757 web/app.js:770
+s0061,看你的照片,See your photo,html text,web/index.html:153 web/index.html:191 web/index.html:229 web/app.js:759 web/app.js:768 web/app.js:1444
+s0062,從預期妝容取色,Pick color from expected look,html text,web/index.html:155
+s0063,上一步,Previous step,html text,web/index.html:158
+s0064,用它對色號,Use it to match a shade,html text,web/index.html:159
+s0065,你的色卡與色號,Your skin tone card and shade,html text,web/index.html:166
+s0066,☀︎ 淺色肌膚的光防護是第一步：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。,"☀︎ Light protection comes first for very light skin: before makeup, apply SPF50+ / PA++++ untinted sunscreen, then a moisturizing base, and your makeup will sit better.",html text,web/index.html:167 web/index.html:385 web/app.js:162
+s0067,原本膚色,Original skin tone,html text,web/index.html:169 web/app.js:564 web/app.js:832
+s0068,淺色區塊,Lighter patch,html text,web/index.html:170
+s0069,選你覺得最像的膚色,Pick the skin tone that looks most like yours,html text,web/index.html:175
+s0070,冷暖,Cool or warm,<div aria-label>,web/index.html:177
+s0071,膚色色卡 1 到 10 級,"Skin tone card, levels 1 to 10",<div aria-label>,web/index.html:178
+s0072,妝容預覽（手機上即時看，不扣點）,"Makeup preview (live on your phone, uses no credits)",html text,web/index.html:183
+s0073,在手機上把色號疊到臉上比較；真正的上妝效果，到後面「試試看」用 YouCam 試妝。,"Compare by laying the shade over your face on your phone; for the real makeup effect, use YouCam try-on at ""Try-on"" later.",html text,web/index.html:184
+s0074,妝容模板,Makeup templates,<div aria-label>,web/index.html:185
+s0075,底妝預覽,Foundation preview,<img alt>,web/index.html:186
+s0076,預覽的色號,Shade being previewed,<div aria-label>,web/index.html:187
+s0077,遮蓋力,Coverage,html text,web/index.html:188
+s0078,吸管：點照片取色,Eyedropper: tap photo to pick a color,html text,web/index.html:190
+s0079,顯示範圍,Show area,html text,web/index.html:192
+s0080,淺色區塊局部遮瑕（手機上模擬，不扣點）,"Spot concealing for lighter patches (simulated on your phone, uses no credits)",html text,web/index.html:199
+s0081,自動找出每一塊淺色區塊的邊界（綠色外框）。點外框選取，拖拉圓點調整邊界；「開／關這一塊」決定要不要遮。,"It automatically finds the edge of each lighter patch (green outline). Tap an outline to select it and drag the dots to adjust the edge; ""On/off for this patch"" decides whether it is concealed.",html text,web/index.html:200
+s0083,影像融合版,Image blending version,html text,web/index.html:203
+s0084,局部遮瑕預覽,Spot concealing preview,<img alt>,web/index.html:205
+s0085,照化妝順序一層一層上：每層用推薦的實際色號、只上在該產品的範圍內；點下面的層可以開關，看每一層的作用。,Apply layer by layer in makeup order: each layer uses the recommended actual shade and goes only within that product's area; tap a layer below to turn it on or off and see what each layer does.,html text,web/index.html:207
+s0086,換成理想色號對照（＝你的膚色）,Switch to the ideal shade for comparison (= your skin tone),html text,web/index.html:209
+s0087,妝感濃淡,Makeup intensity,html text,web/index.html:210
+s0088,遮瑕覆蓋度,Concealer coverage,html text,web/index.html:213
+s0089,邊緣羽化,Edge feathering,html text,web/index.html:214
+s0090,範圍外擴,Expand area,html text,web/index.html:215
+s0091,保留光澤,Keep sheen,html text,web/index.html:216
+s0092,打亮,Highlight,html text,web/index.html:217 web/app.js:12 web/app.js:861 web/app.js:863 web/app.js:866 web/app.js:870
+s0093,遮瑕次數,Concealer passes,html text,web/index.html:218
+s0094,校色層,Color-correcting layer,html text,web/index.html:220
+s0095,保留明暗,Keep light and shade,html text,web/index.html:221
+s0096,抓留白再補一輪,Fill gaps with another pass,html text,web/index.html:222
+s0097,清掉補的輪次,Clear extra passes,html text,web/index.html:223
+s0098,開／關這一塊,On/off for this patch,html text,web/index.html:227
+s0099,顯示邊界,Show edges,html text,web/index.html:228
+s0100,看圖文步驟,See illustrated steps,html text,web/index.html:230
+s0101,局部遮瑕怎麼做（用你的照片在手機上模擬每一步）,How to do spot concealing (each step simulated on your photo on your phone),html text,web/index.html:234
+s0102,示意圖是手機上的模擬，不是實際上妝結果；色號以專櫃自然光試色為準。,"The illustrations are simulations on your phone, not actual makeup results; shades should be confirmed by swatching at the counter in natural light.",html text,web/index.html:236
+s0103,重新取色,Pick color again,html text,web/index.html:240
+s0104,下一步,Next,html text,web/index.html:241
+s0105,三個小問題,Three quick questions,html text,web/index.html:248
+s0106,用來調整保養和妝容建議；答案只用來算這次的建議，不會存檔。,Used to adjust the care and makeup suggestions; the answers are used only to compute this session's suggestions and are not saved.,html text,web/index.html:249
+s0107,擦保養品或化妝品後，會刺痛或發紅嗎？,"After using skincare or makeup, does your skin sting or turn red?",html text,web/index.html:250
+s0108,常常,Often,html text,web/index.html:251
+s0109,偶爾,Sometimes,html text,web/index.html:251
+s0110,不會,Never,html text,web/index.html:251
+s0111,最近在做照光治療，或臉上有擦藥嗎？,"Have you recently been having light therapy, or applying any medication to your face?",html text,web/index.html:252
+s0112,有,Yes,html text,web/index.html:253 web/index.html:255
+s0113,沒有,No,html text,web/index.html:253 web/index.html:255
+s0114,對香料或某些成分過敏過嗎？,Have you ever had an allergic reaction to fragrance or certain ingredients?,html text,web/index.html:254
+s0115,不確定,Not sure,html text,web/index.html:255
+s0116,略過,Skip,html text,web/index.html:257
+s0117,看建議,See suggestions,html text,web/index.html:258
+s0118,你的保養與上妝建議,Your skincare and makeup suggestions,html text,web/index.html:265
+s0119,先保養、再保護、最後才上妝,"Skincare first, then protection, makeup last",html text,web/index.html:268 web/index.html:388
+s0120,為你配的一套完整妝容,A full makeup look put together for you,html text,web/index.html:273
+s0121,妝感,Makeup style,<div aria-label>,web/index.html:274 web/app.js:1783
+s0122,定案妝容,Final look,html text,web/index.html:282
+s0123,選擇示範,Choose a demo,<div aria-label>,web/index.html:283
+s0124,① 本地逐層底妝,① Local layered foundation,html text,web/index.html:286
+s0125,本地逐層底妝（模擬）,Local layered foundation (simulated),<img alt>,web/index.html:287
+s0126,② 官方這一步（YouCam 試妝）,② The official step (YouCam try-on),html text,web/index.html:288
+s0127,官方這一步（模擬）,The official step (simulated),<img alt>,web/index.html:289
+s0128,③ 成品與配方卡,③ Finished look and recipe card,html text,web/index.html:292
+s0129,定案妝容（模擬）,Final look (simulated),<img alt>,web/index.html:293
+s0130,模擬畫面，不是實際上妝照片,"Simulated image, not a photo of actual makeup",html text,web/index.html:293
+s0131,直接存配色卡,Save color card directly,html text,web/index.html:299
+s0132,試試看這套妝,Try this look on,html text,web/index.html:300
+s0133,試試看,Try-on,html text,web/index.html:307
+s0134,你的照片,Your photo,<img alt>,web/index.html:310 web/index.html:314 web/index.html:354 web/index.html:358 web/app.js:770 web/app.js:1743
+s0135,目前的樣子,How it looks now,<img alt>,web/index.html:311
+s0136,完整妝容,Full look,html text,web/index.html:314 web/index.html:319 web/app.js:1492
+s0137,接著試,Try next,<div aria-label>,web/index.html:317
+s0138,保留原樣,Keep as is,html text,web/index.html:318 web/app.js:1492 web/app.js:1507 web/app.js:1599 app/presets.json app/presets.json
+s0139,只上底妝,Foundation only,html text,web/index.html:320
+s0140,好氣色,Good glow,html text,web/index.html:321 web/app.js:1600
+s0141,清晰,Defined,html text,web/index.html:322 web/app.js:1601
+s0142,淺色區塊的遮瑕做法（局部校色、遮瑕、修邊）,"How to conceal lighter patches (spot color correcting, concealing, edge blending)",html text,web/index.html:329
+s0143,逐項調整,Adjust each item,html text,web/index.html:335 web/index.html:351
+s0144,做成配色卡,Make a color card,html text,web/index.html:336 web/index.html:377
+s0145,先看三種,See three first,html text,web/index.html:343
+s0146,點一張你喜歡的，下一步可以再逐項調整。,Tap one you like; in the next step you can adjust it item by item.,html text,web/index.html:344
+s0147,目前的妝,Current makeup,<img alt>,web/index.html:355 web/index.html:358 web/app.js:1696
+s0148,逐層看這個妝,View this look layer by layer,html text,web/index.html:367
+s0149,依五官給建議（多 10 點）,Tips by facial features (costs 10 more credits),html text,web/index.html:371
+s0150,回上一步,Back to previous step,html text,web/index.html:376
+s0151,我的配色卡,My color card,html text,web/index.html:384 web/app.js:1882
+s0152,依五官的小提醒,Small tips by facial features,html text,web/index.html:392
+s0154,給櫃姐看,Show to the beauty advisor,html text,web/index.html:398 web/index.html:404
+s0155,存成圖片,Save as image,html text,web/index.html:399
+s0156,重新開始,Start over,html text,web/index.html:400
+s0157,關閉,Close,html text,web/index.html:406
+s0158,試妝中…,Trying on…,html text,web/index.html:409 web/app.js:91
+s0159,底妝,Foundation,js 字串,web/app.js:10 web/app.js:1355 app/looks.py:300 app/looks.py:300 app/care_rules_vitiligo.py:28 app/care_rules_vitiligo.py:28
+s0160,修容,Contour,js 字串,web/app.js:11 web/app.js:862 web/app.js:869 web/app.js:874 web/app.js:1355 web/makeup_layers.js:24
+s0161,眉毛,Brows,js 字串,web/app.js:13 web/app.js:1797 app/recommend.py:16 app/recommend.py:16 app/looks.py:300 app/looks.py:300
+s0162,睫毛,Lashes,js 字串,web/app.js:14 web/app.js:1355 web/app.js:1797 app/recommend.py:16 app/recommend.py:16 app/looks.py:300
+s0163,腮紅,Blush,js 字串,web/app.js:15 web/app.js:860 web/app.js:863 web/app.js:866 web/app.js:870 web/app.js:875
+s0164,唇,Lips,js 字串,web/app.js:16 web/app.js:861 web/app.js:864 web/app.js:867 web/app.js:871 web/app.js:876
+s0165,冷調（偏粉）,Cool (pinkish),js 字串,web/app.js:19
+s0166,中性,Neutral,js 字串,web/app.js:20 web/app.js:774 app/presets.json app/skin_card.py:31 app/skin_card.py:31
+s0167,暖調（偏象牙）,Warm (ivory-leaning),js 字串,web/app.js:21
+s0168,不知道,Don't know,js 字串,web/app.js:22
+s0169,膚色很淺,Very light skin,js 字串,web/app.js:27
+s0170,容易怕光、眉睫顏色淡,"Light-sensitive, with very light brows and lashes",js 字串,web/app.js:27
+s0171,膚色深淺不一,Uneven skin tone,js 字串,web/app.js:28
+s0172,臉上有顏色較淺的區塊,Some lighter patches on the face,js 字串,web/app.js:28
+s0173,膚色,Skin tone,js 字串,web/app.js:31 web/app.js:564 web/app.js:1784 app/color_engine.py:293 app/color_engine.py:293
+s0174,預期,Expected,js 字串,web/app.js:31
+s0175,色號,Shade,js 字串,web/app.js:31
+s0176,三題,3 questions,js 字串,web/app.js:31
+s0177,建議,Advice,js 字串,web/app.js:31
+s0178,配色卡,Color card,js 字串,web/app.js:31
+s0179,"<button class=""done"" data-step=""${i}"" aria-label=""回到第 ${i + 1} 步：${s}""><b>${i + 1}</b><em>${s}</em></button>","<button class=""done"" data-step=""${i}"" aria-label=""Back to step ${i + 1}: ${s}""><b>${i + 1}</b><em>${s}</em></button>",js 字串,web/app.js:73
+s0180,第 ${at + 1} 步，共 ${STEPS.length} 步：${STEPS[at]},Step ${at + 1} of ${STEPS.length}: ${STEPS[at]},js 字串,web/app.js:76
+s0181,伺服器回應格式錯誤,The server's reply was not in the expected format,js 字串,web/app.js:99
+s0182,發生問題，請再試一次,"Something went wrong, please try again",js 字串,web/app.js:100
+s0183,"<img src=""${c.img}"" alt="""" loading=""eager""><span class=""cc-text""><strong>${c.label}</strong><span>${c.desc}</span><em>開始 →</em></span>","<img src=""${c.img}"" alt="""" loading=""eager""><span class=""cc-text""><strong>${c.label}</strong><span>${c.desc}</span><em>Start →</em></span>",js 字串,web/app.js:156
+s0184,☀︎ 淺色區塊比較怕曬：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。,"☀︎ Lighter patches are more sensitive to the sun: before makeup, apply SPF50+ / PA++++ untinted sunscreen, then a moisturizing base, and your makeup will sit better.",js 字串,web/app.js:163
+s0185,${c.label}。開始前提醒：照光治療當天不上妝，新產品先在耳後小範圍試，出門前先擦防曬。,"${c.label}. Before you start: no makeup on light-therapy days, patch test new products on a small area behind the ear first, and apply sunscreen before you head out.",js 字串,web/app.js:173
+s0186,已是暗色畫面（點一下改回白底）,Dark screen is on (tap to switch back to white),js 字串,web/app.js:190
+s0188,把臉放進畫面中間,Put your face in the middle of the frame,js 字串,web/app.js:268 web/app.js:334
+s0189,再靠近一點,Move a little closer,js 字串,web/app.js:269 web/app.js:335
+s0190,臉往畫面中間移一點,Move your face a bit toward the middle of the frame,js 字串,web/app.js:270 web/app.js:336
+s0191,手機舉到眼睛高度，正對著,"Hold your phone at eye level, facing straight on",js 字串,web/app.js:271 web/app.js:337
+s0192,有點暗也沒關係，我們會幫你調亮,"A bit dark is fine, we will brighten it for you",js 字串,web/app.js:272 web/app.js:341
+s0193,很好，保持不動…,"Good, hold still…",js 字串,web/app.js:273
+s0194,沒拿到照片，請再試一次,"No photo was captured, please try again",js 字串,web/app.js:276
+s0195,開不了相機，可以按「相簿」選一張正面照,"The camera could not be opened; you can tap ""Album"" and pick a front-facing photo",js 字串,web/app.js:312
+s0196,太亮了：避開直射的光,Too bright: avoid direct light,js 字串,web/app.js:342
+s0197,左右亮度不一樣：讓光從正前方來,Brightness differs left to right: let the light come from straight ahead,js 字串,web/app.js:343
+s0198,光線可以，按「拍」,"Lighting is fine, tap ""Capture""",js 字串,web/app.js:344
+s0199,照片偏暗，試妝效果會比較淡。,"The photo is a bit dark, so the try-on effect will look fainter.",js 字串,web/app.js:393
+s0200,左右亮度差 ${Math.round((1 - fp.ratio) * 100)}%，讓光從正前方來會比較準。,Brightness differs by ${Math.round((1 - fp.ratio) * 100)}% between left and right; light from straight ahead will be more accurate.,js 字串,web/app.js:394
+s0201,今天的光線和上次不一樣，顏色看起來會不同，不要拿來比。,"Today's lighting is different from last time, so colors will look different; don't compare them.",js 字串,web/app.js:399
+s0202,光線和上次差不多。,Lighting is about the same as last time.,js 字串,web/app.js:400
+s0203,光線可以。,Lighting is fine.,js 字串,web/app.js:402 web/capture_guide.js:88
+s0204,讀不到這張照片,This photo could not be read,js 字串,web/app.js:412 app/server.py:191 app/server.py:209 app/server.py:191 app/server.py:209
+s0205,解析度不夠（短邊 ${short}px，需要 ${MIN_SHORT}px 以上）。請用前鏡頭最高畫質重拍；放大的照片試妝會失真。,"Resolution is too low (short side ${short}px, ${MIN_SHORT}px or more needed). Please retake with the front camera at its highest quality; enlarged photos distort the try-on.",js 字串,web/app.js:439
+s0206,這是示範照片（Pexels 公開照片）。,This is a demo photo (public photo from Pexels).,js 字串,web/app.js:441
+s0207,點照片取原本膚色,Tap the photo to pick your original skin tone,js 字串,web/app.js:453
+s0208,這張先不取色：請照上面的方法重拍或換一張。,"No color will be picked from this photo: please retake it or choose another, following the tips above.",js 字串,web/app.js:467
+s0209,可以用,Good to use,js 字串,web/app.js:482
+s0210,可以用，有小提醒,"Good to use, with small tips",js 字串,web/app.js:482
+s0211,換一張會更好,Another photo would be better,js 字串,web/app.js:482
+s0212,檢查照片中…,Checking photo…,js 字串,web/app.js:485
+s0213,這張照片沒辦法自動檢查，可以直接繼續，或換一張正面照。,"This photo cannot be checked automatically; you can continue as is, or choose another front-facing photo.",js 字串,web/app.js:505
+s0214,這張照片的角度或距離還不適合取色；照下面的方法重拍或換一張，結果會準很多。,"The angle or distance of this photo is not yet suitable for picking colors; retake it or choose another following the tips below, and the result will be much more accurate.",js 字串,web/app.js:506
+s0215,這張照片可以用！下面是讓結果更準的小提醒。,This photo works! Below are some small tips for a more accurate result.,js 字串,web/app.js:507
+s0216,距離、角度和光線都剛好，可以開始了。,"Distance, angle and lighting are all just right, so you can start.",js 字串,web/app.js:508
+s0217,已自動幫你把臉放到剛好的大小（只裁切、縮放，沒有修圖）。,"Your face has been set to just the right size automatically (crop and resize only, no retouching).",js 字串,web/app.js:509
+s0218,自動：臉部定位,Auto: locating your face,js 字串,web/app.js:561
+s0219,你點選的位置,Where you tapped,js 字串,web/app.js:561
+s0220,示範取色點,Demo sample point,js 字串,web/app.js:561
+s0221,自動取受光側臉頰,Auto: lit-side cheek,js 字串,web/app.js:561
+s0222,${label}：${hex}（${SRC_TEXT[src]}）,${label}: ${hex} (${SRC_TEXT[src]}),js 字串,web/app.js:566
+s0223,${label}：還沒取（點一下沒有淺色區塊的臉頰或下顎線）,${label}: not picked yet (tap a cheek or jawline with no lighter patch),js 字串,web/app.js:566
+s0224,淺色區塊：${hex}（${SRC_TEXT[src]}）,Lighter patch: ${hex} (${SRC_TEXT[src]}),js 字串,web/app.js:572
+s0225,淺色區塊：還沒取（點「取淺色區塊」再點淺色區塊）,"Lighter patch: not picked yet (tap ""Pick lighter patch"", then tap the lighter patch)",js 字串,web/app.js:572
+s0226,眉色：${hex}（${SRC_TEXT[src]}）,Brow color: ${hex} (${SRC_TEXT[src]}),js 字串,web/app.js:583
+s0227,眉色：還沒取（點「眉毛」再點眉毛）,"Brow color: not picked yet (tap ""Brows"", then tap your brow)",js 字串,web/app.js:583
+s0228,請點一下眉毛,Please tap a brow,js 字串,web/app.js:589
+s0229,請點一下淺色區塊,Please tap a lighter patch,js 字串,web/app.js:589
+s0230,請點一下臉頰或下顎線，臉和脖子交界的地方,"Please tap a cheek or the jawline, where the face meets the neck",js 字串,web/app.js:589
+s0231,請依序點眉頭、眉峰、眉尾。先點照片左邊那道眉，再點右邊那道。,"Please tap in order: inner end, arch, outer end. First the brow on the left side of the photo, then the one on the right.",js 字串,web/app.js:590
+s0232,眉頭,inner end,js 字串,web/app.js:593
+s0233,眉峰,arch,js 字串,web/app.js:593
+s0234,眉尾,outer end,js 字串,web/app.js:593
+s0235,眉形已設定：試妝時由手機照這 6 點畫眉（官方不畫眉）。再點「點眉形」可以重點。,"Brow shape is set: during the try-on, your phone draws your brows from these 6 points (the official try-on does not draw brows). Tap ""Tap brow shape"" again to redo it.",js 字串,web/app.js:599
+s0236,下一點：${n < 3 ? '照片左邊那道眉' : '照片右邊那道眉'}的${BROW_STEP[n % 3]}（${n}/6）,Next point: the ${BROW_STEP[n % 3]} of ${n < 3 ? 'the brow on the left of the photo' : 'the brow on the right of the photo'} (${n}/6),js 字串,web/app.js:600
+s0237,眉形設定好了,Brow shape is set,js 字串,web/app.js:673
+s0238,已取你的眉色,Picked your brow color,js 字串,web/app.js:676
+s0239,已取淺色區塊的顏色,Picked the lighter patch color,js 字串,web/app.js:677
+s0240,已改用你點選的膚色,Now using the skin tone you tapped,js 字串,web/app.js:679
+s0241,自動找臉部位置、取色中…,Finding your face and picking colors…,js 字串,web/app.js:698
+s0242,沒有找到臉的位置，請在照片上點選取色。,No face position found. Tap the photo to pick colors.,js 字串,web/app.js:701
+s0243,已自動取原本膚色和眉色；沒有找到明顯的淺色區塊，請點「取淺色區塊」再點淺色區塊。,"Your original skin tone and brow color were picked automatically; no obvious lighter patch was found. Tap ""Pick lighter patch"", then tap the lighter patch.",js 字串,web/app.js:709
+s0244,已自動取色（照片上的小點是取色位置）；不對可以再點選修正。,"Colors were picked automatically (the small dots on the photo show where). If something looks off, tap again to correct it.",js 字串,web/app.js:710
+s0245,色差不大：一個接近原本膚色的色號就夠。,Small color difference: one shade close to your original skin tone is enough.,js 字串,web/app.js:722
+s0246,色差明顯：建議兩個色號，一個打底、一個修邊緣。,"Clear color difference: two shades are suggested, one for the base and one to refine the edge.",js 字串,web/app.js:723
+s0247,色差很明顯：建議兩個色號，必要時先修色。,"Very clear color difference: two shades are suggested, with color correcting first if needed.",js 字串,web/app.js:724
+s0248,沒有接近色,No close match,py 字串,app/color_engine.py:20 app/color_engine.py:20
+s0249,型錄沒有接近的色號，照色塊到專櫃找,No close shade in the catalog; use the color swatch to find one at the counter,js 字串,web/app.js:728
+s0250,整臉底妝（對你選的膚色）,Full-face foundation (for the skin tone you chose),js 字串,web/app.js:734
+s0251,整臉底妝（對預期妝容的膚色）,Full-face foundation (for the skin tone of the expected look),js 字串,web/app.js:734
+s0252,整臉底妝（對淺色區塊周圍的膚色）,Full-face foundation (for the skin tone around the lighter patch),js 字串,web/app.js:734
+s0253,遮瑕打底色（點在淺色區塊上，接近周圍膚色）,Concealer base color (dab on the lighter patch; close to the surrounding skin tone),js 字串,web/app.js:735
+s0254,修邊色（讓交界淡化）,Edge shade (softens the border),js 字串,web/app.js:736
+s0255,局部校色（只點在淺色區塊上）,Spot color correcting (only on the lighter patch),js 字串,web/app.js:737 web/app.js:1320
+s0256,底妝（內頰）,Foundation (inner cheeks),js 字串,web/app.js:749
+s0257,打亮（鼻樑＋額頭）,Highlight (nose bridge + forehead),js 字串,web/app.js:749
+s0258,修容（外頰＋下顎）,Contour (outer cheeks + jawline),js 字串,web/app.js:749
+s0259,<b>${ZONE_LABEL[k]}</b><span>色卡第 ${z[k].level} 級</span></div>,<b>${ZONE_LABEL[k]}</b><span>Card level ${z[k].level}</span></div>,js 字串,web/app.js:752
+s0260,預期妝容，模擬。底妝色卡第 ${ex.zones.base.level} 級，打亮第 ${ex.zones.highlight.level} 級，修容第 ${ex.zones.contour.level} 級。,"Expected look, simulated. Foundation card level ${ex.zones.base.level}, highlight level ${ex.zones.highlight.level}, contour level ${ex.zones.contour.level}.",js 字串,web/app.js:763
+s0261,看預期妝容,See expected look,js 字串,web/app.js:768
+s0262,冷調,Cool,js 字串,web/app.js:774 app/skin_card.py:31 app/skin_card.py:31
+s0263,暖調,Warm,js 字串,web/app.js:774 app/skin_card.py:31 app/skin_card.py:31
+s0264,為了不讓白皙的你被配到太深、偏黃的粉底，我們直接用你照片上的膚色來幫你對色。若覺得不像，隨時都能點選別格調整喔！,"So that your fair skin isn't matched with a foundation that is too deep or leans yellow, we match the shade directly from the skin tone in your photo. If it doesn't look right, you can tap another cell to adjust at any time!",js 字串,web/app.js:783
+s0265,建議第 ${sug.level} 級・${TONE_NAME[sug.tone]}（色卡上標「建議」的那格）。照片會受光線影響，覺得不像可以自己點一格。,"Suggested: level ${sug.level}・${TONE_NAME[sug.tone]} (the cell marked ""Suggested"" on the card). Photos are affected by lighting; if it doesn't look right, you can tap a cell yourself.",js 字串,web/app.js:784
+s0266,你選的是第 ${cur.level} 級・${TONE_NAME[cur.tone]}（建議第 ${sug.level} 級・${TONE_NAME[sug.tone]}）。照片會受光線影響，以你自己看到的為準。,"You chose level ${cur.level}・${TONE_NAME[cur.tone]} (suggested: level ${sug.level}・${TONE_NAME[sug.tone]}). Photos are affected by lighting, so go by what you see yourself.",js 字串,web/app.js:786
+s0267,第 ${c.level} 級 ${c.level_name},Level ${c.level} ${c.level_name},js 字串,web/app.js:807
+s0268,<span>${c.level}</span>${c.level === sug.level && cur.tone === sug.tone ? '<em>建議</em>' : ''},<span>${c.level}</span>${c.level === sug.level && cur.tone === sug.tone ? '<em>Suggested</em>' : ''},js 字串,web/app.js:808
+s0269,第 ${level} 級，${TONE_NAME[tone]},"Level ${level}, ${TONE_NAME[tone]}",js 字串,web/app.js:818
+s0270,找最接近你膚色的色號…,Finding the shade closest to your skin tone…,js 字串,web/app.js:822 web/app.js:1474
+s0271,你選的膚色,Your chosen skin tone,js 字串,web/app.js:832
+s0272,預期膚色,Expected skin tone,js 字串,web/app.js:832
+s0273,你選的膚色色卡：第 ${rec.skin_level} 級・${tone}。淺色區塊和這個膚色差 ${Math.round(b.delta_e)}：${LEVEL_TEXT[b.level] || ''},Your chosen skin tone card: level ${rec.skin_level}・${tone}. The lighter patch differs from this skin tone by ${Math.round(b.delta_e)}: ${LEVEL_TEXT[b.level] || ''},js 字串,web/app.js:835
+s0274,從預期妝容取色：底妝色卡第 ${rec.skin_level} 級・${tone}。淺色區塊和預期膚色差 ${Math.round(b.delta_e)}：${LEVEL_TEXT[b.level] || ''},Color taken from the expected look: foundation card level ${rec.skin_level}・${tone}. The lighter patch differs from the expected skin tone by a color difference (ΔE) of ${Math.round(b.delta_e)}: ${LEVEL_TEXT[b.level] || ''},js 字串,web/app.js:837
+s0275,膚色色卡第 ${rec.skin_level} 級・${tone}（照片推估）。色差 ${Math.round(b.delta_e)}：${LEVEL_TEXT[b.level] || ''},Skin tone card level ${rec.skin_level}・${tone} (estimated from the photo). Color difference ${Math.round(b.delta_e)}: ${LEVEL_TEXT[b.level] || ''},js 字串,web/app.js:838
+s0276,你選的膚色色卡：第 ${rec.skin_level} 級・${tone}。,Your chosen skin tone card: level ${rec.skin_level}・${tone}.,js 字串,web/app.js:842
+s0277,從預期妝容取色：底妝色卡第 ${rec.skin_level} 級・${tone}。,Color taken from the expected look: foundation card level ${rec.skin_level}・${tone}.,js 字串,web/app.js:843
+s0278,膚色色卡第 ${rec.skin_level} 級・${tone}（照片推估）。,Skin tone card level ${rec.skin_level}・${tone} (estimated from the photo).,js 字串,web/app.js:843
+s0279,底妝（最接近你膚色的色號）,Foundation (shade closest to your skin tone),js 字串,web/app.js:844
+s0280,這張照片光線不理想，色號僅供參考。,"The lighting in this photo isn't ideal, so the shade is for reference only.",js 字串,web/app.js:847
+s0281,只有底妝,Foundation only,js 字串,web/app.js:858
+s0282,理容,Groomed,js 字串,web/app.js:859 app/presets.json
+s0283,潤色護唇,Tinted lip balm,js 字串,web/app.js:859 app/presets.json app/catalog.json
+s0284,自然,Natural,js 字串,web/app.js:860 web/app.js:905 app/presets.json app/presets.json
+s0285,精緻,Polished,js 字串,web/app.js:862 app/presets.json
+s0286,女王 日常,Everyday Queen,js 字串,web/app.js:865
+s0287,眼影,Eyeshadow,js 字串,web/app.js:865 web/app.js:868 web/app.js:872 demo/final/recipes.json
+s0288,女王 宮廷,Royal Court,js 字串,web/app.js:868
+s0289,眼線,Eyeliner,js 字串,web/app.js:869 web/app.js:874
+s0290,女王 夜宴,Evening Gala,js 字串,web/app.js:872
+s0291,眼尾煙燻,Smoky Wing,js 字串,web/app.js:873
+s0292,眼皮微光,Soft Lid Shimmer,js 字串,web/app.js:873
+s0293,照色塊找,Find by swatch,js 字串,web/app.js:900 web/app.js:991 web/app.js:992 web/app.js:1827
+s0294,輕薄,Light,js 字串,web/app.js:905
+s0295,遮蓋較高,Higher coverage,js 字串,web/app.js:905 app/presets.json
+s0296,全覆蓋,Full coverage,js 字串,web/app.js:905 app/presets.json
+s0297,最接近,Closest,py 字串,app/color_engine.py:243 app/color_engine.py:243
+s0298,找臉的位置中…,Finding your face…,js 字串,web/app.js:927
+s0299,點色號換顏色，拉遮蓋力看覆蓋程度；也可以用吸管點照片取色。,"Tap a shade to change the color, and drag coverage to adjust how much it covers; you can also use the eyedropper to pick a color from the photo.",js 字串,web/app.js:932
+s0300,這張照片沒辦法預覽：${e.message},This photo can't be previewed: ${e.message},js 字串,web/app.js:936
+s0301,${v}（${covLabel(v)}）,${v} (${covLabel(v)}),js 字串,web/app.js:950
+s0302,這裡不是臉上的皮膚（或太暗、太亮）。請點臉頰或下顎附近、避開眉毛、眼睛、嘴唇和頭髮，再按一次吸管。,"This isn't skin on the face (or it's too dark or too bright). Tap near the cheek or jawline, avoiding eyebrows, eyes, lips and hair, then press the eyedropper again.",js 字串,web/app.js:980
+s0303,請點臉上的皮膚,Tap skin on the face,js 字串,web/app.js:981
+s0304,取到 ${hex}，查對應色號中…,Got ${hex}; looking up the matching shade…,js 字串,web/app.js:984
+s0305,你點的顏色 → 底妝色號,Your tapped color → foundation shade,js 字串,web/app.js:991
+s0306,吸管 ${hex},Eyedropper ${hex},js 字串,web/app.js:994
+s0307,取到 ${hex}；下方是對應色號，已換成最接近的一支來預覽。,"Got ${hex}; the matching shades are below, and the closest one is now used for the preview.",js 字串,web/app.js:999
+s0308,取到顏色，最接近的色號是 ${f && f.matches[0] ? f.matches[0].code : '沒有'},Color picked; closest shade: ${f && f.matches[0] ? f.matches[0].code : 'none'},js 字串,web/app.js:1000
+s0309,找淺色區塊的邊界中…（第一次要載入影像工具，約 2 秒）,"Finding the edge of the lighter patch… (the first time loads an image tool, about 2 seconds)",js 字串,web/app.js:1015
+s0310,這張照片沒辦法做局部遮瑕預覽：${e.message},This photo can't be previewed with spot concealing: ${e.message},js 字串,web/app.js:1027
+s0311,1 次,1 time,js 字串,web/app.js:1039
+s0312,${np} 次（第 2 次起只補還有差的地方）,"${np} times (from the 2nd time on, only the spots that still differ are filled in)",js 字串,web/app.js:1039
+s0313,修容色,Contour color,js 字串,web/app.js:1094
+s0314,打亮色,Highlight color,js 字串,web/app.js:1095
+s0315,${nm(A)} ${10 - m.t}：${nm(B)} ${m.t},${nm(A)} ${10 - m.t} : ${nm(B)} ${m.t},js 字串,web/app.js:1145
+s0316,，換算到你的照片後最接近也還差 ΔE ${m.de.toFixed(1)}，上妝後會看得出色差，建議專櫃自然光再試色,", but even the closest match is still ΔE ${m.de.toFixed(1)} off once converted to your photo; a color difference will be visible after applying, so we suggest testing the shade in natural light at the counter",js 字串,web/app.js:1146
+s0317,，換算到你的照片後差 ΔE ${m.de.toFixed(1)},", ΔE ${m.de.toFixed(1)} off once converted to your photo",js 字串,web/app.js:1146
+s0318,遮瑕用 ${recipe} 混合${warn}。,Concealer: mix ${recipe}${warn}.,js 字串,web/app.js:1147
+s0319,臉部定位：兩種模型一致（平均差 ${Math.round(r.meanErr * 100)}% 眼距）。,Face detection: the two models agree (average difference ${Math.round(r.meanErr * 100)}% of eye distance).,js 字串,web/app.js:1152
+s0320,臉部定位：兩種模型大致一致（平均差 ${Math.round(r.meanErr * 100)}% 眼距）。,Face detection: the two models mostly agree (average difference ${Math.round(r.meanErr * 100)}% of eye distance).,js 字串,web/app.js:1153
+s0321,臉部定位：兩種模型位置差比較多（${Math.round(r.meanErr * 100)}% 眼距），上妝範圍可能偏掉，建議換一張正面、光線均勻的照片，或拖拉外框調整。,"Face detection: the two models differ quite a bit in position (${Math.round(r.meanErr * 100)}% of eye distance), so the makeup area may be off. Try a front-facing photo with even lighting, or drag the frame to adjust.",js 字串,web/app.js:1154
+s0322,臉部定位：第二個模型沒找到臉，只用一種定位，請確認外框位置。,"Face detection: the second model didn't find a face, so only one detection was used. Please check the frame position.",js 字串,web/app.js:1155
+s0323,、,", ",js 字串,web/app.js:1161 web/app.js:1621
+s0324,${part}已分區判斷${z.seg ? '（額頭含到髮際）' : ''}。,${part} assessed by zone${z.seg ? ' (forehead includes the hairline)' : ''}.,js 字串,web/app.js:1162
+s0327,選取第 ${sel.id} 塊（${sel.on ? '遮' : '不遮'}）：拖拉圓點調整邊界。,Selected patch ${sel.id} (${sel.on ? 'covered' : 'not covered'}): drag the dots to adjust the edge.,js 字串,web/app.js:1169
+s0328,點綠色外框可以選取一塊。,Tap a green frame to select a patch.,js 字串,web/app.js:1169
+s0329,找還看得出來的留白中…,Looking for uncovered spots that still show…,js 字串,web/app.js:1180
+s0330,已經補到第 3 輪（上限）；再補臉會變平。可以按「清掉補的輪次」重來。,"Already filled in up to round 3 (the limit); more would flatten the face. You can press ""Clear added rounds"" to start over.",js 字串,web/app.js:1183
+s0331,沒有再抓到明顯的留白（約 ${Math.round(f.residPct * 100)}%），不用再補。,"No obvious uncovered spots found (about ${Math.round(f.residPct * 100)}%), so no more filling in is needed.",js 字串,web/app.js:1184
+s0332,電腦偵測暫時連不上，先用手機上的偵測。,Detection on the server is temporarily unreachable; using detection on your phone for now.,js 字串,web/app.js:1230
+s0333,淺色範圍：電腦逐像素偵測（約佔上妝範圍 ${Math.round(camoMask.ratio * 100)}%），上完妝再檢查一次補殘留。,Lighter area: detected pixel by pixel on the server (about ${Math.round(camoMask.ratio * 100)}% of the makeup area); check once more after applying to fill in anything left.,js 字串,web/app.js:1231
+s0334,"化妝塗層（模擬）：${used}。${ideal ? '目前是理想色號（剛好等於你的膚色）對照。' : camoMixNote(r.mix, cols)}${camoMaskNote()}${camoCheckNote()}","Makeup layers (simulated): ${used}. ${ideal ? 'Currently compared against the ideal shade (exactly your skin tone).' : camoMixNote(r.mix, cols)}${camoMaskNote()}${camoCheckNote()}",js 字串,web/app.js:1254
+s0335,淺色區塊和周圍膚色的色差：${r.deltaE.toFixed(1)}（越小越融合）；還看得出的留白約 ${Math.round(r.residPct * 100)}%。${camoCheckNote()},Color difference between the lighter patch and the surrounding skin tone: ${r.deltaE.toFixed(1)} (smaller blends better); uncovered spots still visible: about ${Math.round(r.residPct * 100)}%. ${camoCheckNote()},js 字串,web/app.js:1260
+s0336,<li><span></span><p>產生步驟圖中…</p></li>,<li><span></span><p>Generating step images…</p></li>,js 字串,web/app.js:1271
+s0337,保濕＋防曬,Moisturizer + sunscreen,js 字串,web/app.js:1295 web/app.js:1319
+s0338,先擦保濕，再擦防曬，等吸收再上妝；淺色區塊沒有黑色素保護，特別怕曬。照光治療當天不上妝。,"Apply moisturizer first, then sunscreen, and wait for them to absorb before makeup. Lighter patches have no melanin protection and are especially sensitive to the sun. No makeup on light-therapy days.",js 字串,web/app.js:1295
+s0339,校色：只點在淺色區塊上,Color correcting: dab only on the lighter patch,js 字串,web/app.js:1296
+s0340,綠色虛線就是範圍。用指尖或小刷在淺色區塊中央薄薄點上蜜桃／橘色，不要沾到旁邊的正常皮膚。,"The green dashed line is the area. With a fingertip or a small brush, dab a thin layer of peach/orange in the middle of the lighter patch, without getting it on the regular skin next to it.",js 字串,web/app.js:1296
+s0341,遮瑕：從中央往外推,Concealer: push outward from the center,js 字串,web/app.js:1297
+s0342,用最接近淺色區塊「周圍」膚色的遮瑕，先點在區塊中央，再用海綿拍按、往外推進周圍皮膚，邊緣才不會有一圈。拍按不要搓。,"Use the concealer closest to the skin tone ""around"" the lighter patch. Dab it in the middle of the patch first, then pat with a sponge and push outward into the surrounding skin, so there's no ring at the edge. Pat, don't rub.",js 字串,web/app.js:1297
+s0343,第二層：只補還看得出來的地方,Second layer: fill in only what still shows,js 字串,web/app.js:1298 web/app.js:1322
+s0344,等第一層服貼，再薄薄補在還看得出差異的地方。兩到三層薄的，比一層厚的自然。,"Once the first layer has settled, add a thin layer where a difference still shows. Two or three thin layers look more natural than one thick layer.",js 字串,web/app.js:1298
+s0345,修邊：交界往外拍開,Edge blending: pat outward at the border,js 字串,web/app.js:1299 web/app.js:1323
+s0346,交界最容易看出色差，用交界色號沿邊緣一圈往外拍開，讓淺色區塊和周圍膚色接起來。,"The border is where a color difference shows most easily. Pat the border shade outward all the way around the edge, so the lighter patch connects with the surrounding skin tone.",js 字串,web/app.js:1299
+s0347,粉底＋蜜粉：整臉統一,Foundation + powder: even out the whole face,js 字串,web/app.js:1300
+s0348,全臉很薄一層粉底讓色調一致（淺色區塊上已經有遮瑕，少放一點）；再用粉撲把透明蜜粉按壓在淺色區塊和 T 字，不要刷。,"Apply a very thin layer of foundation over the whole face to even out the tone (use less over the lighter patch, which already has concealer); then press translucent powder onto the lighter patch and the T-zone with a puff, don't brush.",js 字串,web/app.js:1300
+s0349,補妝：只點還看得出來的地方,Touch-up: dab only where it still shows,js 字串,web/app.js:1301
+s0350,上完底妝退後看一次，哪裡還看得出淺色，就只在那裡用同一支遮瑕點一點、邊緣拍開；少量多次，不要整片再蓋。,"After foundation, step back and look once. Wherever a lighter spot still shows, dab a little of the same concealer only there and pat the edges out; use small amounts a few times, don't cover the whole area again.",js 字串,web/app.js:1301
+s0351,修容＋打亮：找回立體感,Contour + highlight: bring back dimension,js 字串,web/app.js:1302
+s0352,修容在顴骨下緣、下顎線、鼻側，邊緣推開；打亮只點在顴骨上緣、鼻樑（停在鼻頭前），自然妝不打整個額頭。,"Contour under the cheekbones, along the jawline and at the sides of the nose, pushing the edges out; highlight only on top of the cheekbones and the nose bridge (stopping before the tip of the nose), and for a natural look don't highlight the whole forehead.",js 字串,web/app.js:1302
+s0353,"<li><img src=""${img}"" alt=""${esc(st.t)}示意""><div><b>${esc(st.t)}</b><p>${esc(st.d)}</p>${sw(st.m)}</div></li>","<li><img src=""${img}"" alt=""${esc(st.t)} illustration""><div><b>${esc(st.t)}</b><p>${esc(st.d)}</p>${sw(st.m)}</div></li>",js 字串,web/app.js:1310
+s0354,<li><span></span><p>產生下一步…</p></li>,<li><span></span><p>Generating the next step…</p></li>,js 字串,web/app.js:1311 web/app.js:1334
+s0355,先擦保濕，再擦無色防曬；淺色區塊對紫外線特別敏感。照光治療當天不上妝。,"Apply moisturizer first, then untinted sunscreen; lighter patches are especially sensitive to UV. No makeup on light-therapy days.",js 字串,web/app.js:1319
+s0356,用指尖在綠色虛線範圍內薄點蜜桃／橘色校色，分小區塊，不要整臉上；不用綠色（疊上膚色粉底會發灰）。,"With a fingertip, dab a thin layer of peach/orange for color correcting within the green dashed area, in small sections, not over the whole face; don't use green (it turns gray under skin-tone foundation).",js 字串,web/app.js:1320
+s0357,遮瑕第一層：海綿點壓,Concealer first layer: sponge-press,js 字串,web/app.js:1321
+s0358,用接近淺色區塊「周圍」膚色的遮瑕，只點在淺色區塊上，用海綿點壓、不要來回搓（摩擦可能長出新的淺色區塊）。,"Use a concealer close to the skin tone ""around"" the lighter patch, dab only on the lighter patch, and press with a sponge without rubbing back and forth (friction may cause new lighter patches).",js 字串,web/app.js:1321
+s0359,等一下讓第一層服貼，再薄薄補在還看得出差異的地方；已經融合的地方不要再疊，才不會厚重。,"Wait a moment for the first layer to settle, then add a thin layer where a difference still shows; don't layer over areas that already blend in, so it doesn't look heavy.",js 字串,web/app.js:1322
+s0360,交界色差最明顯，用淺一點的遮瑕點在邊緣、往外拍開淡化，讓淺色區塊和周圍膚色接起來。,"The color difference is clearest at the border. Dab a slightly lighter concealer on the edge and pat it outward to fade it, so the lighter patch connects with the surrounding skin tone.",js 字串,web/app.js:1323
+s0361,定妝＋打亮,Setting + highlight,js 字串,web/app.js:1324
+s0362,少量蜜粉輕壓定妝，T 字控油；最後在額頭中央、鼻樑、眼下顴骨、下巴點一點打亮，臉才不會遮完顯得暗沉、扁平。,"Press a small amount of powder on lightly to set, controlling shine in the T-zone; finally dab a little highlight on the middle of the forehead, the nose bridge, the cheekbones under the eyes and the chin, so the face doesn't look dull and flat after being covered.",js 字串,web/app.js:1324
+s0363,"<li><img src=""${img}"" alt=""${esc(st.t)}示意""><div><b>${esc(st.t)}</b><p>${esc(st.d)}</p>${sw(st.m)}","<li><img src=""${img}"" alt=""${esc(st.t)} illustration""><div><b>${esc(st.t)}</b><p>${esc(st.d)}</p>${sw(st.m)}",js 字串,web/app.js:1332
+s0366,三個小問題，用來調整保養和妝容建議。,Three quick questions to adjust the skincare and makeup suggestions.,js 字串,web/app.js:1354
+s0367,眉,Brow,js 字串,web/app.js:1355
+s0368,你比較容易敏感：選無香料、低刺激的產品，妝容已幫你減量。,"You tend to be more sensitive: choose fragrance-free, low-irritation products; the makeup has been scaled back for you.",js 字串,web/app.js:1358
+s0369,偶爾會不舒服：新產品先在耳後或下顎試 2–3 天。,Sometimes uncomfortable: patch test new products behind the ear or on the jawline for 2–3 days first.,js 字串,web/app.js:1359
+s0370,正在照光或擦藥：照光當天不上妝；擦藥的地方先問醫師再上妝。,"Having light therapy or applying medication: no makeup on light-therapy days; for areas with medication, ask a doctor before putting on makeup.",js 字串,web/app.js:1360
+s0371,整理保養與妝容建議…,Putting together skincare and makeup suggestions…,js 字串,web/app.js:1364
+s0372,建議：${(rec.care || []).map((c) => c.text).join('，')}。妝容：${full.why},"Suggestions: ${(rec.care || []).map((c) => c.text).join(', ')}. Makeup: ${full.why}",js 字串,web/app.js:1392
+s0373,女生示範,Female demo,js 字串,web/app.js:1396
+s0374,男生示範,Male demo,js 字串,web/app.js:1396
+s0375,定案妝容暫時看不到，其他建議照常可用。,The final look isn't available right now; the other suggestions work as usual.,js 字串,web/app.js:1425
+s0376,全臉底妝＋面中打亮,Full-face foundation + mid-face highlight,js 字串,web/app.js:1492
+s0377,底妝打亮＋好氣色,"Foundation, highlight + healthy glow",js 字串,web/app.js:1492
+s0378,底妝打亮＋好氣色＋清晰,"Foundation, highlight + healthy glow + defined",js 字串,web/app.js:1492
+s0379,展示模式只錄了幾種組合，這個選項的變化要在正式模式（實際試妝）才看得到。,Demo mode only recorded a few combinations; the change for this option can only be seen in Live mode (actual try-on).,js 字串,web/app.js:1495
+s0380,全臉底妝＋修容打亮,Full-face foundation + contour and highlight,js 字串,web/app.js:1496
+s0381,全臉底妝＋T 字打亮,Full-face foundation + T-zone highlight,js 字串,web/app.js:1496
+s0382,不加任何妝。,No makeup added.,js 字串,web/app.js:1506
+s0383,全臉上底妝中…,Applying foundation over the whole face…,js 字串,web/app.js:1513
+s0384,上完整妝容中…,Applying the full look…,js 字串,web/app.js:1513
+s0385,加妝中…,Adding makeup…,js 字串,web/app.js:1513
+s0386,找出淺色區塊範圍、局部遮瑕中…,Finding the lighter patch area and spot concealing…,js 字串,web/app.js:1524
+s0387,＋淺色區塊局部遮瑕（手機上模擬，判別到淺色區塊約佔臉部 ${Math.round(cam.ratio * 100)}%）,+ spot concealing on the lighter patch (simulated on your phone; the lighter patches detected make up about ${Math.round(cam.ratio * 100)}% of the face),js 字串,web/app.js:1529
+s0388,（這張照片沒能判別淺色區塊範圍，只顯示全臉底妝）,"(The lighter patch area couldn't be identified in this photo, so only the full-face foundation is shown)",js 字串,web/app.js:1531
+s0390,＋局部遮瑕,+ spot concealing,js 字串,web/app.js:1538
+s0391,。,.,js 字串,web/app.js:478 web/app.js:1539 web/app.js:1776
+s0392,。${MOCK_SAME},. ${MOCK_SAME},js 字串,web/app.js:1539
+s0393,${baseTitle(which)}。${describe(sel)},${baseTitle(which)}. ${describe(sel)},js 字串,web/app.js:1542
+s0394,全臉底妝（對淺色區塊周圍的膚色）,Full-face foundation (for the skin tone around the lighter patch),js 字串,web/app.js:1566
+s0395,全臉底妝（最接近你膚色的色號）,Full-face foundation (shade closest to your skin tone),js 字串,web/app.js:1573
+s0396,產生兩種妝…,Creating two looks…,js 字串,web/app.js:1592
+s0397,不加任何妝,No makeup added,js 字串,web/app.js:1599
+s0398,依照片膚色推估：${state.presets.undertones[state.toneFromSkin].label}（請確認，可以回第一頁改）。,Estimated from your photo's skin tone: ${state.presets.undertones[state.toneFromSkin].label} (please check; you can go back to page 1 to change it).,js 字串,web/app.js:1612
+s0399,點一張你喜歡的，下一步可以逐項調整。,Tap the one you like; the next step lets you adjust each item.,js 字串,web/app.js:1613
+s0400,（展示模式：示範照片顯示的是錄好的相近結果，不一定完全對應選項。）,(Demo mode: the sample photos show similar recorded results and don't always match the options exactly.),js 字串,web/app.js:1614
+s0401,三種妝：保留原樣、好氣色、清晰。點一張喜歡的。,"Three looks: keep as is, healthy glow, defined. Tap the one you like.",js 字串,web/app.js:1616
+s0402,"${it.label}：${optionOf(it.key, id).label}","${it.label}: ${optionOf(it.key, id).label}",js 字串,web/app.js:1620
+s0403,不加妝,No makeup,js 字串,web/app.js:1621
+s0404,每換一次會試妝一次（1 點）。,Each change runs one try-on (1 credit).,js 字串,web/app.js:1635
+s0405,展示模式：不會扣點。,Demo mode: no credits are deducted.,js 字串,web/app.js:1635
+s0406,已選${card.title}。可以逐項調整眉毛、睫毛、腮紅、唇。,"Selected ${card.title}. You can now adjust brows, lashes, blush and lips one by one.",js 字串,web/app.js:1638
+s0407,先在照片上取膚色，才能自動對應底妝色號。,"Pick a skin tone from the photo first, so the foundation shade can be matched automatically.",js 字串,web/app.js:1676
+s0408,，${f.fit},", ${f.fit}",js 字串,web/app.js:1677
+s0409,底妝顏色自動用最接近你膚色的色號：${f.brand} ${f.code}（膚色色卡第 ${f.level} 級${fit}）。YouCam 底妝會依皮膚範圍全臉均勻上。${limits},Foundation color automatically uses the shade closest to your skin tone: ${f.brand} ${f.code} (skin tone card level ${f.level}${fit}). YouCam foundation is applied evenly over the whole face within the skin area. ${limits},js 字串,web/app.js:1680
+s0410,"${ITEMS.find((i) => i.key === item).label}：${optionOf(item, id).label}${res.hint ? '。' + res.hint : ''}","${ITEMS.find((i) => i.key === item).label}: ${optionOf(item, id).label}${res.hint ? '. ' + res.hint : ''}",js 字串,web/app.js:1703
+s0411,畫面上的色號是示範型錄（虛構品牌）。實際使用時，可對應合作品牌官網現行色號：先把膚色對到膚色色卡（深淺 10 級×冷暖），再找同一格的色號。請以專櫃自然光試色為準。,"The shades on screen come from a demo catalog (fictional brand). In real use, they can be matched to the current shades on partner brands' official sites: first match your skin tone to the skin tone card (10 depth levels × cool/warm), then find the shade in the same cell. Go by a try-on in natural light at the counter.",js 字串,web/app.js:1723
+s0412,底妝、遮瑕：先把膚色對到膚色色卡（深淺 10 級×冷暖），再找各品牌官網現行色號裡同一格的；冷暖用品牌自己的標示。官網色票是網頁顯示色，請以專櫃自然光試色為準。,"Foundation and concealer: first match your skin tone to the skin tone card (10 depth levels × cool/warm), then look for the shade in the same cell among each brand's current shades on its official site; for cool/warm, use the brand's own labeling. Official site swatches are colors shown on a web page, so go by a try-on in natural light at the counter.",js 字串,web/app.js:1724
+s0415,目前是保留原樣，沒有可以疊的妝。,"Currently keeping as is, so there is no makeup to layer.",js 字串,web/app.js:1734
+s0416,一層一層試妝中…,Trying on layer by layer…,js 字串,web/app.js:1735
+s0417,＋${l.item_label}（${l.option_label}）,+${l.item_label} (${l.option_label}),js 字串,web/app.js:1743
+s0418,，,", ",js 字串,web/app.js:1746
+s0419,${again ? '重新分析五官' : '依五官給建議'}${state.mode === 'mock' ? '（展示模式：不扣點）' : '（多 10 點）'},${again ? 'Re-analyze features' : 'Get suggestions by features'}${state.mode === 'mock' ? ' (Demo mode: no credits deducted)' : ' (10 extra credits)'},js 字串,web/app.js:1751
+s0420,分析五官中…,Analyzing facial features…,js 字串,web/app.js:1754
+s0421,"套用：${ITEMS.find((i) => i.key === item).label}「${optionOf(item, id).label}」","Applied: ${ITEMS.find((i) => i.key === item).label} ""${optionOf(item, id).label}""",js 字串,web/app.js:1771
+s0422,（照片推估）,(estimated from photo),js 字串,web/app.js:1784
+s0423,"（試妝：底妝「${optionOf('foundation', id).label}」）","(Try-on: foundation ""${optionOf('foundation', id).label}"")",js 字串,web/app.js:1794
+s0424,示範型錄,Demo catalog,js 字串,web/app.js:1796
+s0425,官網,Official site,js 字串,web/app.js:1796
+s0426,公開色票 2018,Public swatches 2018,js 字串,web/app.js:1796
+s0427,底妝（原膚色）,Foundation (original skin tone),js 字串,web/app.js:1797
+s0428,遮瑕（泛紅、黑眼圈）,"Concealer (redness, dark circles)",js 字串,web/app.js:1797
+s0429,${m.brand} ${m.product}：${m.code}（${m.fit}）,${m.brand} ${m.product}: ${m.code} (${m.fit}),js 字串,web/app.js:1805
+s0430,${m.brand} ${m.product}：${m.code}（${m.verdict}，色差 ${m.delta_e}）,"${m.brand} ${m.product}: ${m.code} (${m.verdict}, color difference ${m.delta_e})",js 字串,web/app.js:1805
+s0431,"<span class=""strip-cell${c.level === cell.level ? ' on' : ''}"" style=""background:${c.hex}"" title=""第 ${c.level} 級""></span>","<span class=""strip-cell${c.level === cell.level ? ' on' : ''}"" style=""background:${c.hex}"" title=""Level ${c.level}""></span>",js 字串,web/app.js:1810
+s0432,"<div class=""strip""><div class=""strip-label"">膚色色卡：第 ${cell.level} 級（${cell.level_name}）・${cell.tone_label}","<div class=""strip""><div class=""strip-label"">Skin tone card: level ${cell.level} (${cell.level_name})・${cell.tone_label}",js 字串,web/app.js:1811
+s0433,"${cell.tone_confirm ? '（冷暖請本人確認）' : ''}</div><div class=""strip-row"">${sw}</div></div>","${cell.tone_confirm ? ' (please confirm cool/warm yourself)' : ''}</div><div class=""strip-row"">${sw}</div></div>",js 字串,web/app.js:1812
+s0434,對應色號,Matching shade,js 字串,web/app.js:1820
+s0435,${face.how}（色號${face.basis}，目標色 ${face.hex}）${face.warn ? ' ' + face.warn : ''},"${face.how} (${face.basis}, target color ${face.hex})${face.warn ? ' ' + face.warn : ''}",js 字串,web/app.js:1835
+s0436,"<div class=""stripes""><div class=""stripes-k"">專櫃試色三條（${esc(st.stripes[0].brand)} ${esc(st.stripes[0].product)}）</div>","<div class=""stripes""><div class=""stripes-k"">Three counter test stripes (${esc(st.stripes[0].brand)} ${esc(st.stripes[0].product)})</div>",js 字串,web/app.js:1844
+s0437,有差,Noticeable difference,py 字串,app/color_engine.py:19 app/color_engine.py:121 app/color_engine.py:129 app/color_engine.py:267 app/color_engine.py:121 app/color_engine.py:19
+s0438,"<div class=""match"">型錄裡沒有很接近的色號；也可能是照片偏暗或偏色，建議在窗邊自然光重拍，或點選較亮的臉頰。</div>","<div class=""match"">There's no very close shade in the catalog; it may also be that the photo is dark or off-color. Try retaking it in natural light by a window, or tap a brighter cheek.</div>",js 字串,web/app.js:1852
+s0439,對照色號中…,Comparing shades…,js 字串,web/app.js:1857
+s0440,這張照片光線不理想，膚色對應僅供參考。,"The lighting in this photo isn't ideal, so the skin tone match is for reference only.",js 字串,web/app.js:1873
+s0444,配色卡.png,color-card.png,js 字串,web/app.js:1893
+s0446,拍一張，或上傳一張正面照。,"Take a photo, or upload a front-facing one.",js 字串,web/app.js:1901
+s0447,載入示範照片…,Loading the demo photo…,js 字串,web/app.js:1909
+s0448,點照片上你想當底妝顏色的地方（例如膚色最勻的臉頰）。,Tap the spot on the photo you want as the foundation color (for example the cheek where the skin tone is most even).,js 字串,web/app.js:1942
+s0449,請點照片取色,Tap the photo to pick a color,js 字串,web/app.js:1942
+s0450,先點一塊綠色外框，再按「開／關這一塊」。,"First tap a green frame, then press ""On/off for this patch"".",js 字串,web/app.js:1956
+s0451,<h2>我想找這些顏色</h2>,<h2>Colors I want to find</h2>,js 字串,web/app.js:1976
+s0452,展示模式：不會呼叫 YouCam、不扣點,Demo mode: YouCam is not called and no credits are deducted,js 字串,web/app.js:2000
+s0453,正式模式：本次已試妝 ${s.calls_used}/${s.max_calls} 次,Live mode: ${s.calls_used}/${s.max_calls} try-ons used this time,js 字串,web/app.js:2000
+s0454,連不上伺服器,Can't reach the server,js 字串,web/app.js:2003
+s0455,粉冷調,Cool pink,$.undertones.pink_cool.label,app/presets.json
+s0456,暖象牙,Warm ivory,$.undertones.warm_ivory.label,app/presets.json
+s0457,不加,None,$.blush.levels[0].label,app/presets.json app/presets.json
+s0458,一點血色,A hint of color,$.blush.levels[1].label,app/presets.json
+s0459,淡,Light,$.blush.levels[2].label,app/presets.json
+s0460,中,Medium,$.blush.levels[3].label,app/presets.json app/skin_card.py:22 app/skin_card.py:22 app/patch_detect.py:21 app/patch_detect.py:21
+s0461,暖杏好氣色,Warm apricot glow,$.blush.levels[4].label,app/presets.json
+s0462,裸粉潤唇,Nude pink lip balm,$.lip[2].label,app/presets.json
+s0463,水光自然色,Glossy natural tint,$.lip[3].label,app/presets.json
+s0464,水光莓紅,Glossy berry red,$.lip[4].label,app/presets.json
+s0465,緞面冷櫻桃,Satin cool cherry,$.lip[5].label,app/presets.json
+s0466,霧面深紅,Matte deep red,$.lip[6].label,app/presets.json
+s0467,照原眉色補一點,"Fill in a little, matching your brow color",$.brow[1].label,app/presets.json
+s0468,照原眉色略深（立體）,Slightly deeper than your brow color (dimensional),$.brow[2].label,app/presets.json
+s0469,只補一點,Just a touch,$.brow[3].label,app/presets.json
+s0470,淺金棕,Light golden brown,$.brow[4].label,app/presets.json
+s0471,灰褐,Taupe,$.brow[5].label,app/presets.json
+s0472,灰褐深一階,Deeper taupe,$.brow[6].label,app/presets.json
+s0473,冷燕麥灰,Cool oat gray,$.brow[7].label,app/presets.json
+s0474,淡棕灰,Light gray-brown,$.lash[1].label,app/presets.json app/catalog.json
+s0475,棕,Brown,$.lash[2].label,app/presets.json app/catalog.json
+s0476,黑,Black,$.lash[3].label,app/presets.json app/catalog.json app/brow_card.py:18 app/brow_card.py:21 app/brow_card.py:42 app/brow_card.py:65
+s0477,香檳淡金,Champagne light gold,$.lash[4].label,app/presets.json app/catalog.json
+s0478,極細自然黑,Ultra-fine natural black,$.lash[5].label,app/presets.json
+s0479,柔和修容,Soft contour,$.contour[1].label,app/presets.json
+s0480,修容明顯一點,Slightly stronger contour,$.contour[2].label,app/presets.json
+s0481,看不出有化妝：補一點眉、潤色護唇，皮膚保持原樣,"No visible makeup: a touch of brow fill and a tinted lip balm, skin left as it is",$.styles.grooming.description,app/presets.json
+s0482,淡淡的好氣色：腮紅、水光唇、照原眉色補眉,"A soft, healthy glow: blush, a dewy lip, and brows filled in with your natural brow color",$.styles.natural.description,app/presets.json
+s0483,有妝感：可以加深眉睫、選紅唇；建議只放一個焦點,A visible makeup look: you can deepen brows and lashes and choose a red lip; we suggest keeping just one focal point,$.styles.polished.description,app/presets.json
+s0484,薄透,Sheer,$.foundation[1].label,app/presets.json
+s0485,BB 霜（快速勻膚）,BB cream (quick even-out),$.foundation[2].label,app/presets.json
+s0486,輕薄（保留膚質）,Light (keeps skin texture),$.foundation[3].label,app/presets.json
+s0487,薄透水光,Sheer dewy,$.foundation[4].label,app/presets.json
+s0488,面中打亮,Center-face highlight,$.highlight[1].label,app/presets.json
+s0489,顴骨打亮（修容上方）,Cheekbone highlight (above the contour),$.highlight[2].label,app/presets.json
+s0490,T 字打亮,T-zone highlight,$.highlight[3].label,app/presets.json
+s0491,鼻樑微光,Nose bridge glow,$.highlight[4].label,app/presets.json
+s0492,底妝用「自然」讓泛紅和膚色不均變勻、仍保留部分雀斑，加裸粉潤唇提亮嘴唇；其他彩妝都不加。,"Foundation in the ""Natural"" level evens out redness and uneven skin tone while still keeping some freckles, and a nude pink lip balm brightens the lips; no other makeup is added.",$.base.albinism.grooming.why,app/full_looks.json
+s0493,輕薄底妝修飾泛紅、保留膚質；面中柔和提亮不刺眼；眉睫照原生淡色微補。,A light foundation corrects redness while keeping skin texture; a soft brightening on the center of the face that is not harsh; brows and lashes are lightly filled in with their natural light color.,$.base.albinism.natural.why,app/full_looks.json
+s0494,薄透水光加極淡冷灰修容；眉略深半階；棕灰睫毛取代純黑；冷調紅唇做亮點。,Sheer dewy foundation with a very light cool-gray contour; brows about half a shade deeper; brown-gray lashes instead of pure black; a cool-toned red lip as the standout.,$.base.albinism.polished.why,app/full_looks.json
+s0495,只上一層薄底妝（像 BB 霜），把膚色統一、看不出化妝；其他彩妝都不加。,Just one thin layer of foundation (like BB cream) to even out the skin tone so no makeup is visible; no other makeup is added.,$.base.vitiligo.grooming.why,app/full_looks.json
+s0496,底妝對齊周圍膚色、淺色區塊局部校色；鼻樑微光把視線拉到中央；柔和修容弱化兩側色差。,"Foundation matched to the surrounding skin tone, with spot color correcting on the lighter patches; a soft glow on the nose bridge draws the eye to the center; a soft contour reduces the color difference on both sides.",$.base.vitiligo.natural.why,app/full_looks.json
+s0497,校色加全覆蓋平衡全臉；重建骨相；暖杏腮紅過渡遮瑕底妝；霧面深紅當焦點。,Color correcting plus full coverage balances the whole face; the face structure is rebuilt; warm apricot blush blends into the concealing foundation base; a matte deep red is the focal point.,$.base.vitiligo.polished.why,app/full_looks.json
+s0498,溫和保濕,Gentle moisturizing,$.steps[0].title,app/full_looks.json
+s0499,輕拍保濕，不要用力搓揉,Pat the moisturizer on lightly; do not rub hard,$.steps[0].tip,app/full_looks.json
+s0500,一般衛教資料整理（尚未逐條查證）,"General patient-information material, compiled by us (not verified item by item)",$.steps[0].source,app/full_looks.json app/full_looks.json app/full_looks.json
+s0501,廣譜防曬,Broad-spectrum sunscreen,$.steps[1].title,app/full_looks.json
+s0502,均勻厚塗，保護怕光肌膚,"Apply an even, generous layer to protect light-sensitive skin",$.steps[1].tip,app/full_looks.json
+s0504,局部校色,Spot color correcting,$.steps[2].title,app/full_looks.json app/care_rules_vitiligo.py:32 app/care_rules_vitiligo.py:32
+s0505,淺色區塊處輕點校色，順平周圍膚色,Dab a little color corrector on the lighter patches to blend them into the surrounding skin tone,$.steps[2].tip,app/full_looks.json
+s0507,均勻底妝,Even foundation,$.steps[3].title,app/full_looks.json
+s0508,粉撲輕壓對齊原膚色，不來回擦,Press on with a powder puff to match your natural skin tone; do not rub back and forth,$.steps[3].tip,app/full_looks.json
+s0510,柔和眉部,Soft brows,$.steps[4].title,app/full_looks.json
+s0511,順著毛流補色，不畫生硬外框,Fill in color following the hair direction; do not draw a harsh outline,$.steps[4].tip,app/full_looks.json
+s0512,經驗建議,Experience-based suggestion,$.steps[4].source,app/full_looks.json app/full_looks.json app/full_looks.json app/full_looks.json
+s0513,修容打亮,Contour and highlight,$.steps[5].title,app/full_looks.json
+s0514,極少量輕掃，避開泛紅處,Sweep on a very small amount lightly; avoid areas with redness,$.steps[5].tip,app/full_looks.json
+s0515,睫毛腮紅,Lashes and blush,$.steps[6].title,app/full_looks.json
+s0516,輕刷睫毛，雙頰點一點氣色,Lightly brush on the lashes and add a touch of healthy color to both cheeks,$.steps[6].tip,app/full_looks.json
+s0517,保濕潤唇,Moisturizing lip care,$.steps[7].title,app/full_looks.json
+s0518,輕塗保濕唇彩，增添光澤,Lightly apply a moisturizing lip color for a little extra shine,$.steps[7].tip,app/full_looks.json
+s0519,很接近,Very close,py 字串,app/color_engine.py:19 app/color_engine.py:121 app/color_engine.py:129 app/color_engine.py:121 app/color_engine.py:19 app/color_engine.py:129
+s0520,接近,Close,py 字串,app/color_engine.py:19 app/color_engine.py:121 app/color_engine.py:129 app/color_engine.py:121 app/color_engine.py:19 app/color_engine.py:129
+s0521,淺一階,One step lighter,py 字串,app/color_engine.py:243 app/color_engine.py:243
+s0522,深一階,One step deeper,py 字串,app/color_engine.py:243 app/color_engine.py:243
+s0523,在下顎線（臉和脖子交界）各試一條，到窗邊自然光看，等 15–30 分鐘（底妝和皮脂混合、變乾後會稍微變深）,"Try one stripe each along the jawline (where the face meets the neck), look in natural light by a window, and wait 15–30 minutes (foundation mixes with skin oil and dries slightly deeper),",py 字串,app/color_engine.py:248
+s0524,再選最「看不見」的那條；兩條之間猶豫時選略淺半階的。,"then pick the stripe that looks most ""invisible""; if you cannot decide between two, pick the one about half a step lighter.",py 字串,app/color_engine.py:249
+s0525,官網色票普遍比真人皮膚黃：目錄裡沒有很接近你膚色的色號，以下是明度最合、相對偏紅的候選。,"Official website swatches are generally yellower than real skin: the catalog has no shade very close to your skin tone, so below are the candidates that best match in lightness and lean relatively red.",py 字串,app/color_engine.py:253
+s0526,請在下顎線試三條、自然光下看；需要時底妝可加一點紅色調色液，淺色區塊先用紅橘色校色。,"Please try three stripes along the jawline and look in natural light; if needed, a little red tinting liquid can be added to the foundation, and for the lighter patches, first color-correct with a red-orange.",py 字串,app/color_engine.py:254
+s0527,顏色以原膚色為準：不選更白、也不選更深的色號。,"Go by your natural skin tone: do not choose a whiter shade, and do not choose a deeper one.",py 字串,app/color_engine.py:271 app/color_engine.py:271
+s0528,若最接近的色號仍「有差」，可混兩色（彩妝師常見做法）或請專櫃以自然光試色。,"If the closest shade is still marked ""Noticeable difference"", you can blend two shades (a common makeup-artist approach) or ask the counter staff to test shades in natural light.",py 字串,app/color_engine.py:272 app/color_engine.py:272
+s0529,預期妝容的打亮／修容區取色,Colors taken from the highlight/contour zones of the expected look,py 字串,app/color_engine.py:291 app/color_engine.py:291
+s0530,依膚色推算,Estimated from skin tone,py 字串,app/color_engine.py:291 app/color_engine.py:291
+s0531,只點在泛紅、黑眼圈，同深淺或淺半階；用指腹點開，不要全臉。,"Dab only on redness and dark circles, in the same shade level or half a step lighter; blend out with a fingertip and do not apply over the whole face.",py 字串,app/color_engine.py:293 app/color_engine.py:293
+s0532,打亮：比膚色淺一階的遮瑕，點在鼻樑、顴骨上緣，拍開。,"Highlight: a concealer one step lighter than your skin tone, dabbed on the nose bridge and the top of the cheekbones, then patted out.",py 字串,app/color_engine.py:295 app/color_engine.py:295
+s0533,修容：深兩階、偏冷（灰褐）的粉底，刷在顴骨下方和下顎線，邊界拍開；不要用偏橘的。,"Contour: a foundation two steps deeper and cool-leaning (gray-brown), brushed under the cheekbones and along the jawline, with the edges patted out; do not use orange-leaning ones.",py 字串,app/color_engine.py:297 app/color_engine.py:297
+s0534,型錄沒有適合的修容色（粉底不是偏橘就是太淺）：照色塊選灰褐色的修容粉，刷很淡、只在顴骨下方。,"The catalog has no suitable contour shade (the foundations are either too orange or too light): follow the color swatch and choose a gray-brown contour powder, brushed on very lightly and only under the cheekbones.",py 字串,app/color_engine.py:314 app/color_engine.py:314
+s0535,型錄裡最接近的粉底仍比目標偏橘：刷很淡、只在顴骨下方，或選灰褐色的修容產品。,"The closest foundation in the catalog is still more orange than the target: brush on very lightly and only under the cheekbones, or choose a gray-brown contour product.",py 字串,app/color_engine.py:316 app/color_engine.py:316
+s0536,色差不大：用一個接近周圍膚色的色號，點壓在淺色區塊上即可。,Small color difference: use one shade close to the surrounding skin tone and dab it over the lighter patch.,py 字串,app/color_engine.py:348 app/color_engine.py:348
+s0537,色差明顯：淺色區塊先局部校色，粉底對周圍膚色，邊緣再用淺一點的遮瑕修邊。,"Clear color difference: first color-correct the lighter patch locally, match the foundation to the surrounding skin tone, then touch up the edges with a slightly lighter concealer.",py 字串,app/color_engine.py:354 app/color_engine.py:354
+s0539,淺色區塊缺色素：先用指尖只在淺色區塊上薄點蜜桃／橘色校色（深膚色用偏紅的深橘），,"Lighter patches lack pigment: first, with a fingertip, dab a thin layer of peach/orange color corrector only on the lighter patches (use a reddish deep orange for deeper skin tones),",py 字串,app/color_engine.py:365
+s0540,粉底才不會泛灰；淺色區塊偏粉也不用綠色，綠疊棕色粉底會發灰。,"so the foundation does not turn gray; even if a lighter patch looks pinkish, do not use green, because green layered under brown foundation turns gray.",py 字串,app/color_engine.py:366
+s0542,原膚色較深：校色選偏紅的深橘，粉底對周圍膚色。,"Deeper natural skin tone: choose a reddish deep orange for color correcting, and match the foundation to the surrounding skin tone.",py 字串,app/color_engine.py:369 app/color_engine.py:369
+s0546,面中打亮：額頭中央、鼻樑、下巴、眼下三角，霧面或微光；T 字少量蜜粉按壓控油。,"Center-face highlight: center of the forehead, nose bridge, chin, and the triangle under the eyes, matte or a soft glimmer; press a little loose powder on the T-zone to control oil.",py 字串,app/color_engine.py:374 app/color_engine.py:374
+s0550,選色時在下顎線試三條（淺一階、最接近、深一階），到窗邊自然光看、等 15–30 分鐘再決定：底妝和皮脂混合、變乾後會稍微變深，,"When choosing a shade, try three stripes along the jawline (one step lighter, closest, one step deeper), look in natural light by a window, and wait 15–30 minutes before deciding: foundation mixes with skin oil and dries slightly deeper,",py 字串,app/color_engine.py:378
+s0551,猶豫時選略淺半階的。,"so if you cannot decide, pick the one about half a step lighter.",py 字串,app/color_engine.py:379
+s0552,溫和清潔、保濕,Gentle cleansing and moisturizing,py 字串,app/color_engine.py:428 app/color_engine.py:428
+s0553,皮膚薄、容易紅；動作輕，不搓不擦，乾燥的地方上妝會浮粉。,"Skin is thin and flushes easily; use a light touch, no rubbing or wiping, and makeup looks powdery on dry areas.",py 字串,app/color_engine.py:428 app/color_engine.py:428
+s0554,防曬 SPF50+，出門前 10–15 分鐘,"Sunscreen SPF50+, 10–15 minutes before going out",py 字串,app/color_engine.py:429 app/color_engine.py:429
+s0556,隔離（溫和、無香料的妝前乳）,"Primer (gentle, fragrance-free)",py 字串,app/color_engine.py:430 app/color_engine.py:430
+s0557,在皮膚和彩妝之間多一層保護，也讓後面的妝服貼。,"Adds a layer of protection between the skin and the makeup, and helps the makeup that follows sit well.",py 字串,app/color_engine.py:430 app/color_engine.py:430
+s0558,眼睛也要防曬：寬簷帽、包覆式抗 UV 墨鏡,Protect your eyes too: a wide-brimmed hat and wraparound UV-blocking sunglasses,py 字串,app/color_engine.py:434 app/color_engine.py:434
+s0559,眼睛怕光，防曬不只擦臉。,Eyes are light-sensitive; sun protection is not just for the face.,py 字串,app/color_engine.py:434 app/color_engine.py:434
+s0560,隔離：溫和、無香料的妝前乳；要修色只修泛紅（綠色系）,"Primer: gentle, fragrance-free; for color correcting, only correct redness (green tones)",py 字串,app/color_engine.py:435 app/color_engine.py:435
+s0561,多一層保護、讓妝服貼；不選美白提亮的紫色系，目標是調和膚色，不是更白。,"Adds a layer of protection and helps makeup sit well; do not choose brightening purple tones, since the goal is to harmonize the skin tone, not to make it whiter.",py 字串,app/color_engine.py:435 app/color_engine.py:435
+s0562,新產品先在耳後或下顎小範圍試用,Try new products first on a small area behind the ear or on the jawline,py 字串,app/color_engine.py:436 app/color_engine.py:436
+s0563,選溫和、無香料，降低過敏機會。,"Choose gentle, fragrance-free products to lower the chance of an allergic reaction.",py 字串,app/color_engine.py:436 app/color_engine.py:436
+s0564,底妝（想要時）：顏色接近原本膚色，面中最多往外推薄，T 字平刷、眼周最薄,"Foundation (if you want it): a shade close to your natural skin tone, most on the center of the face and thinned outward, flat strokes on the T-zone, thinnest around the eyes",py 字串,app/color_engine.py:437 app/color_engine.py:437
+s0565,照配色卡的底妝色號，往外推到脖子一致；T 字少量蜜粉按壓。保留特色的妝可以不上底妝，隔離一樣要上。,"Follow the foundation shade on the color card and blend out to the neck so it looks consistent; press on a little loose powder on the T-zone. A look that keeps your natural character can skip foundation, but still apply primer.",py 字串,app/color_engine.py:437 app/color_engine.py:437
+s0566,面中打亮（想要時）：額頭中央、鼻樑、下巴、眼下三角，霧面或微光,"Center-face highlight (if you want it): center of the forehead, nose bridge, chin, and the triangle under the eyes, matte or a soft glimmer",py 字串,app/color_engine.py:438 app/color_engine.py:438
+s0567,膚色很淺的人常用粉色系、珠光打亮；量少一點、輕拍。,"People with very light skin often use pink-toned, pearlescent highlighter; use a small amount and pat it on lightly.",py 字串,app/color_engine.py:438 app/color_engine.py:438
+s0568,上妝：眉、睫毛、腮紅、唇，少量多次,"Apply makeup: brows, lashes, blush, lips, a little at a time, building up in layers",py 字串,app/color_engine.py:439 app/color_engine.py:439
+s0569,照配色卡的色號；保留原樣也可以。,Follow the shades on the color card; keeping things as they are is also fine.,py 字串,app/color_engine.py:439 app/color_engine.py:439
+s0570,卸妝：溫和卸妝，指尖輕打圈、紙巾輕壓,"Makeup removal: remove gently, with fingertips in light circles and tissue pressed lightly",py 字串,app/color_engine.py:440 app/color_engine.py:440
+s0571,不用力擦。,Do not wipe hard.,py 字串,app/color_engine.py:440 app/color_engine.py:440
+s0572,溫和清潔、保濕，不搓不刷,"Gentle cleansing and moisturizing, no rubbing or brushing",py 字串,app/color_engine.py:443 app/color_engine.py:443
+s0573,摩擦、抓、用力刷都可能在該處長出新的淺色區塊。,"Rubbing, scratching, and brushing hard may cause new lighter patches to appear there.",py 字串,app/color_engine.py:443 app/color_engine.py:443
+s0574,防曬 SPF50+，大範圍擦,"Sunscreen SPF50+, applied over a wide area",py 字串,app/color_engine.py:444 app/color_engine.py:444
+s0575,淺色區塊處容易曬傷；周圍皮膚不曬黑，色差也比較小。,"Lighter patches burn easily; if the surrounding skin does not tan, the color difference is also smaller.",py 字串,app/color_engine.py:444 app/color_engine.py:444
+s0576,避開可能誘發淺色區塊的成分,Avoid ingredients that may trigger lighter patches,py 字串,app/color_engine.py:446 app/color_engine.py:446
+s0577,染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白產品；在哪裡用、哪裡出現淺色區塊就停用並看醫師。,"Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes, whitening products; if lighter patches appear where you use one, stop using it and see a doctor.",py 字串,app/color_engine.py:446 app/color_engine.py:446
+s0578,照光前 2 小時不擦乳霜、化妝品、香水；一般保濕可以。,"Do not apply creams, cosmetics, or perfume for 2 hours before light therapy; regular moisturizer is fine.",py 字串,app/color_engine.py:447 app/color_engine.py:447
+s0579,局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色）,Spot color correcting: dab peach/orange only on the lighter patches (no green),py 字串,app/color_engine.py:448 app/color_engine.py:448
+s0580,淺色區塊缺色素，先校色粉底才不會泛灰；不要整臉上。,"Lighter patches lack pigment, so do color correcting first so the foundation does not turn gray; do not apply it over the whole face.",py 字串,app/color_engine.py:448 app/color_engine.py:448
+s0581,底妝：對淺色區塊周圍的膚色選色，面中最多、往外推薄；T 字平刷、眼周最薄；海綿點壓,"Foundation: choose a shade to match the skin tone around the lighter patches, most on the center of the face and thinned outward; flat strokes on the T-zone, thinnest around the eyes; dab with a sponge",py 字串,app/color_engine.py:449 app/color_engine.py:449
+s0582,照配色卡的底妝色號；往外推到脖子一致。T 字少量蜜粉按壓控油。不想上可以跳過。,Follow the foundation shade on the color card; blend out to the neck so it looks consistent. Press a little loose powder on the T-zone to control oil. You can skip it if you prefer.,py 字串,app/color_engine.py:449 app/color_engine.py:449
+s0583,面中打亮：額頭中央、鼻樑、下巴、眼下三角，選霧面或微光,"Center-face highlight: center of the forehead, nose bridge, chin, and the triangle under the eyes, in matte or a soft glimmer",py 字串,app/color_engine.py:450 app/color_engine.py:450
+s0584,讓臉中間亮一點、更立體；珠光太多會讓紋理和淺色區塊更明顯。,Makes the middle of the face a little brighter and more dimensional; too much shimmer makes skin texture and the lighter patches more noticeable.,py 字串,app/color_engine.py:450 app/color_engine.py:450
+s0585,遮瑕用點壓，不推不擦；邊緣用淺一點的修邊,Dab concealer on; do not push or wipe it; use a slightly lighter shade for the edges,py 字串,app/color_engine.py:451 app/color_engine.py:451
+s0586,照配色卡的遮瑕打底色、修邊色；不想遮也完全可以。,Follow the concealer base color and edge-touch-up color on the color card; not covering at all is also completely fine.,py 字串,app/color_engine.py:451 app/color_engine.py:451
+s0587,卸妝：溫和卸妝，紙巾輕壓,"Makeup removal: remove gently, pressing lightly with tissue",py 字串,app/color_engine.py:452 app/color_engine.py:452
+s0588,同樣不搓。,"Again, do not rub.",py 字串,app/color_engine.py:452 app/color_engine.py:452
+s0589,照你原本的眉色補稀疏處,Fill in sparse spots using your natural brow color,py 字串,app/color_engine.py:494 app/color_engine.py:494 app/brow_card.py:83 app/brow_card.py:83
+s0590,照你原本的眉色深一階，加強立體感,"One step deeper than your natural brow color, to add dimension",py 字串,app/color_engine.py:494 app/color_engine.py:494
+s0591,眉毛很淡：用原眉色的色調加深一點，讓眉毛看得見,"Brows are very light: use the tone of your natural brow color, slightly deeper, so the brows are visible",py 字串,app/color_engine.py:505 app/color_engine.py:505
+s0592,眉毛很淡：用原眉色的色調加深，加強立體感；淺膚色不會深到太兇,"Brows are very light: use the tone of your natural brow color, deeper, to add dimension; on light skin it will not look too harsh",py 字串,app/color_engine.py:506 app/color_engine.py:506
+s0593,你的皮膚比較敏感，上妝前先看這幾點,Your skin is on the sensitive side; please look at these points before applying makeup,py 字串,app/color_engine.py:515 app/color_engine.py:524 app/color_engine.py:515 app/color_engine.py:524
+s0596,皮膚薄、容易紅，手指一壓就可能留紅印,Skin is thin and flushes easily; a finger press may leave a red mark,py 字串,app/color_engine.py:518 app/color_engine.py:518
+s0597,上妝用輕拍，不要來回推。,"Apply makeup by patting lightly, not pushing back and forth.",py 字串,app/color_engine.py:518 app/color_engine.py:518
+s0598,新產品先在耳後或下顎小範圍試，選溫和、無香料,"Try new products first on a small area behind the ear or on the jawline, and choose gentle, fragrance-free ones",py 字串,app/color_engine.py:519 app/color_engine.py:519
+s0599,不要一開始就買大罐。,Do not buy a large size at first.,py 字串,app/color_engine.py:519 app/color_engine.py:519
+s0600,定期給皮膚科檢查,Have a dermatologist check your skin regularly,py 字串,app/color_engine.py:520 app/color_engine.py:520
+s0604,不要搓、抓、用力刷,"Do not rub, scratch, or brush hard",py 字串,app/color_engine.py:527 app/color_engine.py:527
+s0606,留意可能誘發淺色區塊的成分,Watch for ingredients that may trigger lighter patches,py 字串,app/color_engine.py:528 app/color_engine.py:528
+s0608,新產品先小範圍試，不要急著買大罐,Try new products on a small area first; do not rush to buy a large size,py 字串,app/color_engine.py:529 app/color_engine.py:529
+s0609,出現刺激、過敏就停用。,Stop using a product if you notice irritation or an allergic reaction.,py 字串,app/color_engine.py:529 app/color_engine.py:529
+s0610,照光治療當天不上妝；不確定是什麼、或淺色區塊範圍變大，請皮膚科確認,"No makeup on light-therapy days; if you are not sure what it is, or the lighter patches are getting larger, please have a dermatologist check",py 字串,app/color_engine.py:530 app/color_engine.py:530
+s0612,要取兩個顏色：原本膚色、淺色區塊各一點,Two colors are needed: one dot on your natural skin tone and one on the lighter patch,py 字串,app/recommend.py:47 app/recommend.py:47
+s0613,要先取膚色：點一下臉頰或下顎,Pick your skin tone first: tap a spot on the cheek or jawline,py 字串,app/recommend.py:51 app/recommend.py:51
+s0614,冷暖是照片推估，請本人確認；色號以專櫃自然光試色為準。,"Cool/warm is estimated from the photo, so please confirm it yourself; the shade is best judged by trying it at a beauty counter in natural light.",py 字串,app/recommend.py:84 app/recommend.py:84
+s0615,膚色很淺：修容只用極淡灰階，避免髒感,"Very light skin tone: use only a very light gray for contour, to avoid a muddy look",py 字串,app/full_look.py:49 app/full_look.py:49
+s0616,膚色很淺：腮紅用淡的，避免大面積色塊,"Very light skin tone: use a light blush, and avoid large patches of color",py 字串,app/full_look.py:51 app/full_look.py:51
+s0617,眉色很淺：不用深灰褐，照原眉色補或用冷燕麥灰,Very light brows: do not use a deep gray-brown; fill in with your natural brow color or use a cool oat gray,py 字串,app/full_look.py:53 app/full_look.py:53
+s0618,睫毛很淺：用香檳淡金，避開粗重深色,"Very light lashes: use champagne light gold, and avoid heavy dark colors",py 字串,app/full_look.py:55 app/full_look.py:55
+s0619,粉冷調淺膚色：唇色用冷調櫻桃，避開橘黃,"Light skin tone with a pink cool undertone: use a cool cherry lip color, and avoid orange-yellow",py 字串,app/full_look.py:58 app/full_look.py:58
+s0620,粉冷調淺膚色：腮紅避開暖杏,Light skin tone with a pink cool undertone: avoid warm apricot blush,py 字串,app/full_look.py:60 app/full_look.py:60
+s0621,暖象牙淺膚色：腮紅用暖杏,Light skin tone with a warm ivory undertone: use warm apricot blush,py 字串,app/full_look.py:63 app/full_look.py:63
+s0622,暖象牙淺膚色：眉色用淺金棕,Light skin tone with a warm ivory undertone: use light golden brown for the brows,py 字串,app/full_look.py:65 app/full_look.py:65
+s0623,中性中等膚色：眉色用灰褐，色調穩定,"Neutral medium skin tone: use gray-brown for the brows, a steady tone",py 字串,app/full_look.py:68 app/full_look.py:68
+s0624,中性中等膚色：睫毛以棕色為準,Neutral medium skin tone: go with brown for the lashes,py 字串,app/full_look.py:70 app/full_look.py:70
+s0625,深膚色：修容要明顯一點，太淺會顯得灰白,Deep skin tone: make the contour a bit stronger; too light looks grayish-white,py 字串,app/full_look.py:72 app/full_look.py:72
+s0626,深膚色：精緻款用霧面深紅做對比,"Deep skin tone: for the Polished look, use a matte deep red for contrast",py 字串,app/full_look.py:74 app/full_look.py:74
+s0627,暖調膚色：腮紅用暖杏,Warm skin tone: use warm apricot blush,py 字串,app/full_look.py:76 app/full_look.py:76
+s0628,容易敏感：底妝降為自然，避免厚重,Sensitive skin: foundation is lowered to Natural to avoid a heavy feel,py 字串,app/full_look.py:82 app/full_look.py:82
+s0629,容易敏感：不上修容，減少來回刷,"Sensitive skin: no contour, to reduce back-and-forth brushing",py 字串,app/full_look.py:85 app/full_look.py:85
+s0630,容易敏感：打亮只留鼻樑微光,Sensitive skin: highlight only a soft glow on the nose bridge,py 字串,app/full_look.py:87 app/full_look.py:87
+s0631,容易敏感：腮紅只點一點血色,Sensitive skin: blush with just a touch of natural color,py 字串,app/full_look.py:90 app/full_look.py:90
+s0632,容易敏感：不上腮紅,Sensitive skin: no blush,py 字串,app/full_look.py:93 app/full_look.py:93
+s0633,容易敏感：睫毛用淡棕灰，卸妝負擔小,"Sensitive skin: use light brown-gray lashes, which are easier on the skin when removing makeup",py 字串,app/full_look.py:95 app/full_look.py:95
+s0634,容易敏感：眉只補一點,Sensitive skin: fill in the brows only a little,py 字串,app/full_look.py:97 app/full_look.py:97
+s0635,容易敏感：霧面唇容易乾，改水光自然色,"Sensitive skin: matte lips dry out easily, so switch to a dewy natural color",py 字串,app/full_look.py:99 app/full_look.py:99
+s0636,眉毛本來就看得見：照原眉色補，不換成較淺的顏色,Your brows are already visible: fill in with your natural brow color and do not switch to a lighter color,py 字串,app/full_look.py:106 app/full_look.py:106
+s0637,眉毛顏色很淡：自動試妝抓不準眉毛位置，眉毛保留原樣,"Brows are very light: the automatic try-on cannot pinpoint the brow position, so the brows are left as they are",py 字串,app/full_look.py:112 app/full_look.py:112
+s0638,這些妝容規則參考化妝師常見做法與 AI 建議整理，尚未經專業審核；以你自己舒適為準。,"These makeup rules are based on common makeup-artist practice and AI suggestions, and have not been professionally reviewed; your own comfort comes first.",py 字串,app/full_look.py:124 app/full_look.py:124
+s0639,試底妝要先有對應的底妝色號（先取膚色）,"To try on foundation, a matching foundation shade is needed first (pick your skin tone first)",py 字串,app/looks.py:218 app/looks.py:218
+s0640,「照原眉色」要先在照片上點眉毛和臉頰取色,"To use ""natural brow color"", first tap the brow and the cheek on the photo to pick colors",py 字串,app/looks.py:232 app/looks.py:232
+s0641,深色紅唇比較搶眼，可以試試眉毛「灰褐深一階」和棕色睫毛來平衡。,"A deep red lip is eye-catching; you can try brows ""gray-brown one step deeper"" and brown lashes to balance it.",py 字串,app/looks.py:295 app/looks.py:295
+s0642,極淺,Extra light,py 字串,app/skin_card.py:22 app/skin_card.py:22
+s0643,很淺,Very light,py 字串,app/skin_card.py:22 app/skin_card.py:22
+s0644,淺,Light,py 字串,app/skin_card.py:22 app/skin_card.py:22
+s0645,淺中,Light-medium,py 字串,app/skin_card.py:22 app/skin_card.py:22
+s0646,中深,Medium-deep,py 字串,app/skin_card.py:22 app/skin_card.py:22
+s0647,深,Deep,py 字串,app/skin_card.py:22 app/skin_card.py:22
+s0648,很深,Very deep,py 字串,app/skin_card.py:22 app/skin_card.py:22
+s0649,極深,Extra deep,py 字串,app/skin_card.py:22 app/skin_card.py:22
+s0650,最深,Deepest,py 字串,app/skin_card.py:22 app/skin_card.py:22
+s0651,同深淺、同冷暖,"Same depth, same undertone",py 字串,app/skin_card.py:171 app/skin_card.py:171
+s0652,同深淺、冷暖相近,"Same depth, similar undertone",py 字串,app/skin_card.py:173 app/skin_card.py:173
+s0653,同深淺、冷暖不同,"Same depth, different undertone",py 字串,app/skin_card.py:173 app/skin_card.py:173
+s0654,差一級,1 level apart,py 字串,app/skin_card.py:175 app/skin_card.py:175
+s0655,這條產品線沒有同深淺的色號：一淺一深各取一半混合。,This product line has no shade at the same depth: take one lighter and one deeper and mix them half and half.,py 字串,app/skin_card.py:224 app/skin_card.py:224
+s0656,臉要完整出現在畫面裡,Your whole face needs to be in the frame,py 字串,app/server.py:65 app/server.py:65
+s0657,臉太小：手機拿近一點,Face is too small: hold the phone a little closer,py 字串,app/server.py:66 app/server.py:66
+s0658,臉超出畫面：往中間移一點,Face is out of the frame: move a little toward the center,py 字串,app/server.py:67 app/server.py:67
+s0659,臉太斜：手機舉到眼睛高度、正對鏡頭,"Face is tilted too much: hold the phone at eye level, facing the camera straight on",py 字串,app/server.py:68 app/server.py:68
+s0660,照片解析度不夠：改用前鏡頭最高畫質,The photo resolution is not high enough: use the front camera at its highest quality,py 字串,app/server.py:69 app/server.py:69
+s0661,Pexels（可修改授權）https://www.pexels.com/photo/5273693/,Pexels (license allows modification) https://www.pexels.com/photo/5273693/,py 字串,app/server.py:78 app/server.py:78
+s0662,Pexels（可修改授權）https://www.pexels.com/photo/20551205/,Pexels (license allows modification) https://www.pexels.com/photo/20551205/,py 字串,app/server.py:82 app/server.py:82
+s0663,照片編碼錯誤,Photo encoding problem,py 字串,app/server.py:180 app/server.py:180
+s0664,伺服器找不到 API key,The server cannot find the API key,py 字串,app/server.py:384 app/server.py:514 app/server.py:384 app/server.py:514
+s0665,試妝服務太久沒回應，請再試一次,"The try-on service took too long to respond, please try again",py 字串,app/server.py:409 app/server.py:409
+s0666,試妝服務暫時連不上，稍後再試,"The try-on service is temporarily unreachable, please try again later",py 字串,app/server.py:413 app/server.py:413
+s0667,這張沒辦法試妝，換個角度或光線再拍一次,This photo cannot be tried on; take another one from a different angle or in different lighting,py 字串,app/server.py:417 app/server.py:441 app/server.py:417 app/server.py:441
+s0668,試妝結果是空的，請再試一次,"The try-on result is empty, please try again",py 字串,app/server.py:421 app/server.py:421
+s0669,展示模式：這張照片沒有錄好的五官結果。,Demo mode: this photo has no recorded facial-feature result.,py 字串,app/server.py:510 app/server.py:510
+s0670,五官分析太久沒回應，請再試一次,"The facial-feature analysis took too long to respond, please try again",py 字串,app/server.py:531 app/server.py:531
+s0671,五官分析暫時連不上，稍後再試,"The facial-feature analysis is temporarily unreachable, please try again later",py 字串,app/server.py:536 app/server.py:536
+s0672,這張沒辦法分析五官，換個正面、光線均勻的照片再試,This photo cannot be analyzed for facial features; try a front-facing photo with even lighting,py 字串,app/server.py:542 app/server.py:542
+s0673,入口只有膚色很淺、膚色深淺不一兩種,Only two entry paths exist: very light skin tone and uneven skin tone,py 字串,app/server.py:661 app/server.py:661
+s0674,這個入口目前沒有這個選項的定案妝容,This entry does not have a finalized look for this option yet,py 字串,app/server.py:665 app/server.py:665
+s0675,定案妝容暫時看不到,The finalized look is not available right now,py 字串,app/server.py:668 app/server.py:668
+s0676,官方這一步：YouCam 試妝錄好的結果（展示模式重播，不扣點）,"Official step: the recorded YouCam try-on result (Demo mode replay, no credits deducted)",py 字串,app/server.py:674 app/server.py:674
+s0677,官方這一步尚未錄製；展示模式不呼叫 YouCam，以下顯示本地結果,"The official step has not been recorded yet; Demo mode does not call YouCam, so the local result is shown below",py 字串,app/server.py:676 app/server.py:676
+s0678,本地逐層底妝,Local layer-by-layer foundation,py 字串,app/server.py:679 app/server.py:679
+s0679,照片太大,Photo is too large,py 字串,app/server.py:764 app/server.py:764
+s0680,請求格式錯誤,Problem with the request format,py 字串,app/server.py:762 app/server.py:772 app/server.py:775 app/server.py:762 app/server.py:772 app/server.py:775
+s0681,不連 YouCam、不扣點,"Does not connect to YouCam, no credits deducted",py 字串,app/server.py:822 app/server.py:822
+s0682,本次啟動最多呼叫幾次真 API,Maximum number of real API calls per launch,py 字串,app/server.py:823 app/server.py:823
+s0683,跨次啟動的點數總預算（帳本 runs/budget_ledger.json）,Total credit budget across launches (ledger runs/budget_ledger.json),py 字串,app/server.py:824 app/server.py:824
+s0684,demo＝只顯示虛構示範型錄（錄影片、截圖用，畫面不出現品牌名稱）,demo = show only the fictional demo catalog (for recording videos and screenshots; no brand names appear on screen),py 字串,app/server.py:826 app/server.py:826
+s0685,mock（不扣點）,mock (no credits deducted),py 字串,app/server.py:848 app/server.py:848
+s0686,臉型偏圓：腮紅從蘋果肌斜斜往太陽穴刷（目前試妝就是斜刷）。,Rounder face shape: sweep blush diagonally from the apples of the cheeks toward the temples (the current try-on already sweeps diagonally).,py 字串,app/face_rules.py:12 app/face_rules.py:12
+s0687,臉型偏方：腮紅斜刷、往太陽穴暈開，讓線條柔和（目前試妝就是斜刷）。,Squarer face shape: sweep blush diagonally and blend it toward the temples to soften the lines (the current try-on already sweeps diagonally).,py 字串,app/face_rules.py:13 app/face_rules.py:13
+s0688,臉型偏長：腮紅橫向、停在蘋果肌，不要往上拉太長。,Longer face shape: blush goes sideways and stops at the apples of the cheeks; do not pull it up too far.,py 字串,app/face_rules.py:14 app/face_rules.py:14
+s0689,臉型橢圓：腮紅位置照喜好，蘋果肌或斜刷都適合。,Oval face shape: place the blush as you like; the apples of the cheeks or a diagonal sweep both suit.,py 字串,app/face_rules.py:15 app/face_rules.py:15
+s0690,臉型上寬下窄：腮紅放在顴骨下緣、往耳朵方向，不要太靠近鼻子。,"Wider top and narrower bottom face shape: place blush along the lower edge of the cheekbones toward the ears, not too close to the nose.",py 字串,app/face_rules.py:16 app/face_rules.py:17 app/face_rules.py:16 app/face_rules.py:17
+s0691,顴骨較寬：腮紅放在顴骨中央往外輕拍。,Wider cheekbones: place blush at the center of the cheekbones and pat it outward lightly.,py 字串,app/face_rules.py:18 app/face_rules.py:18
+s0692,下顎較寬：腮紅稍微往上、靠近顴骨高處。,"Wider jaw: place blush slightly higher, near the high point of the cheekbones.",py 字串,app/face_rules.py:19 app/face_rules.py:19
+s0693,顴骨較高：腮紅刷在顴骨上方往外。,"Higher cheekbones: brush blush above the cheekbones, sweeping outward.",py 字串,app/face_rules.py:22 app/face_rules.py:22
+s0694,顴骨較低：腮紅放在蘋果肌稍高的位置。,Lower cheekbones: place blush a little higher on the apples of the cheeks.,py 字串,app/face_rules.py:23 app/face_rules.py:23
+s0695,顴骨較平：腮紅放在蘋果肌稍高的位置，輕拍就好。,"Flatter cheekbones: place blush a little higher on the apples of the cheeks, and just pat lightly.",py 字串,app/face_rules.py:24 app/face_rules.py:24
+s0696,臉頰圓潤：腮紅輕拍在蘋果肌。,Fuller cheeks: pat blush lightly onto the apples of the cheeks.,py 字串,app/face_rules.py:25 app/face_rules.py:25
+s0697,杏仁眼：睫毛用自然款就很好看。,Almond eyes: a natural lash style already looks lovely.,py 字串,app/face_rules.py:28 app/face_rules.py:28
+s0698,圓眼：睫毛刷在眼尾多一點，眼型會拉長一點。,Round eyes: brush the lashes a bit more at the outer corners to make the eye shape look a little longer.,py 字串,app/face_rules.py:29 app/face_rules.py:29
+s0699,細長眼：睫毛從根部往上刷，讓眼睛看起來比較開。,"Narrow, elongated eyes: brush the lashes upward from the roots so the eyes look more open.",py 字串,app/face_rules.py:30 app/face_rules.py:30
+s0700,唇形較薄：水光、淺色的唇看起來比較豐潤。,"Thinner lips: dewy, light-colored lips look fuller.",py 字串,app/face_rules.py:33 app/face_rules.py:33
+s0701,唇形較窄：水光、淺色的唇看起來比較豐潤。,"Narrower lips: dewy, light-colored lips look fuller.",py 字串,app/face_rules.py:34 app/face_rules.py:34
+s0702,唇形豐潤：潤色護唇或霧面都適合，顏色可以淡一點。,"Full lips: a tinted lip balm or a matte finish both suit, and the color can be softer.",py 字串,app/face_rules.py:35 app/face_rules.py:35
+s0703,下唇較厚：上唇中央多擦一點點，上下比較平衡。,Fuller lower lip: apply just a little more at the center of the upper lip to balance top and bottom.,py 字串,app/face_rules.py:36 app/face_rules.py:36
+s0704,上唇較厚：下唇中央多擦一點點，上下比較平衡。,Fuller upper lip: apply just a little more at the center of the lower lip to balance top and bottom.,py 字串,app/face_rules.py:37 app/face_rules.py:37
+s0705,眉毛較稀：照原眉色從「補一點」開始，順著毛流畫短線。,"Sparser brows: start with ""fill in a little"" using your natural brow color, drawing short strokes along the hair direction.",py 字串,app/face_rules.py:65 app/face_rules.py:65
+s0706,眉毛本身濃：只要順毛、照原眉色補一點，不需要加深。,Naturally thick brows: just brush with the hair direction and fill in a little with your natural brow color; no need to deepen them.,py 字串,app/face_rules.py:68 app/face_rules.py:68
+s0707,眉尾比較稀：只補眉尾就好，眉形不用改。,Sparser at the brow tails: fill in only the tails; there is no need to change the brow shape.,py 字串,app/face_rules.py:72 app/face_rules.py:72
+s0708,五官沒有特別需要調整的地方，照喜歡的妝感就好。,No facial feature needs special adjustment; just go with the makeup look you like.,py 字串,app/face_rules.py:89 app/face_rules.py:89
+s0709,依五官的一般美妝原則；只是建議，保留原樣也很好。,"Based on general makeup principles for facial features; these are only suggestions, and leaving things as they are is also great.",py 字串,app/face_rules.py:91 app/face_rules.py:91
+s0710,沒有載入 camouflage.js,camouflage.js is not loaded,js 字串,web/camo_editor.js:185
+s0711,找不到臉或淺色區塊,No face or lighter patch found,js 字串,web/camo_editor.js:188
+s0712,額頭,Forehead,js 字串,web/camo_editor.js:274
+s0713,下巴,Chin,js 字串,web/camo_editor.js:274
+s0714,全臉,Full face,js 字串,web/camo_editor.js:274
+s0715,先 prepare,Run prepare first,js 字串,web/camo_editor.js:318 web/camo_editor.js:491 web/camo_editor.js:642 web/shade_preview.js:240 web/shade_preview.js:287
+s0716,找不到清楚的臉：請換一張正面、整張臉入鏡的照片。,No clear face found: please use a front-facing photo with your whole face in the frame.,js 字串,web/capture_guide.js:37
+s0717,臉的位置抓得不太穩，結果可能有點偏；可以換個角度再拍一張，或直接繼續。,"The face position isn't very steady, so the result may be slightly off; you can retake from another angle, or just continue.",js 字串,web/capture_guide.js:44
+s0718,臉的位置抓得到。,Face position detected.,js 字串,web/capture_guide.js:47
+s0719,臉的大小剛好。,The face size is just right.,js 字串,web/capture_guide.js:52
+s0720,再靠近一點，讓臉占滿畫面多一些；我們也會自動幫你裁到剛好。,Move a little closer so your face fills more of the frame; we'll also crop it to fit automatically.,js 字串,web/capture_guide.js:53
+s0721,臉有點太小了：手機拿近一點再拍。,Your face is a bit small: hold the phone closer and retake.,js 字串,web/capture_guide.js:54
+s0722,臉有點側了：手機舉到眼睛高度、正對鏡頭再拍一張。,"Your face is turned a bit: hold the phone at eye level, face the camera, and take another photo.",js 字串,web/capture_guide.js:62
+s0723,臉稍微有點側：可以把手機舉到眼睛高度、正對鏡頭。,Your face is turned slightly: you can hold the phone at eye level and face the camera.,js 字串,web/capture_guide.js:64
+s0724,臉正對鏡頭。,Your face is facing the camera.,js 字串,web/capture_guide.js:65
+s0725,臉超出畫面了：往中間移一點，頭頂和下巴都要拍進來。,Your face is out of the frame: move toward the center so the top of your head and your chin are both in.,js 字串,web/capture_guide.js:71
+s0726,臉有點貼邊：往中間移一點，頭頂和下巴留一點空間。,Your face is close to the edge: move toward the center and leave a little space above your head and below your chin.,js 字串,web/capture_guide.js:72
+s0727,整張臉都在畫面裡。,Your whole face is in the frame.,js 字串,web/capture_guide.js:73
+s0728,照片解析度偏低：取色和試妝都能用，膚質分析可能沒辦法做；可以換一張比較清楚的照片。,"The photo resolution is on the low side: skin tone picking and makeup try-on still work, but skin analysis may not be possible; you can switch to a clearer photo.",js 字串,web/capture_guide.js:79
+s0729,HD 規格：tools/noise_test.py 預檢,HD spec: tools/noise_test.py pre-check,js 字串,web/capture_guide.js:80 web/capture_guide.js:81
+s0730,照片夠清楚。,The photo is clear enough.,js 字串,web/capture_guide.js:81
+s0731,光線不用特別調整。,No lighting adjustment needed.,js 字串,web/capture_guide.js:85
+s0732,工程參考線 L* 30–90,Engineering reference range L* 30–90,js 字串,web/capture_guide.js:85 web/capture_guide.js:86 web/capture_guide.js:87 web/capture_guide.js:88
+s0733,光線有點暗也沒關係，我們會幫你調亮；不用開閃光燈。,"It's fine if the light is a bit dim, we'll brighten it for you; no need to use the flash.",js 字串,web/capture_guide.js:86
+s0734,畫面有點太亮：稍微避開直射的光就好，不用找更亮的地方。,"The image is a bit too bright: just step out of the direct light a little, no need to look for a brighter spot.",js 字串,web/capture_guide.js:87
+s0735,校色,Color correcting,js 字串,web/makeup_layers.js:11 web/makeup_layers.js:11
+s0736,遮瑕,Concealer,js 字串,web/makeup_layers.js:12 web/makeup_layers.js:12 web/makeup_layers.js:13 web/makeup_layers.js:21 web/makeup_layers.js:22 web/makeup_layers.js:23
+s0737,遮瑕第二層,"Concealer, 2nd layer",js 字串,web/makeup_layers.js:13
+s0738,修邊,Edge refining,js 字串,web/makeup_layers.js:14
+s0739,交界,Boundary,js 字串,web/makeup_layers.js:14
+s0740,粉底,Foundation,js 字串,web/makeup_layers.js:15 web/makeup_layers.js:15 demo/final/recipes.json demo/final/recipes.json demo/final/recipes.json demo/final/recipes.json
+s0741,蜜粉,Setting powder,js 字串,web/makeup_layers.js:16 web/makeup_layers.js:16
+s0742,補妝1,Touch-up 1,js 字串,web/makeup_layers.js:21
+s0743,補妝2,Touch-up 2,js 字串,web/makeup_layers.js:22
+s0744,補妝3,Touch-up 3,js 字串,web/makeup_layers.js:23
+s0745,細修容,Fine contour,js 字串,web/makeup_layers.js:26
+s0746,細打亮,Fine highlight,js 字串,web/makeup_layers.js:27
+s0747,先找淺色區塊,Find the lighter patches first,js 字串,web/makeup_layers.js:168
+s0748,臉部定位沒有載入,Face detection is not loaded,js 字串,web/shade_preview.js:83
+s0749,找不到臉,No face found,js 字串,web/shade_preview.js:86
+s0750,臉部點位不完整,Face landmarks are incomplete,js 字串,web/shade_preview.js:89
+s0751,沒有這一項妝：${item},No such makeup item: ${item},js 字串,web/shade_preview.js:194
+s0752,色碼格式不對：${hex},Invalid color code format: ${hex},js 字串,web/shade_preview.js:242
+s0753,找到 ${ps.length - nr} 塊淺色區塊${nr ? `，另補 ${rounds} 輪留白 ${nr} 塊` : ''}，正在遮 ${on} 塊。,"Found ${ps.length - nr} lighter patches${nr ? `, plus ${rounds} extra rounds to fill the uncovered gaps (${nr} patches)` : ''}, currently covering ${on} patch(es).",js 字串,web/app.js:1168
+s0754,"${r ? `<p class=""de"">${st === steps[0] ? '原本' : '這一步之後'}色差 ${r.deltaE.toFixed(1)}（越小越融合）</p>` : ''}</div></li>","${r ? `<p class=""de"">${st === steps[0] ? 'Original' : 'After this step'} color difference ${r.deltaE.toFixed(1)} (smaller blends in better)</p>` : ''}</div></li>",js 字串,web/app.js:1333
+s0755,逐層看這個妝（${n} 層${state.mode === 'mock' ? '，展示模式不扣點' : `，多 ${n} 點`}）,"See this look layer by layer (${n} layers${state.mode === 'mock' ? ', no credits deducted in Demo mode' : `, ${n} extra credits`})",js 字串,web/app.js:1731
+s0756,"${m.mix ? `<div class=""mix"">也可以：${esc(m.mix.lighter)} 和 ${esc(m.mix.deeper)} 各取一半混合</div>` : ''}</div>","${m.mix ? `<div class=""mix"">You can also mix half ${esc(m.mix.lighter)} with half ${esc(m.mix.deeper)}</div>` : ''}</div>",js 字串,web/app.js:1850
+s0759,官網色票普遍比真人皮膚黃：目錄裡沒有很接近你膚色的色號，以下是明度最合、相對偏紅的候選。請在下顎線試三條、自然光下看；需要時底妝可加一點紅色調色液，淺色區塊先用紅橘色校色。,"Official swatches tend to look yellower than real skin: the catalog has no shade very close to your skin tone, so these are the closest in lightness and relatively redder. Test three stripes along the jawline and look in natural light; if needed, add a little red toning drop to the foundation, and color-correct the lighter patches with red-orange first.",py 字串,app/color_engine.py:253
+s0760,在下顎線（臉和脖子交界）各試一條，到窗邊自然光看，等 15–30 分鐘（底妝和皮脂混合、變乾後會稍微變深）再選最「看不見」的那條；兩條之間猶豫時選略淺半階的。,"Test one stripe each along the jawline (where face meets neck), look by a window in natural light, and wait 15–30 minutes (foundation mixes with skin oil and dries slightly deeper), then choose the one that nearly disappears; if you are torn between two, choose the slightly lighter half-step.",py 字串,app/color_engine.py:248
+s0761,選色時在下顎線試三條（淺一階、最接近、深一階），到窗邊自然光看、等 15–30 分鐘再決定：底妝和皮脂混合、變乾後會稍微變深，猶豫時選略淺半階的。,"When choosing a shade, test three stripes along the jawline (one step lighter, the closest, one step deeper), look by a window in natural light, and wait 15–30 minutes before deciding: foundation mixes with skin oil and dries slightly deeper, so if you are torn, choose the slightly lighter half-step.",py 字串,app/color_engine.py:378
+s0762,色碼格式錯誤：{hex_color},That color code is not in the right format: {hex_color},py f-string,app/color_engine.py:31
+s0764,眉色層級只有 soft／defined：{level},Brow color level can only be soft or defined: {level},py f-string,app/color_engine.py:479
+s0765,"第 {tg[""level""]} 級{bcard.level_name(tg[""level""])}・{tg[""family""]}","Level {tg[""level""]} {bcard.level_name(tg[""level""])}・{tg[""family""]}",py f-string,app/color_engine.py:486
+s0766,{item} 沒有選項 {opt_id},{item} has no option {opt_id},py f-string,app/recommend.py:31
+s0767,{item} 沒有選項 {option_id},{item} has no option {option_id},py f-string,app/looks.py:22
+s0768,沒有膚色基調 {tone_id},No skin tone undertone {tone_id},py f-string,app/looks.py:31
+s0769,沒有妝感 {style},No look style {style},py f-string,app/looks.py:244 app/looks.py:259
+s0770,快速選項只有 {list(quick)},The only quick options are {list(quick)},py f-string,app/looks.py:262
+s0771,底妝色號色碼錯誤：{hex_},The foundation shade color code is not valid: {hex_},py f-string,app/looks.py:222
+s0772,眉色或膚色色碼錯誤：{exc},The brow color or skin tone color code is not valid: {exc},py f-string,app/looks.py:236
+s0773,妝感「{p['styles'][style]['label']}」不提供 {item}={value},"The look ""{p['styles'][style]['label']}"" does not offer {item}={value}",py f-string,app/looks.py:249
+s0774,差 {level_diff} 級,{level_diff} levels apart,py f-string,app/skin_card.py:176
+s0775,live（本次上限 {args.max_calls} 次；總預算 {state.budget.status()}）,live (limit of {args.max_calls} calls this run; total budget {state.budget.status()}),py f-string,app/server.py:848
+s0776,http://{args.host}:{args.port} 模式：{mode} presets {state.presets['version']},http://{args.host}:{args.port} mode: {mode} presets {state.presets['version']},py f-string,app/server.py:849
+s0777,"照片解析度不夠（短邊 {min(w, h)}px，需要 {MIN_SHORT}px 以上）：請用前鏡頭最高畫質重拍","The photo resolution is too low (short side {min(w, h)}px; at least {MIN_SHORT}px needed): please retake it with the front camera at its highest quality.",py f-string,app/server.py:213
+s0778,makeup-vto ok，已用 {self.calls}/{self.max_calls}，預算剩 {self.budget.remaining()},"makeup-vto ok, used {self.calls}/{self.max_calls}, budget remaining {self.budget.remaining()}",py f-string,app/server.py:424
+s0779,ERROR 找不到 {nt.KEY_ENV}：設環境變數或寫進 {ROOT / '.env'}；只想看介面請加 --mock,ERROR could not find {nt.KEY_ENV}: set the environment variable or write it into {ROOT / '.env'}; add --mock if you only want to see the interface,py f-string,app/server.py:845
+s0780,ERROR makeup-vto task：{code},ERROR makeup-vto task: {code},py f-string,app/server.py:416
+s0781,ERROR face-attr task：{code},ERROR face-attr task: {code},py f-string,app/server.py:541
+s0782,已達本次上限 {self.max_calls} 次，防止誤扣點,"Reached this run's limit of {self.max_calls} calls, to prevent accidental credit charges",py f-string,app/server.py:387
+s0783,已達點數總預算：{exc},The total credit budget has been reached: {exc},py f-string,app/server.py:392 app/server.py:518
+s0784,ERROR makeup-vto：{self.client._redact(str(exc))[:200]},ERROR makeup-vto: {self.client._redact(str(exc))[:200]},py f-string,app/server.py:412
+s0785,ERROR face-attr：{self.client._redact(str(exc))[:200]},ERROR face-attr: {self.client._redact(str(exc))[:200]},py f-string,app/server.py:535
+s0786,色碼或類別錯誤：{exc},The color code or category is not valid: {exc},py f-string,app/server.py:551
+s0787,取色資料不完整：{exc},The color sampling data is incomplete: {exc},py f-string,app/server.py:562
+s0788,取色或妝感資料不完整：{exc},The color sampling or look data is incomplete: {exc},py f-string,app/server.py:609
+s0790,膚色色碼錯誤：{exc},The skin tone color code is not valid: {exc},py f-string,app/server.py:581 app/server.py:598
+s0792,BB 霜用手指推開就好、比粉底快，常附防曬與保濕，看起來比較不像化妝。限制：色號通常只有淺、中、深幾色，膚色很淺或很深可能找不到接近的；遮蓋輕，淺色區塊、明顯泛紅還是要局部遮瑕；附的 SPF 不夠，防曬照樣另外擦。試色一樣在下顎線、自然光下等 15–30 分鐘再看。,"BB cream can be blended in with your fingers, is quicker than foundation, and often includes sun protection and moisturizer, so it looks less like makeup. Limits: shades usually come in just light, medium and deep, so very light or very deep skin may not find a close match; coverage is light, so lighter patches and obvious redness still need concealer in spots; the built-in SPF is not enough, so still apply sunscreen separately. Test the shade the same way: along the jawline, in natural light, and look again after 15–30 minutes.",$.foundation[2].limits,app/presets.json
+s0793,雪原 Snowfield,Snowfield,$.products[0].brand,app/catalog.json app/catalog.json app/catalog.json
+s0794,極淺膚粉底液,Very Light Skin Liquid Foundation,$.products[0].name,app/catalog.json
+s0795,C00 瓷粉,C00 Porcelain Pink,$.products[0].shades[0].code,app/catalog.json
+s0796,C05 雪紗,C05 Snow Veil,$.products[0].shades[1].code,app/catalog.json
+s0797,N00 月白,N00 Moon White,$.products[0].shades[2].code,app/catalog.json
+s0798,N05 象牙霧,N05 Ivory Mist,$.products[0].shades[3].code,app/catalog.json
+s0799,W00 奶油,W00 Cream,$.products[0].shades[4].code,app/catalog.json
+s0800,W05 米杏,W05 Apricot Beige,$.products[0].shades[5].code,app/catalog.json
+s0801,初色 First Hue,First Hue,$.products[1].brand,app/catalog.json app/catalog.json app/catalog.json
+s0802,日常粉底,Everyday Foundation,$.products[1].name,app/catalog.json
+s0803,110 粉白,110 Pink White,$.products[1].shades[0].code,app/catalog.json
+s0804,120 自然,120 Natural,$.products[1].shades[1].code,app/catalog.json
+s0805,130 暖象牙,130 Warm Ivory,$.products[1].shades[2].code,app/catalog.json
+s0806,220 自然中,220 Natural Medium,$.products[1].shades[3].code,app/catalog.json
+s0807,230 蜂蜜,230 Honey,$.products[1].shades[4].code,app/catalog.json
+s0808,320 焦糖,320 Caramel,$.products[1].shades[5].code,app/catalog.json
+s0809,420 可可,420 Cocoa,$.products[1].shades[6].code,app/catalog.json
+s0810,430 深可可,430 Deep Cocoa,$.products[1].shades[7].code,app/catalog.json
+s0811,440 深焦糖,440 Deep Caramel,$.products[1].shades[8].code,app/catalog.json
+s0812,520 濃可可,520 Rich Cocoa,$.products[1].shades[9].code,app/catalog.json
+s0813,610 黑巧克力,610 Dark Chocolate,$.products[1].shades[10].code,app/catalog.json
+s0814,月光實驗室 Lumen Lab,Lumen Lab,$.products[2].brand,app/catalog.json app/catalog.json app/catalog.json app/catalog.json
+s0815,高遮瑕遮瑕膏,High-Coverage Concealer,$.products[2].name,app/catalog.json
+s0816,L1 冷瓷,L1 Cool Porcelain,$.products[2].shades[0].code,app/catalog.json
+s0817,L2 中性淺,L2 Neutral Light,$.products[2].shades[1].code,app/catalog.json
+s0818,L3 暖淺,L3 Warm Light,$.products[2].shades[2].code,app/catalog.json
+s0819,M1 冷中,M1 Cool Medium,$.products[2].shades[3].code,app/catalog.json
+s0820,M2 中性中,M2 Neutral Medium,$.products[2].shades[4].code,app/catalog.json
+s0821,M3 暖中,M3 Warm Medium,$.products[2].shades[5].code,app/catalog.json
+s0822,D1 中性深,D1 Neutral Deep,$.products[2].shades[6].code,app/catalog.json
+s0823,D2 暖深,D2 Warm Deep,$.products[2].shades[7].code,app/catalog.json
+s0824,D3 深可可,D3 Deep Cocoa,$.products[2].shades[8].code,app/catalog.json
+s0825,M4 冷中深,M4 Cool Medium-Deep,$.products[2].shades[9].code,app/catalog.json
+s0826,D4 冷深,D4 Cool Deep,$.products[2].shades[10].code,app/catalog.json
+s0827,D5 濃深,D5 Rich Deep,$.products[2].shades[11].code,app/catalog.json
+s0828,修色棒,Color Correcting Stick,$.products[3].name,app/catalog.json
+s0829,綠 修泛紅,"Green, for redness",$.products[3].shades[0].code,app/catalog.json
+s0830,蜜桃 修暗沉,"Peach, for dullness",$.products[3].shades[1].code,app/catalog.json
+s0831,橘 修深色差,"Orange, for darker discoloration",$.products[3].shades[2].code,app/catalog.json
+s0832,細芯眉筆,Fine-Tip Brow Pencil,$.products[4].name,app/catalog.json
+s0833,01 淺金,01 Light Gold,$.products[4].shades[0].code,app/catalog.json
+s0834,02 淺金棕,02 Light Golden Brown,$.products[4].shades[1].code,app/catalog.json
+s0835,03 灰褐,03 Taupe,$.products[4].shades[2].code,app/catalog.json
+s0836,04 冷燕麥灰,04 Cool Oat Gray,$.products[4].shades[3].code,app/catalog.json
+s0837,05 灰棕,05 Ash Brown,$.products[4].shades[4].code,app/catalog.json
+s0838,06 深棕,06 Dark Brown,$.products[4].shades[5].code,app/catalog.json
+s0839,07 黑棕,07 Black Brown,$.products[4].shades[6].code,app/catalog.json
+s0840,08 自然黑,08 Natural Black,$.products[4].shades[7].code,app/catalog.json
+s0841,染眉膏,Tinted Brow Gel,$.products[5].name,app/catalog.json
+s0842,淺棕,Light Brown,$.products[5].shades[0].code,app/catalog.json app/brow_card.py:18 app/brow_card.py:18
+s0843,自然棕,Natural Brown,$.products[5].shades[1].code,app/catalog.json
+s0844,睫毛膏,Mascara,$.products[6].name,app/catalog.json demo/final/recipes.json
+s0845,白,White,$.products[6].shades[4].code,app/catalog.json
+s0846,霜狀腮紅,Cream Blush,$.products[7].name,app/catalog.json
+s0847,玫瑰,Rose,$.products[7].shades[0].code,app/catalog.json
+s0848,薰衣草玫瑰,Lavender Rose,$.products[7].shades[1].code,app/catalog.json
+s0849,乾燥玫瑰,Dried Rose,$.products[7].shades[2].code,app/catalog.json
+s0850,蜜桃,Peach,$.products[7].shades[3].code,app/catalog.json
+s0851,杏,Apricot,$.products[7].shades[4].code,app/catalog.json
+s0852,透玫瑰,Sheer Rose,$.products[8].shades[0].code,app/catalog.json
+s0853,透裸,Sheer Nude,$.products[8].shades[1].code,app/catalog.json
+s0854,無花果,Fig,$.products[8].shades[2].code,app/catalog.json
+s0855,唇彩,Lip Gloss,$.products[9].name,app/catalog.json
+s0856,莓果水光,Berry Gloss,$.products[9].shades[0].code,app/catalog.json
+s0857,冷櫻桃,Cool Cherry,$.products[9].shades[1].code,app/catalog.json
+s0858,深紅寶石,Deep Ruby,$.products[9].shades[2].code,app/catalog.json
+s0859,經典正紅（暖）,Classic Red (warm),$.products[9].shades[3].code,app/catalog.json
+s0860,粉嫩好氣色,Rosy healthy glow,$.albinism_F.title,demo/final/recipes.json
+s0861,照片：Pexels（Pexels License，可修改）https://www.pexels.com/photo/5273693/,"Photo: Pexels (Pexels License, edits allowed) https://www.pexels.com/photo/5273693/",$.albinism_F.credit,demo/final/recipes.json demo/final/recipes.json
+s0862,全臉薄薄一層，保留雀斑與毛孔,A thin layer over the whole face; keep freckles and pores visible,$.albinism_F.steps[0].where,demo/final/recipes.json demo/final/recipes.json
+s0863,只點在泛紅的小點上，拍開邊緣,Dab only on small red spots; blend the edges out,$.albinism_F.steps[1].where,demo/final/recipes.json demo/final/recipes.json
+s0864,眼下遮瑕,Under-eye concealer,$.albinism_F.steps[2].item,demo/final/recipes.json demo/final/recipes.json
+s0865,靠下眼瞼最濃、往下淡出，不成一條帶,"Heaviest next to the lower eyelid, fading downward; not a solid band",$.albinism_F.steps[2].where,demo/final/recipes.json demo/final/recipes.json
+s0866,淚溝遮瑕,Tear-trough concealer,$.albinism_F.steps[3].item,demo/final/recipes.json
+s0867,只補內眼角往外下那條凹線的暗處,Only fill in the darker part of the hollow line running down and outward from the inner corner of the eye,$.albinism_F.steps[3].where,demo/final/recipes.json
+s0868,顴骨下、太陽穴、下顎角，只上皮膚,"Below the cheekbones, at the temples and jaw angles; skin only",$.albinism_F.steps[4].where,demo/final/recipes.json
+s0869,顴骨上緣、額頭中間、鼻樑、下巴，輕輕帶過,"Top of the cheekbones, middle of the forehead, bridge of the nose and chin; a light touch",$.albinism_F.steps[5].where,demo/final/recipes.json
+s0870,鼻影,Nose shading,$.albinism_F.steps[6].item,demo/final/recipes.json
+s0871,鼻樑兩側兩條淡淡的平行線,Two faint parallel lines along both sides of the nose bridge,$.albinism_F.steps[6].where,demo/final/recipes.json
+s0872,顴骨上、往太陽穴斜刷，避開眼下,"On the cheekbones, brushed diagonally toward the temples; keep away from under the eyes",$.albinism_F.steps[7].where,demo/final/recipes.json
+s0873,上眼皮薄薄一層,A thin layer on the upper eyelid,$.albinism_F.steps[8].where,demo/final/recipes.json
+s0874,深咖啡色，刷根部,Dark brown; brush from the roots,$.albinism_F.steps[9].where,demo/final/recipes.json
+s0875,收在原本唇線內，保留唇紋,Stay inside your natural lip line; keep the lip texture visible,$.albinism_F.steps[10].where,demo/final/recipes.json demo/final/recipes.json
+s0877,妝前柔焦,Pre-makeup soft focus,$.albinism_M.steps[4].item,demo/final/recipes.json
+s0878,兩頰毛孔與痘疤處薄拍，鬍子區不碰,Pat on lightly over pores and acne marks on both cheeks; leave the beard area untouched,$.albinism_M.steps[4].where,demo/final/recipes.json
+s0879,膚色均勻・自然,Even Skin Tone・Natural,$.vitiligo_M.title,demo/final/recipes.json
+s0880,照片：Pexels（Pexels License，可修改）https://www.pexels.com/photo/20551205/,"Photo: Pexels (Pexels License, edits allowed) https://www.pexels.com/photo/20551205/",$.vitiligo_M.credit,demo/final/recipes.json
+s0881,淺色區塊分區上色，交界拍開,Color each lighter patch separately; blend the borders,$.vitiligo_M.steps[0].where,demo/final/recipes.json
+s0882,全臉薄薄一層，讓膚色一致,A thin layer over the whole face to even out the skin tone,$.vitiligo_M.steps[1].where,demo/final/recipes.json
+s0883,淡妝,Light makeup,$.vitiligo_M.steps[2].item,demo/final/recipes.json
+s0884,修容、腮紅一點點，看不出化妝,"Just a touch of contour and blush, so it does not look like makeup",$.vitiligo_M.steps[2].where,demo/final/recipes.json
+s0885,局部輕遮瑕,"Light, targeted concealing",$.vitiligo_F.title,demo/final/recipes.json
+s0886,照片：模擬・由 AI 生成的轉向示意圖，非本人原照（原照來源：Unsplash，可修改授權）https://unsplash.com/photos/uCt9uA9r1Rw,"Photo: simulated; an AI-generated turned-head illustration, not the original photo of the person (original photo source: Unsplash, modification allowed) https://unsplash.com/photos/uCt9uA9r1Rw",$.vitiligo_F.credit,demo/final/recipes.json
+s0887,只在看得出的淺色區塊小範圍點蓋、拍開,Dab on and blend only a small area over the lighter patches that are visible,$.vitiligo_F.steps[0].where,demo/final/recipes.json
+s0888,其他地方維持原本膚色，不全臉厚塗,Leave the rest of the skin tone as it is; no thick layer over the whole face,$.vitiligo_F.steps[1].where,demo/final/recipes.json
+s0889,peach|orange|ochre|red|bisque|橘|蜜桃,peach|orange|ochre|red|bisque|橘|蜜桃,py 字串,app/color_engine.py:362 app/color_engine.py:362
+s0890,淺金,Light gold,py 字串,app/brow_card.py:18 app/brow_card.py:18
+s0891,中棕,Medium brown,py 字串,app/brow_card.py:18 app/brow_card.py:18
+s0892,深棕,Dark brown,py 字串,app/brow_card.py:18 app/brow_card.py:18
+s0893,黑棕,Black brown,py 字串,app/brow_card.py:18 app/brow_card.py:18
+s0894,金,Golden,py 字串,app/brow_card.py:21 app/brow_card.py:45 app/brow_card.py:45 app/brow_card.py:54 app/brow_card.py:86 app/brow_card.py:91
+s0895,暖棕,Warm brown,py 字串,app/brow_card.py:21 app/brow_card.py:45 app/brow_card.py:56 app/brow_card.py:91 app/brow_card.py:91 app/brow_card.py:100
+s0896,中性棕,Neutral brown,py 字串,app/brow_card.py:21 app/brow_card.py:49 app/brow_card.py:57 app/brow_card.py:91 app/brow_card.py:100 app/brow_card.py:100
+s0897,冷灰褐,Cool taupe,py 字串,app/brow_card.py:21 app/brow_card.py:47 app/brow_card.py:52 app/brow_card.py:86 app/brow_card.py:100 app/brow_card.py:100
+s0898,\bblack black\b|^black$|自然黑,\bblack black\b|^black$|自然黑,py 字串,app/brow_card.py:41 app/brow_card.py:41
+s0899,\b(warm|auburn|chocolate|caramel|honey|golden|red)\b|暖|焦糖,\b(warm|auburn|chocolate|caramel|honey|golden|red)\b|暖|焦糖,py 字串,app/brow_card.py:44 app/brow_card.py:44
+s0900,\b(ash|ashy|grey|gray|cool|taupe)\b|灰|冷,\b(ash|ashy|grey|gray|cool|taupe)\b|灰|冷,py 字串,app/brow_card.py:46 app/brow_card.py:46
+s0901,\bneutral\b|中性,\bneutral\b|中性,py 字串,app/brow_card.py:48 app/brow_card.py:48
+s0902,照你原本的眉色深一級，加強立體感,"One level deeper than your natural brow color, for more dimension",py 字串,app/brow_card.py:83 app/brow_card.py:83
+s0903,眉毛很淡、膚色很淺：用淺金棕補，不用黑或深灰,"Very light brows and very light skin: fill in with light golden brown, not black or dark gray",py 字串,app/brow_card.py:87 app/brow_card.py:87
+s0904,眉毛很淡：用淺灰褐略深一點加立體，不用黑或深灰,"Very light brows: use a light taupe slightly deeper than your brows for dimension, not black or dark gray",py 字串,app/brow_card.py:87 app/brow_card.py:87
+s0905,眉毛顏色淡：用棕色系補到看得見,Light brow color: fill in with brown tones until the brows are visible,py 字串,app/brow_card.py:92 app/brow_card.py:92
+s0906,同深淺、同色系,"Same depth, same color family",py 字串,app/brow_card.py:111 app/brow_card.py:111
+s0907,深淺差一級、同色系,"One level off in depth, same color family",py 字串,app/brow_card.py:113 app/brow_card.py:113
+s0908,同深淺、色系相近,"Same depth, similar color family",py 字串,app/brow_card.py:115 app/brow_card.py:115
+s0909,深淺差一級、色系相近,"One level off in depth, similar color family",py 字串,app/brow_card.py:117 app/brow_card.py:117
+s0910,第 {lv} 級{level_name(lv)}・{fam},Level {lv} {level_name(lv)}・{fam},py f-string,app/brow_card.py:64
+s0911,溫和清潔,Gentle cleansing,py 字串,app/care_rules_vitiligo.py:25 app/care_rules_vitiligo.py:25
+s0912,溫和清潔，保濕要做足再上妝；不搓不刷,Cleanse gently and moisturize well before makeup; no rubbing or scrubbing,py 字串,app/care_rules_vitiligo.py:26 app/care_rules_vitiligo.py:26
+s0913,這次膚質分析裡，保濕是分數最低的一項；乾的地方上妝會浮粉。摩擦、抓、用力刷都可能在該處長出新的淺色區塊。,"In this skin analysis, moisture is the lowest score; makeup can look patchy on dry areas. Rubbing, scratching or hard brushing may cause new lighter patches to appear there.",py 字串,app/care_rules_vitiligo.py:27 app/care_rules_vitiligo.py:27
+s0914,底妝：對淺色區塊周圍的膚色選色，面中最多、往外推薄；眼周最薄；海綿點壓,"Foundation: choose a shade to match the skin around the lighter patches; most in the center of the face, thinned out toward the edges; thinnest around the eyes; press on with a sponge",py 字串,app/care_rules_vitiligo.py:29 app/care_rules_vitiligo.py:29
+s0915,照配色卡的底妝色號；往外推到脖子一致。這次分析 T 字、U 字都是中性膚質，不需要特別控油；蜜粉只在淺色區塊輕按，固定遮瑕。不想上可以跳過。,"Use the foundation shade from your color card; blend out to the neck so it matches. In this analysis both the T-zone and U-zone are a balanced skin type, so no special oil control is needed; lightly press powder only onto the lighter patches to set the concealer. You can skip it if you prefer.",py 字串,app/care_rules_vitiligo.py:30 app/care_rules_vitiligo.py:30
+s0916,眼下：先薄點一層桃杏色校色，再上遮瑕；量少、點壓,"Under the eyes: first dot on a thin layer of peach-apricot color correcting, then concealer; use a small amount and press it on",py 字串,app/care_rules_vitiligo.py:34 app/care_rules_vitiligo.py:34
+s0917,這次膚質分析裡，眼下暗沉是第二弱的一項；桃杏色能中和偏暗，讓眼周看起來有精神。內眼角、下眼瞼最薄，避免卡紋。,"In this skin analysis, dullness under the eyes is the second-lowest score; peach-apricot helps neutralize the darkness so the eye area looks fresher. Keep it thinnest at the inner corner and lower eyelid to avoid settling into lines.",py 字串,app/care_rules_vitiligo.py:35 app/care_rules_vitiligo.py:35
+s0918,細,Fine,py 字串,app/patch_detect.py:20 app/patch_detect.py:20
+s0919,粗,Coarse,py 字串,app/patch_detect.py:22 app/patch_detect.py:22
+s0920,畫面上的真實品牌名換成字母代稱（M 牌）、產品名換成品類；內部仍用真實色號比對（錄影、截圖用）,Replace real brand names shown on screen with letter aliases (e.g. Brand M) and product names with product categories; matching still uses the real shades internally (for recordings and screenshots),py 字串,app/server.py:828 app/server.py:828
+s0922,展示模式｜模擬（未呼叫 YouCam）,Demo mode | simulated (YouCam not called),py 字串,app/server.py:261 app/server.py:261
+s0923,AI 模擬：把膚色補勻、加上 T 字打亮和修容，只把顏色明暗套回原圖；五官、毛孔、輪廓都是原圖。這是目標示意，不是實際上妝結果。,"AI simulation: evens out skin tone and adds a T-zone highlight and contour. Only the lights and darks of the color are applied back onto the original photo; features, pores and outline are all the original. This is a target illustration, not an actual makeup result.",$.how,demo/expected/vitiligo_20551205.json
+s0924,遮瑕（擬合色）,Concealer (fitted color),$.layer_fit.shades.concealer.code,demo/expected/vitiligo_20551205.json
+s0925,粉底（擬合色）,Foundation (fitted color),$.layer_fit.shades.foundation.code,demo/expected/vitiligo_20551205.json
+s0926,修容（擬合色）,Contour (fitted color),$.layer_fit.shades.contour.code,demo/expected/vitiligo_20551205.json
+s0927,示範型錄色號可對照,demo-catalog shades you can match against,js 字串,web/app.js:1994
+s0928,虛構品牌,fictional brands,js 字串,web/app.js:1995
+s0929,柔和・極簡,Soft & minimal,$.albinism_M.title,demo/final/recipes.json
+s0930,輕壓上妝衛教（待查證）,Dab-on makeup guidance (to be verified),$.steps[3].source,app/full_looks.json
+s0931,粉底對淺色區塊周圍的膚色選色：面中最多、往外推薄，T 字平刷、眼周最薄；用海綿**點壓**，不要來回搓：摩擦可能在該處長出新的淺色區塊。（化妝師分區上法）,"Choose a foundation to match the skin tone around the lighter patches: most on the center of the face, thinning out toward the edges, flat strokes on the T-zone, thinnest around the eyes; **dab** with a sponge and do not rub back and forth: friction may cause new lighter patches to appear there. (makeup artist zoning technique)",py 字串,app/color_engine.py:373 app/color_engine.py:373
+s0932,黑色素較少時，紫外線防護比較弱。,"With less melanin, protection against UV is weaker.",py 字串,app/color_engine.py:429 app/color_engine.py:429
+s0933,黑色素較少時，強光下很快就可能曬傷,"With less melanin, skin can sunburn quickly in strong light",py 字串,app/color_engine.py:517 app/color_engine.py:517
+s0935,淺色區塊的黑色素較少，特別容易曬傷,Lighter patches have less melanin and sunburn especially easily,py 字串,app/color_engine.py:526 app/color_engine.py:526
+s0943,依據：一般衛教與美妝資料的整理，不是醫療建議；皮膚有新的變化請找皮膚科醫師。,Based on: general patient information and makeup material compiled by us; not medical advice. See a dermatologist about any new change in your skin.,html text,web/index.html:58
+s0945,防曬與隔離先上；淺色區塊處對紫外線特別敏感。,Apply sunscreen and primer first; lighter patches are especially sensitive to UV.,py 字串,app/color_engine.py:371 app/color_engine.py:371
+s0946,局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色），分小區塊，不要整臉上。,"Spot color correcting: dab peach/orange only on the lighter patches (no green), in small sections, not over the whole face.",py 字串,app/color_engine.py:372 app/color_engine.py:372
+s0947,需要的地方再疊一層遮瑕；淺色區塊邊緣色差最明顯，點上淺一點的遮瑕修邊、往外淡化。,"Layer on concealer where needed; the color difference is most noticeable at the edges of the lighter patches, so dab a slightly lighter concealer on the edges and fade it outward.",py 字串,app/color_engine.py:375 app/color_engine.py:375
+s0948,少量蜜粉輕壓定妝。,"Set with a little loose powder, pressed on lightly.",py 字串,app/color_engine.py:376 app/color_engine.py:376
+s0949,照光治療當天不上妝。,No makeup on light-therapy days.,py 字串,app/color_engine.py:377 app/color_engine.py:377
+s0950,防曬、遮陽、長袖、抗 UV 墨鏡一起用。,"Use sunscreen, shade, long sleeves, and UV-blocking sunglasses together.",py 字串,app/color_engine.py:517 app/color_engine.py:517
+s0951,長期日曬會讓皮膚慢慢出現變化；新長的斑點、顏色不均或形狀改變，請給皮膚科醫師檢查。,"Long-term sun exposure gradually changes the skin; have any new spot, uneven color or change in shape checked by a dermatologist.",py 字串,app/color_engine.py:520 app/color_engine.py:520
+s0952,大範圍擦防曬；周圍皮膚不曬黑，色差也比較小。,"Apply sunscreen over a wide area; if the surrounding skin does not tan, the color difference is also smaller.",py 字串,app/color_engine.py:526 app/color_engine.py:526
+s0953,摩擦可能讓該處長出新的淺色區塊。上妝、卸妝都用點壓。,Friction may cause new lighter patches to appear there. Dab when applying and removing makeup.,py 字串,app/color_engine.py:527 app/color_engine.py:527
+s0954,染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白成分（如杜鵑醇）；在哪裡用、哪裡出現淺色區塊就停用並看醫師。,"Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes, whitening ingredients (such as rhododenol); if lighter patches appear where you use one, stop using it and see a doctor.",py 字串,app/color_engine.py:528 app/color_engine.py:528
+s0955,以醫師或衛教人員的說明為準。,Follow your doctor's or health educator's instructions.,py 字串,app/color_engine.py:530 app/color_engine.py:530
+s0956,淺色區塊缺色素：先用指尖只在淺色區塊上薄點蜜桃／橘色校色（深膚色用偏紅的深橘），粉底才不會泛灰；淺色區塊偏粉也不用綠色，綠疊棕色粉底會發灰。,"Lighter patches lack pigment: first dab a thin layer of peach/orange color corrector with a fingertip, only on the lighter patches (for deeper skin tones, use a redder deep orange), so the foundation does not turn gray; even if the lighter patches look pink, do not use green, because green under brown foundation looks gray.",py 字串,app/color_engine.py:365
+s0957,看你選的樣子,See the look you chose,html text,web/index.html:315 web/index.html:359 web/app.js:1444
+s0958,點一下看你選的樣子,Tap to see the look you chose,js 字串,web/app.js:1445
+s0959,點一下回到你的照片,Tap to go back to your photo,js 字串,web/app.js:1445
+s0960,光太亮可以改成暗色畫面,"If the light is too bright, you can switch to the dark screen",html text,web/index.html:71
+s0961,手機舉到眼睛高度，像照鏡子一樣。,"Hold your phone at eye level, like looking in a mirror.",js 字串,web/app.js:247
+s0962,來源：,Source: ,js 字串,web/app.js:1471
+s0963,YouCam 試妝,YouCam try-on,js 字串,web/app.js:1540
+s0964,本機局部遮瑕（模擬）,local spot concealing (simulated),js 字串,web/app.js:1540
+s0965,本機畫眉（模擬）,local brow drawing (simulated),js 字串,web/app.js:1540
+s0966,這一步 YouCam 暫時處理不了，改用手機上的本機模擬：只有底妝與局部遮瑕，其他項目維持原樣。,"YouCam could not process this step, so a local simulation on your phone is shown instead: foundation and spot concealing only, everything else stays as it is.",js 字串,web/app.js:1550 web/app.js:1714
+s0967,本機模擬（YouCam 暫時處理不了）,Local simulation (YouCam could not process this step),js 字串,web/app.js:1551 web/app.js:1711
+s0968,--simulate-youcam-error 只能和 --mock 一起用,--simulate-youcam-error can only be used with --mock,py 字串,app/server.py:327 app/server.py:327
+s0969,（只能和 --mock 用）試妝類請求回 YouCam 的錯誤碼，重現「YouCam 處理不了時改由本機模擬接手」；預設 error_face_angle_invalid,"(only with --mock) make try-on requests return a YouCam error code, to reproduce ""a local simulation takes over when YouCam cannot process a step""; default error_face_angle_invalid",py 字串,app/server.py:830 app/server.py:830
+s0970,ERROR 啟動參數有問題：{exc},ERROR invalid startup option: {exc},py f-string,app/server.py:842
+s0971,現在使用的人比較多，請幾秒後再試一次,Many people are using this right now; please try again in a few seconds.,py 字串,app/server.py:768 app/server.py:768
+s0972,同時處理的重運算請求上限（遮罩、試妝、逐層、五官），預設 2；環境變數 GOODGLOW_MAX_HEAVY,"Maximum number of heavy requests handled at the same time (masks, try-on, layers, face tips), default 2; environment variable GOODGLOW_MAX_HEAVY",py 字串,app/server.py:832 app/server.py:832
+s0973,照片格式只收 JPEG、PNG、WebP,"Only JPEG, PNG and WebP photos are accepted",py 字串,app/server.py:193 app/server.py:193
+s0974,照片畫面太大，請縮小後再試,The photo's dimensions are too large; please make it smaller and try again,py 字串,app/server.py:195 app/server.py:195
+s0975,照片或範圍讀不到,The photo or the area could not be read,py 字串,app/server.py:637 app/server.py:637
+s0977,化妝塗層,Makeup layers,html text,web/index.html:202
+s0978,相機沒有回應：請關掉其他正在用相機的分頁或程式，或改從相簿選照片。,"The camera is not responding. Close other apps or tabs that use the camera, or choose a photo from your album.",js 字串,web/app.js:254
+s0979,ERROR --api-base 只能是 YouCam 的 https 主機（*.makeupar.com）或本機測試伺服器,ERROR --api-base must be a YouCam https host (*.makeupar.com) or a local test server,py 字串,app/server.py:836 app/server.py:836

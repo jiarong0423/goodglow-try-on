@@ -1,0 +1,688 @@
+{
+ "version": "process-20261021",
+ "note": "每一步的累積圖都是模擬；說明為草稿，英文定稿由 owner。不含品牌名、色號、人名、病名。",
+ "subjects": [
+  {
+   "id": "light_a",
+   "title_zh": "膚色很淺 · 示範 A",
+   "title_en": "Very light skin · Example A",
+   "credit": "Pexels",
+   "local_layers": 11,
+   "youcam_steps": 1,
+   "steps": [
+    {
+     "n": 0,
+     "img": "img/light_a/00.jpg",
+     "diff": null,
+     "source_sha256": "27a0c61573ebb03ab2828df0c6262e83274f35ad734990d216abeb554c41f1f1",
+     "kind": "start",
+     "zh": "你的照片（起點）",
+     "en": "Your photo (the starting point)",
+     "tech_zh": "",
+     "tech_en": "",
+     "delta": null
+    },
+    {
+     "n": 1,
+     "img": "img/light_a/01.jpg",
+     "diff": "img/light_a/01_d.jpg",
+     "source_sha256": "8a9a467ff21f01b3e69ab4451bd0729734d25a46fa35b4f2c3639404af64e0d2",
+     "kind": "local",
+     "zh": "全臉薄薄一層，保留雀斑與毛孔",
+     "en": "A thin base over the whole face; freckles and pores stay",
+     "tech_zh": "Lab 色彩空間混色，不透明度上限 0.22（示範 B 為 0.30），臉緣淡出",
+     "tech_en": "Lab color blend, opacity cap 0.22 (0.30 in Example B), edges faded out",
+     "delta": 1.39
+    },
+    {
+     "n": 2,
+     "img": "img/light_a/02.jpg",
+     "diff": "img/light_a/02_d.jpg",
+     "source_sha256": "3a04a12d12fdd47be7a28a1038c151c98fd223af9c85d3758286cd6d7e5b0668",
+     "kind": "local",
+     "zh": "只點在泛紅的小點上，拍開邊緣",
+     "en": "Concealer only on small red spots, edges patted out",
+     "tech_zh": "依色差找出小點遮罩，不透明度上限 0.30，點內柔化",
+     "tech_en": "Spot mask from color difference, opacity cap 0.30, soft blend inside the spot",
+     "delta": 0.6
+    },
+    {
+     "n": 3,
+     "img": "img/light_a/03.jpg",
+     "diff": "img/light_a/03_d.jpg",
+     "source_sha256": "b63775fc2832a9fb11ed5da2fd9715528213b5a9cf7c2c9809f7a2d1cdc73b49",
+     "kind": "local",
+     "zh": "靠下眼瞼最濃、往下淡出，不成一條帶",
+     "en": "Under the eye: strongest at the lash line, fading downward, never a band",
+     "tech_zh": "漸層遮罩，不透明度上限 0.45",
+     "tech_en": "Gradient mask, opacity cap 0.45",
+     "delta": 2.16
+    },
+    {
+     "n": 4,
+     "img": "img/light_a/04.jpg",
+     "diff": "img/light_a/04_d.jpg",
+     "source_sha256": "08f6d807fdb76b039311fd7d446e874710107eed5bba0670fb6b13e175a423e4",
+     "kind": "local",
+     "zh": "只補內眼角往外下那條凹線的暗處",
+     "en": "Fills only the dark hollow running down from the inner corner",
+     "tech_zh": "低頻亮度拉回臉頰（保留毛孔），不透明度上限 0.75",
+     "tech_en": "Low-frequency lightness pulled toward the cheek (pores kept), opacity cap 0.75",
+     "delta": 1.09
+    },
+    {
+     "n": 5,
+     "img": "img/light_a/05.jpg",
+     "diff": "img/light_a/05_d.jpg",
+     "source_sha256": "52e0c24f458463c0b133891223e2072d8680f365728a5e7f9fdac34367269bd3",
+     "kind": "local",
+     "zh": "顴骨下、太陽穴、下顎角，只上皮膚",
+     "en": "Under the cheekbones, at the temples and jaw angles; skin only",
+     "tech_zh": "分區遮罩，不透明度上限 0.30",
+     "tech_en": "Zone mask, opacity cap 0.30",
+     "delta": 0.36
+    },
+    {
+     "n": 6,
+     "img": "img/light_a/06.jpg",
+     "diff": "img/light_a/06_d.jpg",
+     "source_sha256": "9924eee4a4aaa85ebaeb9108879af6962d6d7389ff571eda0d789db490bbf4fd",
+     "kind": "local",
+     "zh": "顴骨上緣、額頭中間、鼻樑、下巴，輕輕帶過",
+     "en": "Top of the cheekbones, mid forehead, nose bridge, chin; a light touch",
+     "tech_zh": "寬而柔的漸層，不成一條帶，不透明度上限 0.22",
+     "tech_en": "Wide soft gradient, never a band, opacity cap 0.22",
+     "delta": 0.86
+    },
+    {
+     "n": 7,
+     "img": "img/light_a/07.jpg",
+     "diff": "img/light_a/07_d.jpg",
+     "source_sha256": "a848aea492ea7bd6ba8e01164ff304ef8315b8859ed160f22bc213709389bb62",
+     "kind": "local",
+     "zh": "鼻樑兩側兩條淡淡的平行線",
+     "en": "Two faint parallel lines at the sides of the nose",
+     "tech_zh": "平行線遮罩，不透明度上限 0.22",
+     "tech_en": "Parallel-line mask, opacity cap 0.22",
+     "delta": 0.8
+    },
+    {
+     "n": 8,
+     "img": "img/light_a/08.jpg",
+     "diff": "img/light_a/08_d.jpg",
+     "source_sha256": "f0ee883a8a525076baf6af9f92cb7bfd73caf3f134b0cabbd7fb4f5ae5551bce",
+     "kind": "local",
+     "zh": "顴骨上、往太陽穴斜刷，避開眼下",
+     "en": "Over the cheekbones, swept toward the temples, away from the eyes",
+     "tech_zh": "形狀遮罩，不透明度上限 0.45（定案版的腮紅改由 YouCam 試妝）",
+     "tech_en": "Shape mask, opacity cap 0.45 (the final look takes its blush from YouCam)",
+     "delta": 2.76
+    },
+    {
+     "n": 9,
+     "img": "img/light_a/09.jpg",
+     "diff": "img/light_a/09_d.jpg",
+     "source_sha256": "2a712ae3af2efdaaa4ed748e5c685d3debc23da4788a1181332027709892fabc",
+     "kind": "local",
+     "zh": "上眼皮薄薄一層",
+     "en": "A thin wash on the upper lid",
+     "tech_zh": "指定色，不透明度上限 0.22",
+     "tech_en": "Chosen color, opacity cap 0.22",
+     "delta": 2.26
+    },
+    {
+     "n": 10,
+     "img": "img/light_a/10.jpg",
+     "diff": "img/light_a/10_d.jpg",
+     "source_sha256": "43a160b9dadb66d674e34c93f79df4da828d1ba6dc76353c0e13ceb24fa1c8f4",
+     "kind": "local",
+     "zh": "深咖啡色，刷根部",
+     "en": "Dark brown at the lash roots, tips left clear",
+     "tech_zh": "睫毛遮罩，根深尖透，不透明度上限 0.70",
+     "tech_en": "Lash mask, deeper at the root and sheer at the tip, opacity cap 0.70",
+     "delta": 7.33
+    },
+    {
+     "n": 11,
+     "img": "img/light_a/11.jpg",
+     "diff": "img/light_a/11_d.jpg",
+     "source_sha256": "96736fb69840c1e1e34ea825119f1d1251f32b1db2c9c0adda327fd9f35a4fe4",
+     "kind": "local",
+     "zh": "收在原本唇線內，保留唇紋",
+     "en": "Kept inside the natural lip line; lip texture stays",
+     "tech_zh": "Lab 換色（唇遮罩內），不透明度上限 0.50（示範 B 為 0.45）",
+     "tech_en": "Lab color swap inside the lip mask, opacity cap 0.50 (0.45 in Example B)",
+     "delta": 2.27
+    },
+    {
+     "n": 12,
+     "img": "img/light_a/12.jpg",
+     "diff": "img/light_a/12_d.jpg",
+     "source_sha256": "dff68e1dd1535032bd094c862a4a66c1059e02182281b5429238393469e0341b",
+     "kind": "local",
+     "zh": "本機逐層做完的底（裁到臉部標準框）",
+     "en": "The locally layered base, cropped to the standard face frame",
+     "tech_zh": "同一組層，裁成固定臉框，送去 YouCam 之前的樣子",
+     "tech_en": "The same layers, cropped to a fixed face frame, as sent to YouCam",
+     "delta": null
+    },
+    {
+     "n": 13,
+     "img": "img/light_a/13.jpg",
+     "diff": "img/light_a/13_d.jpg",
+     "source_sha256": "5717debc030c487752212f4808bee63caa131647c6cd6d70679b6b04ae43de61",
+     "kind": "youcam",
+     "zh": "YouCam 試妝：官方腮紅（輸入已含先前的官方眼妝）",
+     "en": "YouCam try-on: official blush (input already carries an earlier official eye-makeup pass)",
+     "tech_zh": "YouCam Makeup VTO，腮紅強度 100，磨皮固定 0",
+     "tech_en": "YouCam Makeup VTO, blush intensity 100, smoothing fixed at 0",
+     "delta": null
+    },
+    {
+     "n": 14,
+     "img": "img/light_a/14.jpg",
+     "diff": "img/light_a/14_d.jpg",
+     "source_sha256": "fe1026c44555cbedfabcc51fa7b2c6862ba5978e901d9ff8a7fbd71e0bc6d220",
+     "kind": "final",
+     "zh": "定案（模擬）：官方眼妝與腮紅＋顴骨帶腮紅",
+     "en": "Final look (simulated): YouCam eye makeup and blush plus a cheekbone blush band",
+     "tech_zh": "官方腮紅層放大 1.8 倍疊回",
+     "tech_en": "The official blush layer, scaled up 1.8×, laid back on",
+     "delta": null
+    }
+   ]
+  },
+  {
+   "id": "light_b",
+   "title_zh": "膚色很淺 · 示範 B",
+   "title_en": "Very light skin · Example B",
+   "credit": "Pexels",
+   "local_layers": 4,
+   "youcam_steps": 1,
+   "extra_zh": "另有一道兩頰柔焦",
+   "extra_en": "plus a soft-focus pass on the cheeks",
+   "steps": [
+    {
+     "n": 0,
+     "img": "img/light_b/00.jpg",
+     "diff": null,
+     "source_sha256": "8203067310a9f6421fbd7199b4fb6444b9fcbc7ec2d500b09b67383b7fdd1612",
+     "kind": "start",
+     "zh": "你的照片（起點）",
+     "en": "Your photo (the starting point)",
+     "tech_zh": "",
+     "tech_en": "",
+     "delta": null
+    },
+    {
+     "n": 1,
+     "img": "img/light_b/01.jpg",
+     "diff": "img/light_b/01_d.jpg",
+     "source_sha256": "d4ca0e676b4ae9b6d1f2ebbf1677788782c829edfa40e798d3a58ce1d845906f",
+     "kind": "local",
+     "zh": "全臉薄薄一層，保留雀斑與毛孔",
+     "en": "A thin base over the whole face; freckles and pores stay",
+     "tech_zh": "Lab 色彩空間混色，不透明度上限 0.22（示範 B 為 0.30），臉緣淡出",
+     "tech_en": "Lab color blend, opacity cap 0.22 (0.30 in Example B), edges faded out",
+     "delta": 2.59
+    },
+    {
+     "n": 2,
+     "img": "img/light_b/02.jpg",
+     "diff": "img/light_b/02_d.jpg",
+     "source_sha256": "252fc2ccf21347b832542641abf34244bc5d1dc71fd325e5d3a7a95f7f8c9c72",
+     "kind": "local",
+     "zh": "只點在泛紅的小點上，拍開邊緣",
+     "en": "Concealer only on small red spots, edges patted out",
+     "tech_zh": "依色差找出小點遮罩，不透明度上限 0.30，點內柔化",
+     "tech_en": "Spot mask from color difference, opacity cap 0.30, soft blend inside the spot",
+     "delta": 0.58
+    },
+    {
+     "n": 3,
+     "img": "img/light_b/03.jpg",
+     "diff": "img/light_b/03_d.jpg",
+     "source_sha256": "f5776f6f908050413c6c6fed56513285ed0d7ada3873b1d5f9cecf65e84cb532",
+     "kind": "local",
+     "zh": "靠下眼瞼最濃、往下淡出，不成一條帶",
+     "en": "Under the eye: strongest at the lash line, fading downward, never a band",
+     "tech_zh": "漸層遮罩，不透明度上限 0.45",
+     "tech_en": "Gradient mask, opacity cap 0.45",
+     "delta": 3.04
+    },
+    {
+     "n": 4,
+     "img": "img/light_b/04.jpg",
+     "diff": "img/light_b/04_d.jpg",
+     "source_sha256": "2d47419be539649b3a06ba0b29319806af4b2c98c99cc8cc468612a07973b02d",
+     "kind": "local",
+     "zh": "收在原本唇線內，保留唇紋",
+     "en": "Kept inside the natural lip line; lip texture stays",
+     "tech_zh": "Lab 換色（唇遮罩內），不透明度上限 0.50（示範 B 為 0.45）",
+     "tech_en": "Lab color swap inside the lip mask, opacity cap 0.50 (0.45 in Example B)",
+     "delta": 2.34
+    },
+    {
+     "n": 5,
+     "img": "img/light_b/05.jpg",
+     "diff": "img/light_b/05_d.jpg",
+     "source_sha256": "ac181cd661fd31a490969568c722b206fd0d4af3c4b4b15373b8d730e0b2fa8c",
+     "kind": "local",
+     "zh": "本機細修後送去 YouCam 的圖",
+     "en": "The locally refined image sent to YouCam",
+     "tech_zh": "",
+     "tech_en": "",
+     "delta": null
+    },
+    {
+     "n": 6,
+     "img": "img/light_b/06.jpg",
+     "diff": "img/light_b/06_d.jpg",
+     "source_sha256": "d5966ab066e1b178341c360699241a10edeb615d510c9de22d5bccfe147a80f7",
+     "kind": "youcam",
+     "zh": "YouCam 試妝：唇",
+     "en": "YouCam try-on: lips",
+     "tech_zh": "YouCam Makeup VTO，磨皮固定 0",
+     "tech_en": "YouCam Makeup VTO, smoothing fixed at 0",
+     "delta": null
+    },
+    {
+     "n": 7,
+     "img": "img/light_b/07.jpg",
+     "diff": "img/light_b/07_d.jpg",
+     "source_sha256": "c2ce9994c8ca516e68f6ef7535d1bfddb6b728cc0ed7c6a5626fd83ee8392eed",
+     "kind": "final",
+     "zh": "定案（模擬）：唇層加強、柔焦、淡化小斑",
+     "en": "Final look (simulated): stronger lip layer, soft focus, faded small marks",
+     "tech_zh": "官方唇層 ×2，柔焦只在兩頰（鬍子區不碰）",
+     "tech_en": "The official lip layer ×2, soft focus on the cheeks only (beard area untouched)",
+     "delta": null
+    }
+   ]
+  },
+  {
+   "id": "uneven_a",
+   "title_zh": "膚色深淺不一 · 示範 A",
+   "title_en": "Uneven skin tone · Example A",
+   "credit": "Pexels",
+   "local_layers": 17,
+   "youcam_steps": 1,
+   "note_zh": "這組的本機逐層是對一張 AI 生成的目標圖擬合出來的，不是照著真人上妝照片。",
+   "note_en": "The local layers of this example were fitted to an AI-generated target image, not copied from a photo of real makeup.",
+   "extra_zh": "另有一輪補拍，整臉粉底與修容合併",
+   "extra_en": "plus one touch-up round, with whole-face foundation and contour merged",
+   "steps": [
+    {
+     "n": 0,
+     "img": "img/uneven_a/00.jpg",
+     "diff": null,
+     "source_sha256": "62c6f40d3c185ab200bf0b8c2966c94ccf2dff1a6b45100cc3b43fd93390632d",
+     "kind": "start",
+     "zh": "你的照片（起點）",
+     "en": "Your photo (the starting point)",
+     "tech_zh": "",
+     "tech_en": "",
+     "delta": null
+    },
+    {
+     "n": 1,
+     "img": "img/uneven_a/01.jpg",
+     "diff": "img/uneven_a/01_d.jpg",
+     "source_sha256": "ada42b3a325e6ae212e7ef252f6cf8adfad928a6bd9bcc010bca0d5aad95f909",
+     "kind": "local",
+     "zh": "校色：淺色區塊核心先用校色色號",
+     "en": "A corrector first, only on the core of the lighter area",
+     "tech_zh": "點刷；1 層",
+     "tech_en": "Dab brush; 1 layer(s)",
+     "delta": [
+      9.79,
+      5.5
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 2,
+     "img": "img/uneven_a/02.jpg",
+     "diff": "img/uneven_a/02_d.jpg",
+     "source_sha256": "18774c1985876c13f7a92f0b67e09f8c1207779c3953220139a9c77b9af7c9aa",
+     "kind": "local",
+     "zh": "遮瑕：淺色區塊用較深色號（只上比目標淺處）",
+     "en": "Concealer on the lighter area, only where it is lighter than the target",
+     "tech_zh": "點刷；1 層",
+     "tech_en": "Dab brush; 1 layer(s)",
+     "delta": [
+      7.16,
+      4.22
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 3,
+     "img": "img/uneven_a/03.jpg",
+     "diff": "img/uneven_a/03_d.jpg",
+     "source_sha256": "b33e7bd9a24d76abf0957f8c38b413385f5e91ea6547702b92567183fe8a29d3",
+     "kind": "local",
+     "zh": "遮瑕第二層：還看得出來的淺色處再點一次",
+     "en": "A second concealer pass where the lighter area still shows",
+     "tech_zh": "扁頭遮瑕刷（沿交界）；1 層",
+     "tech_en": "Flat concealer brush along the border; 1 layer(s)",
+     "delta": [
+      4.31,
+      3.38
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 4,
+     "img": "img/uneven_a/04.jpg",
+     "diff": "img/uneven_a/04_d.jpg",
+     "source_sha256": "cb20647b1648d91f45c47d4cc67d31e7948a600c257e40da754af1e17ffc743a",
+     "kind": "local",
+     "zh": "修邊：交界兩側偏淺處沿邊補色",
+     "en": "Edge work: color along the border where it is still lighter",
+     "tech_zh": "細刷；2 層",
+     "tech_en": "Fine brush; 2 layer(s)",
+     "delta": [
+      3.05,
+      2.99
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 5,
+     "img": "img/uneven_a/05.jpg",
+     "diff": "img/uneven_a/05_d.jpg",
+     "source_sha256": "a096c9cee7d04ac8bf18deac5d7c8a522b9403e4f231cc3b6e81a3121fcfd7f0",
+     "kind": "local",
+     "zh": "修邊：交界外側棕邊薄拍較淺色號",
+     "en": "Edge work: a lighter shade patted thinly on the brown rim outside the border",
+     "tech_zh": "點刷；1 層",
+     "tech_en": "Dab brush; 1 layer(s)",
+     "delta": [
+      4.38,
+      4.06
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 6,
+     "img": "img/uneven_a/06.jpg",
+     "diff": "img/uneven_a/06_d.jpg",
+     "source_sha256": "76fda99711ad5e9e0f8526ad89fee47ef2adbcdd46c6551b205772153a215247",
+     "kind": "local",
+     "zh": "修邊：棕色小島薄拍較淺色號",
+     "en": "Edge work: a lighter shade patted thinly on the small brown islands",
+     "tech_zh": "點刷；1 層",
+     "tech_en": "Dab brush; 1 layer(s)",
+     "delta": [
+      4.8,
+      4.18
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 7,
+     "img": "img/uneven_a/07.jpg",
+     "diff": "img/uneven_a/07_d.jpg",
+     "source_sha256": "94607c4e51d054b6b83351aee1ff06a55e75741b6afb10930a399941ec19801a",
+     "kind": "local",
+     "zh": "粉底：整臉一層薄粉底",
+     "en": "Foundation: one thin layer over the whole face",
+     "tech_zh": "大粉底刷；1 層",
+     "tech_en": "Large foundation brush; 1 layer(s)",
+     "delta": [
+      3.6,
+      3.21
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 8,
+     "img": "img/uneven_a/08.jpg",
+     "diff": "img/uneven_a/08_d.jpg",
+     "source_sha256": "d9769aaa3425f299bba1b4e2907a04608b6e97374ffd2fa4b8d022f258d28e88",
+     "kind": "local",
+     "zh": "粉底：往下帶到脖子薄薄一層",
+     "en": "Foundation: carried down the neck in a thin layer",
+     "tech_zh": "大粉底刷；1 層",
+     "tech_en": "Large foundation brush; 1 layer(s)",
+     "delta": [
+      2.83,
+      2.48
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 9,
+     "img": "img/uneven_a/09.jpg",
+     "diff": "img/uneven_a/09_d.jpg",
+     "source_sha256": "0dbec1ec0a08b8fe7f0468584d9589099cdf503605cd368fa9facbe2b4807335",
+     "kind": "local",
+     "zh": "修容：臉周圍薄掃暖色修容",
+     "en": "Contour: a thin warm sweep around the edge of the face",
+     "tech_zh": "大粉底刷；1 層",
+     "tech_en": "Large foundation brush; 1 layer(s)",
+     "delta": [
+      3.23,
+      3.2
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 10,
+     "img": "img/uneven_a/10.jpg",
+     "diff": "img/uneven_a/10_d.jpg",
+     "source_sha256": "097447d6f323fdeee6b263b1f7883151ca3be0721b27277b72bc42de347ef5cd",
+     "kind": "local",
+     "zh": "補拍：淺色殘留點較深色號",
+     "en": "Touch-up: a deeper shade dabbed on the lighter leftovers",
+     "tech_zh": "點刷；1 層",
+     "tech_en": "Dab brush; 1 layer(s)",
+     "delta": [
+      3.17,
+      3.02
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 11,
+     "img": "img/uneven_a/11.jpg",
+     "diff": "img/uneven_a/11_d.jpg",
+     "source_sha256": "46e3f1220e55f25244eec97ac0952cc8e234246cb032a5559656cefdc0792b4b",
+     "kind": "local",
+     "zh": "補拍：偏深殘留薄拍較淺色號",
+     "en": "Touch-up: a lighter shade patted thinly on the slightly too deep spots",
+     "tech_zh": "點刷；1 層",
+     "tech_en": "Dab brush; 1 layer(s)",
+     "delta": [
+      3.96,
+      3.74
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 12,
+     "img": "img/uneven_a/12.jpg",
+     "diff": "img/uneven_a/12_d.jpg",
+     "source_sha256": "0d36ce2562fbeda20a42db5fad44ed955253c7466660bfd8318ccfd83dcf4ea6",
+     "kind": "local",
+     "zh": "細修：脖子淺色處點遮",
+     "en": "Fine work: spot-concealing the lighter areas on the neck",
+     "tech_zh": "扁頭遮瑕刷（沿交界）；1 層",
+     "tech_en": "Flat concealer brush along the border; 1 layer(s)",
+     "delta": [
+      2.65,
+      2.54
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 13,
+     "img": "img/uneven_a/13.jpg",
+     "diff": "img/uneven_a/13_d.jpg",
+     "source_sha256": "bc68c83d40c359b2b05f512e13ac4503314840bb4984869b5d796f6daec2ff2f",
+     "kind": "local",
+     "zh": "細修：下顎陰影帶薄拍提亮",
+     "en": "Fine work: lightly brightening the shadow band along the jaw",
+     "tech_zh": "扁頭遮瑕刷（沿交界）；1 層",
+     "tech_en": "Flat concealer brush along the border; 1 layer(s)",
+     "delta": [
+      4.62,
+      4.33
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 14,
+     "img": "img/uneven_a/14.jpg",
+     "diff": "img/uneven_a/14_d.jpg",
+     "source_sha256": "0880f0bce246e02ddf8d0ef18c08a69eb5b917f1fd1c847953efef2cd3fbbab8",
+     "kind": "local",
+     "zh": "細修：眼下薄拍校色（桃杏）",
+     "en": "Fine work: a thin peach-apricot corrector under the eyes",
+     "tech_zh": "細刷；1 層",
+     "tech_en": "Fine brush; 1 layer(s)",
+     "delta": [
+      4.53,
+      3.96
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 15,
+     "img": "img/uneven_a/15.jpg",
+     "diff": "img/uneven_a/15_d.jpg",
+     "source_sha256": "2a85809cf3602c84066da58963b6cb8f406dd5a9f7d7ef82dc32dc121c564d7e",
+     "kind": "local",
+     "zh": "細修：細亮紋細刷點遮",
+     "en": "Fine work: fine-brush concealing of thin light lines",
+     "tech_zh": "細刷；1 層",
+     "tech_en": "Fine brush; 1 layer(s)",
+     "delta": [
+      4.03,
+      3.94
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 16,
+     "img": "img/uneven_a/16.jpg",
+     "diff": "img/uneven_a/16_d.jpg",
+     "source_sha256": "5c3cbde2c3930a70ea28c392a0e8d6e6e73ae30032b63a407bcc81c9324e4795",
+     "kind": "local",
+     "zh": "第1輪補：遮瑕（偏淺處）",
+     "en": "Round 1 touch-up: concealer where it is still lighter",
+     "tech_zh": "點刷；1 層",
+     "tech_en": "Dab brush; 1 layer(s)",
+     "delta": [
+      3.45,
+      3.36
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 17,
+     "img": "img/uneven_a/17.jpg",
+     "diff": "img/uneven_a/17_d.jpg",
+     "source_sha256": "c9064386c8e71565102d7724a9001517ae507d33ac10c977f3570d261fc91072",
+     "kind": "local",
+     "zh": "第1輪補：偏深處薄拍較淺色號",
+     "en": "Round 1 touch-up: a lighter shade patted thinly where it is too deep",
+     "tech_zh": "點刷；1 層",
+     "tech_en": "Dab brush; 1 layer(s)",
+     "delta": [
+      4.39,
+      4.34
+     ],
+     "metric": "patch"
+    },
+    {
+     "n": 18,
+     "img": "img/uneven_a/18.jpg",
+     "diff": "img/uneven_a/18_d.jpg",
+     "source_sha256": "c9064386c8e71565102d7724a9001517ae507d33ac10c977f3570d261fc91072",
+     "kind": "local",
+     "zh": "本機逐層做完（含一輪補拍與整臉粉底、修容）",
+     "en": "All local layers done (one touch-up round, whole-face foundation and contour included)",
+     "tech_zh": "",
+     "tech_en": "",
+     "delta": null
+    },
+    {
+     "n": 19,
+     "img": "img/uneven_a/19.jpg",
+     "diff": "img/uneven_a/19_d.jpg",
+     "source_sha256": "a819ecd2164fbc10bb44b6ac1d9681aae496778d252886528425cc8afccf717c",
+     "kind": "final",
+     "zh": "定案（模擬）：YouCam 試妝，淡妝",
+     "en": "Final look (simulated): YouCam try-on, light makeup",
+     "tech_zh": "YouCam Makeup VTO，磨皮固定 0",
+     "tech_en": "YouCam Makeup VTO, smoothing fixed at 0",
+     "delta": null
+    }
+   ]
+  },
+  {
+   "id": "uneven_b",
+   "title_zh": "膚色深淺不一 · 示範 B",
+   "title_en": "Uneven skin tone · Example B",
+   "credit": "Unsplash",
+   "credit_zh": "Unsplash（AI 轉向示意圖）",
+   "credit_en": "Unsplash (AI-generated frontal illustration)",
+   "local_layers": null,
+   "youcam_steps": 2,
+   "note_zh": "本機逐層的部位中間圖沒有留存，這裡只放階段圖。感謝願意公開自己照片的人與攝影師。膚色很淺或深淺不一的人的清晰照片本來就少，正面照更少；這一組只有側臉照，所以用 AI 生成的正面示意圖來示範方法，它不是本人原照，畫面標示「模擬」。照片中的人沒有參與本作品，也不代表背書。",
+   "note_en": "The per-area intermediate images of the local layers were not kept, so only the stage images are shown. Thank you to the people and photographers who make photos publicly available. Clear photos of people with very light skin or uneven skin tone are scarce, and frontal ones scarcer; here the only suitable photo was a side view, so an AI-generated frontal illustration demonstrates the method. It is not the person's original photo and is labelled Simulated. The people in these photos did not take part in this project and do not endorse it.",
+   "steps": [
+    {
+     "n": 0,
+     "img": "img/uneven_b/00.jpg",
+     "diff": null,
+     "source_sha256": "59301145a17a981d033f913460b5ae5fcedb72e592f169183d1e8cde96acc311",
+     "kind": "start",
+     "zh": "起點（AI 生成的正面示意圖，非本人原照）",
+     "en": "Starting point (an AI-generated frontal illustration, not an original photo)",
+     "tech_zh": "",
+     "tech_en": "",
+     "delta": null
+    },
+    {
+     "n": 1,
+     "img": "img/uneven_b/01.jpg",
+     "diff": "img/uneven_b/01_d.jpg",
+     "source_sha256": "e6085ea0de4b0ab782771844c1a87306d97386347ad18aa25b38909aab0a9884",
+     "kind": "local",
+     "zh": "本機逐層做完：眼周 → 嘴與下巴 → 耳 → 額，只在看得出的淺色區塊小範圍點蓋、拍開",
+     "en": "All local layers done: around the eyes, mouth and chin, ear, forehead; only small dabs on lighter areas that really show, patted out",
+     "tech_zh": "連通色差成長出遮罩（不畫直線），分部位逐層，每步放大檢查",
+     "tech_en": "Masks grown by connected color difference (no straight lines), one body area at a time, each step checked zoomed in",
+     "delta": null
+    },
+    {
+     "n": 2,
+     "img": "img/uneven_b/02.jpg",
+     "diff": "img/uneven_b/02_d.jpg",
+     "source_sha256": "c8b5d372af5adcb770dc89fc1c379a6ca06057d0c7292ecad33be24d150cbb2c",
+     "kind": "youcam",
+     "zh": "YouCam 試妝：腮紅",
+     "en": "YouCam try-on: blush",
+     "tech_zh": "YouCam Makeup VTO，磨皮固定 0",
+     "tech_en": "YouCam Makeup VTO, smoothing fixed at 0",
+     "delta": null
+    },
+    {
+     "n": 3,
+     "img": "img/uneven_b/03.jpg",
+     "diff": "img/uneven_b/03_d.jpg",
+     "source_sha256": "6c0c584ec55b091ec5b3e225e6637e7995c41550b809ee89736a499bbde0bc40",
+     "kind": "final",
+     "zh": "定案（模擬）：再加 YouCam 眼影",
+     "en": "Final look (simulated): plus a YouCam eyeshadow",
+     "tech_zh": "YouCam Makeup VTO，眼影兩色",
+     "tech_en": "YouCam Makeup VTO, two-color eyeshadow",
+     "delta": null
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,962 @@
+{
+ "4edaacdd71ddc8f3": {
+  "tag": "vitiligo/grooming/base",
+  "style": "grooming",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "keep",
+   "contour": "keep",
+   "highlight": "keep",
+   "brow": "fill_light",
+   "lash": "keep",
+   "blush": "keep",
+   "lip": "tinted_balm"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "8a9468c876e57d43344fe461f81b17894a65b946be3ab4be20250e09c0feee79",
+  "raw_sha256": "836321b2dc0c542a7908c26536895f074bfa6f72943fc3986ed3d65ac57fe196",
+  "raw_bytes": 2173851,
+  "recorded_at": "2026-10-21T22:25:26"
+ },
+ "60949056bf76dc29": {
+  "tag": "vitiligo/grooming/base",
+  "style": "grooming",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "keep",
+   "highlight": "tzone",
+   "brow": "keep",
+   "lash": "keep",
+   "blush": "keep",
+   "lip": "keep"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "57ba329d03f943e1bb1a15f3ab326b8b8a9770f974f1f2ec8150b1c405d2c8cb",
+  "raw_sha256": "2f9b0e67bc6680d455461a04d9d870920ce831a31ff6b0b63622ed038986fe78",
+  "raw_bytes": 2250745,
+  "recorded_at": "2026-10-21T22:25:40"
+ },
+ "0c058ee1c3104d54": {
+  "tag": "vitiligo/grooming/base",
+  "style": "grooming",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "keep",
+   "highlight": "tzone",
+   "brow": "keep",
+   "lash": "keep",
+   "blush": "keep",
+   "lip": "tinted_balm"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "aebc792e153acca21b123aa8adc37f2ed7a0e5762bc130fe1d1acce99648cbce",
+  "raw_sha256": "4411d4805f0e634710dd636d0161b9ed58bd76baec52acf3e3b2093aed17eff4",
+  "raw_bytes": 2254080,
+  "recorded_at": "2026-10-21T22:25:58"
+ },
+ "d5cd3a542b305cef": {
+  "tag": "vitiligo/grooming/base",
+  "style": "grooming",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "keep",
+   "highlight": "tzone",
+   "brow": "photo_soft",
+   "lash": "translucent_brown",
+   "blush": "keep",
+   "lip": "tinted_balm"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "35d4dafc5b999db34a0b40061ecf5522b3eaa68248ab04fff0d2a399c4f21fa3",
+  "raw_sha256": "b38656b51555a5e6423805784834d48abb1997ce863f40ab89865233522cf22e",
+  "raw_bytes": 2253764,
+  "recorded_at": "2026-10-21T22:26:20"
+ },
+ "1d1a739f495f20ee": {
+  "tag": "vitiligo/natural/base",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "bee6e9259ed610e9219a8e5a63d1ac1079d00331e32d85507b2e5b4187076f1d",
+  "raw_sha256": "2e22b4c4799e22178fe4fb58f62a2ee58c069fe02476ed388930de93968b8f89",
+  "raw_bytes": 2288601,
+  "recorded_at": "2026-10-21T22:26:42"
+ },
+ "70a1455905e76d70": {
+  "tag": "vitiligo/natural/base",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "keep",
+   "highlight": "tzone",
+   "brow": "keep",
+   "lash": "keep",
+   "blush": "keep",
+   "lip": "keep"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "dd466ec7a46c7576fe47f1df5d462f227036f1c9ef204a7e0b9cde1eb61b9f92",
+  "raw_sha256": "85897269bffd1605f954217f26c55d8aa2222e8749f79466b8431daf77808da9",
+  "raw_bytes": 2251336,
+  "recorded_at": "2026-10-21T22:26:56"
+ },
+ "6f7de40d468783b6": {
+  "tag": "vitiligo/natural/base",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "keep",
+   "highlight": "tzone",
+   "brow": "keep",
+   "lash": "keep",
+   "blush": "soft",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "75707d6e253498133af61314547e99373eee9e152bfb97241a739aa987514812",
+  "raw_sha256": "ac6efff20af9f6eddbb96b18b166c7d2631b9cb6f57e05c3b6dbce02fa331ac0",
+  "raw_bytes": 2259582,
+  "recorded_at": "2026-10-21T22:27:14"
+ },
+ "819e11fffbb432af": {
+  "tag": "vitiligo/natural/base",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "keep",
+   "highlight": "tzone",
+   "brow": "photo_defined",
+   "lash": "translucent_brown",
+   "blush": "soft",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "d8d0b6f81912722d89341f0f6286e2f1a8198b3d02cbb6575c149afd31e4a7ea",
+  "raw_sha256": "1d1306776601e6a38506728c12ef12e2c03e356f806187bd2fd8184fb63c93bd",
+  "raw_bytes": 2258787,
+  "recorded_at": "2026-10-21T22:27:36"
+ },
+ "4e31c8548a9c55d1": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "keep",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "09960a04f0974858d0263fd3f0c5051100a5fc8b910ebe4fc295b9ba8d873f09",
+  "raw_sha256": "f40209b6b87362df6bcbcf8fa0fc94bb1c55fee082b1e3ce2bbc08779695ff07",
+  "raw_bytes": 2252247,
+  "recorded_at": "2026-10-21T22:27:54"
+ },
+ "d173c0872a534933": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "sheer",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "c08c5f4ea7784e1353a215e4e7411f3dc8c5b1aa01f853cc1c394642de52a2fc",
+  "raw_sha256": "04041fe70083bcf341fab5874f6787c4504f9a1a60dd08a4fb57c97b715ee183",
+  "raw_bytes": 2292092,
+  "recorded_at": "2026-10-21T22:28:19"
+ },
+ "a3c175c14936cb9e": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "light",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "39e5e57c7fb8c640838c52b695cf71ca7c1a71ad9018fbd30a12d2cee981b081",
+  "raw_sha256": "3eaaea805dc3ae4b0df2ae5fa4e147b206fcf80f9b82584cc10ca3f4fdc9c1c7",
+  "raw_bytes": 2282324,
+  "recorded_at": "2026-10-21T22:28:37"
+ },
+ "d1437a4ea16c6a4b": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "6cac4bc0172cbcb3d2d85f9b2b92a1fc44186d99f0fe05e5885525b9beff1bcf",
+  "raw_sha256": "ba809900f4272ee8bf3564b0a915de98117f1895f7a05d4af4224e20f4a092b1",
+  "raw_bytes": 2287781,
+  "recorded_at": "2026-10-21T22:28:59"
+ },
+ "f49f5e63e432e6c6": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "full",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "188bce41c2497f81e70f3ad0b051f6dbc1cd0f3171d17d706e18bf3795090700",
+  "raw_sha256": "714b82504a4046b64493cbe1e2c1010bc0211a3a4c9da1c52b3f3df7eefc712e",
+  "raw_bytes": 2282095,
+  "recorded_at": "2026-10-21T22:29:16"
+ },
+ "9674d0006c3a844b": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "max",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "dc5152d9d4afc38015a905b0751c5914dc9829b2e855be338789af421f60b12f",
+  "raw_sha256": "296fbc095f66e895ee9555b25a01bd761a38f5226c93506084c5f1fc556edb5c",
+  "raw_bytes": 2278535,
+  "recorded_at": "2026-10-21T22:29:42"
+ },
+ "a9e34378fed0ec02": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "keep",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "b0e8e05699321daf23728ae147215a8fc1df01361d40e80f7c0f2d67fbd0043e",
+  "raw_sha256": "9cd321d62886e7b59443b4aad87f8bbda6ad0197330c9af05b62e0af6cb60f59",
+  "raw_bytes": 2260951,
+  "recorded_at": "2026-10-21T22:30:07"
+ },
+ "b9b245e79bc0cfdd": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "keep",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "b1e9ac1deffdcee428a6a8873b2bb2c1f61fbb808bd60bf972783d9d70ad95fc",
+  "raw_sha256": "6a6c7fd529cd3d324269bd112f5b3cf5b96a2d63a32d293fcfc5cdd09d9e2551",
+  "raw_bytes": 2288159,
+  "recorded_at": "2026-10-21T22:30:28"
+ },
+ "845c68621a21713b": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "center",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "ffbc34e1f620b8fbf80edea5adabbb1fc586f69b1932fe1a41aaddd37854e496",
+  "raw_sha256": "ae92323b481141d8a153c1d02365ee319791bbe9767d4ab40fab09514893b8ab",
+  "raw_bytes": 2313231,
+  "recorded_at": "2026-10-21T22:30:57"
+ },
+ "b3858661545598a5": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "lift",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "2154d0384e72c98bdff542b3a9c811da882b7b6ba70db7388ee8087103f93bf2",
+  "raw_sha256": "3e971c694cf359cdaad60ab106b17b89122b9f7afb33d1390629c05f7b680830",
+  "raw_bytes": 2295357,
+  "recorded_at": "2026-10-21T22:31:25"
+ },
+ "640b6503757551be": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "tzone",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "f063b138aaeef9bd7dde31d85ec4bb72f628b68c072ce8d9bd2c9d316dc557b0",
+  "raw_sha256": "216ac72cc3a0dda1e5d86d1d4d7f2cdcb205159ea9e89c904a9272e8f05638bf",
+  "raw_bytes": 2299546,
+  "recorded_at": "2026-10-21T22:31:47"
+ },
+ "fc6c4c7117592dad": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "keep",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "ec671720a7600262d3955a0d049be2c3c571972409f1dce7b9366960f7d0cc88",
+  "raw_sha256": "90fa94a536a4bb5e3b0311a3c43b61b0229cd25c982f9a03417bc91ed1f5e553",
+  "raw_bytes": 2296207,
+  "recorded_at": "2026-10-21T22:32:05"
+ },
+ "1ca9ca8a120774e5": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "photo_soft",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "a4528eec65611810e5f562ad73a280042c23c592d5565a91cd7d7bf4875e90f3",
+  "raw_sha256": "4ec27f84c2617d98ac2df537ae037e9d185da6c080e073e571f4a85261e666cd",
+  "raw_bytes": 2288940,
+  "recorded_at": "2026-10-21T22:32:23"
+ },
+ "fb4fe5c0fabc5ce5": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "photo_defined",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "1117772a6c361806986900342ffd8bba520ad580f3cc56349ece5101d60c5983",
+  "raw_sha256": "2ab3f4d98229fda05c90771d930f987742bb53c873dae23fb4182e0b5c096a60",
+  "raw_bytes": 2289001,
+  "recorded_at": "2026-10-21T22:32:41"
+ },
+ "521db4b2c0e6934b": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "fill_light",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "a191defb70c3f829ed724e331874da3c13e39d2f2915121bd1b2bf7cf301d67e",
+  "raw_sha256": "b7634a2813fbd83ff8d8d3fe2fbac588326f7b8409607785bd129ad0654fdd04",
+  "raw_bytes": 2290880,
+  "recorded_at": "2026-10-21T22:32:59"
+ },
+ "fd2b8363825828fd": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "light_brown",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "267d5a2ca26e84e9fb5b2e9dd9e49d6302835c0176c498cbe6ab6580e7635930",
+  "raw_sha256": "20d5d0b5da4cf225bdf4559d24f221d37b4c4521fdcc1dc57d9196c2ac1cb42c",
+  "raw_bytes": 2290901,
+  "recorded_at": "2026-10-21T22:33:18"
+ },
+ "c569bed48c6f1d06": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "greige",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "1822f64da787934ea6bb023c4e0a6389c66bc6ed8165a4af005215893cd4faf0",
+  "raw_sha256": "c71e8524f72010e44704064c9b2fec2504d984a35855bcbc83efa033c9a112c5",
+  "raw_bytes": 2290347,
+  "recorded_at": "2026-10-21T22:33:39"
+ },
+ "3413d76cf26c4002": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "keep",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "141a31a60b380068806a08917820f084e9b5574be637ffb12a32a36d688b54ca",
+  "raw_sha256": "1156e75566bfd4efd1a08d9f32921957e7535667c11f05b0476f8c454d7f9f54",
+  "raw_bytes": 2291003,
+  "recorded_at": "2026-10-21T22:33:57"
+ },
+ "573e1641e953ee69": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "translucent_brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "0ab9a8f7468ff9631cc2851378f4003cf6f72b56bddf46c50ffabc6d1b61c002",
+  "raw_sha256": "b8785bfa9be08eb791fdc6d630e21f1b63417118be7a12b4f6cfb2849cc3b2e5",
+  "raw_bytes": 2291576,
+  "recorded_at": "2026-10-21T22:34:19"
+ },
+ "19a26159f15f5ed9": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "champagne",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "6b47f4896f247a1edb1663818f00b2d0aef70d3ace54a08e3c4c75e1d353e689",
+  "raw_sha256": "6cb2b8c3f6d1c2eae56046db0ef7bd3ab6c502f7ba96fbf9fb858ab24f34550b",
+  "raw_bytes": 2295355,
+  "recorded_at": "2026-10-21T22:34:37"
+ },
+ "b3bc40ef027eea31": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "keep",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "62f73711eb218b89c3a18154577a97d51d9625dbba25a1fcb8e0ee786eea16de",
+  "raw_sha256": "633d87f0ff9713da4b934350ec55238ec82219bb2ce5cf1704baefb66ef6cd9d",
+  "raw_bytes": 2288203,
+  "recorded_at": "2026-10-21T22:34:59"
+ },
+ "aeaa1546b17e5a1b": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "flush",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "fc10ae9d667853ebfd5f2379d7d38de69d1f74d6bd80533a6f7a941dc591a53f",
+  "raw_sha256": "0591e588be83b09bf02fbfb890b5cea3b82b377d9df037a67f8e5958c82d5a15",
+  "raw_bytes": 2291537,
+  "recorded_at": "2026-10-21T22:35:24"
+ },
+ "8526a0f1f23ec0cd": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "soft",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "362eb3301f50dda8d2e9ee43406d7ead11a552c0bc65e7901f188995fe56c340",
+  "raw_sha256": "01261c00e375bdaaa10f21b0eda43ec9edc036eeeb4891ecb1e705d10a684beb",
+  "raw_bytes": 2291935,
+  "recorded_at": "2026-10-21T22:35:42"
+ },
+ "778bead94e624afb": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "apricot",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "239068ee66e4c44b7e41f3f08ab4efd7a70c32e9069741d7b8c5671425ad9b0c",
+  "raw_sha256": "ef0d2fe92fd7981b69610a404f8a712218e39e33b670913c2143cb8e255bc7e2",
+  "raw_bytes": 2290083,
+  "recorded_at": "2026-10-21T22:36:00"
+ },
+ "d052a07bb54be061": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "keep"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "3d86a2b968f264f28462af2bb70934898dbb98700ff61dc110b661d445403df4",
+  "raw_sha256": "674c11447833600de0b0201771030f83f5268616281d7e8ace8e799b60ab8220",
+  "raw_bytes": 2291505,
+  "recorded_at": "2026-10-21T22:36:18"
+ },
+ "920e62ad3b3b6974": {
+  "tag": "vitiligo/natural/adjust",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "soft",
+   "highlight": "nose",
+   "brow": "taupe",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "tinted_balm"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "e213a2208dcfd50f34aa240ae82c5cecc0d9ae008f7fd4092a9d13f8bded688c",
+  "raw_sha256": "298711f6cf8d58dd9d1e41fe99db5a3c3e02da3d39bf27a1852e955dd04d5503",
+  "raw_bytes": 2293009,
+  "recorded_at": "2026-10-21T22:36:36"
+ },
+ "473efeb6df6cb4f2": {
+  "tag": "vitiligo/natural/sensitive",
+  "style": "natural",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "keep",
+   "highlight": "nose",
+   "brow": "fill_light",
+   "lash": "translucent_brown",
+   "blush": "flush",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "4862f1e77d5d263cfb7c0e8f437ee1e9e022859bd03110771f65cb0330b53766",
+  "raw_sha256": "b296176538ef9d6e65e7b37ae7c8171f81d2e505739f48bcbc66ed85fdd12af2",
+  "raw_bytes": 2258832,
+  "recorded_at": "2026-10-21T22:36:54"
+ },
+ "3b465c72060331b5": {
+  "tag": "vitiligo/polished/base",
+  "style": "polished",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "max",
+   "contour": "defined",
+   "highlight": "tzone",
+   "brow": "taupe_deep",
+   "lash": "black",
+   "blush": "apricot",
+   "lip": "red3"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "fde3fea6745811f58e5d5272e592b6fb0df8a3acdc54d14da3b96fcb5e07902c",
+  "raw_sha256": "9751909cbb4bcba8311bb6652a7f4c8622eac44d111728a4aeb78f9f8e54e20f",
+  "raw_bytes": 2285248,
+  "recorded_at": "2026-10-21T22:37:16"
+ },
+ "bf9eb1d34d22b47b": {
+  "tag": "vitiligo/polished/base",
+  "style": "polished",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "keep",
+   "highlight": "tzone",
+   "brow": "keep",
+   "lash": "keep",
+   "blush": "keep",
+   "lip": "keep"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "4b0235c85d1de0649be8f97ba4190f9c6ea740738004abe1f3044c0949ef6523",
+  "raw_sha256": "4a55f978f00dd2c9e9d5dc31afe8cb8f14949b39104439c343248166240ba897",
+  "raw_bytes": 2251027,
+  "recorded_at": "2026-10-21T22:37:44"
+ },
+ "d587c34b6998b608": {
+  "tag": "vitiligo/polished/base",
+  "style": "polished",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "keep",
+   "highlight": "tzone",
+   "brow": "keep",
+   "lash": "keep",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "53034e44f2c26ed1ca042957e7feaa7e76c0f71851252f16516a30115d2294cf",
+  "raw_sha256": "6c32c89bc1c55b261becba24d146711e510e534b55678a266e684dca2b6a09ae",
+  "raw_bytes": 2260528,
+  "recorded_at": "2026-10-21T22:38:02"
+ },
+ "d0e6d543bcae4473": {
+  "tag": "vitiligo/polished/base",
+  "style": "polished",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "veil",
+   "contour": "keep",
+   "highlight": "tzone",
+   "brow": "photo_defined",
+   "lash": "brown",
+   "blush": "medium",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "f4d7157005c349dd606317a8c28ff0c1781d2a7e43fbb0c2fb3f2ad95c7d8439",
+  "raw_sha256": "959254e2e00ea8e90d785de8f3dec25ea6c33f872f0ea9dcbddcd1d12f56358d",
+  "raw_bytes": 2259774,
+  "recorded_at": "2026-10-21T22:38:24"
+ },
+ "29f1c06840bb26bf": {
+  "tag": "vitiligo/polished/sensitive",
+  "style": "polished",
+  "undertone": "pink_cool",
+  "selection": {
+   "foundation": "medium",
+   "contour": "keep",
+   "highlight": "nose",
+   "brow": "fill_light",
+   "lash": "translucent_brown",
+   "blush": "keep",
+   "lip": "natural_gloss"
+  },
+  "colors": {
+   "skin_hex": "#B38071",
+   "brow_hex": "#1B1B1B",
+   "foundation_hex": "#BB8B69"
+  },
+  "photo": "demo/photos/vitiligo_20551205.jpg",
+  "sha256": "b3273949776c18cc01d974e3e1b65bcce207105440f6d8155c10d2e43e69e868",
+  "raw_sha256": "163ef542632868a3133567c708607e35788b02b6774749fe7b245f0fb600288f",
+  "raw_bytes": 2253873,
+  "recorded_at": "2026-10-21T22:38:42"
+ }
+}

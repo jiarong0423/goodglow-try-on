@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>環境自檢</title>
+<style>
+  body { font: 16px/1.5 -apple-system, "PingFang TC", sans-serif; margin: 16px; background: #fff; color: #222; }
+  li { margin: 6px 0; } .ok { color: #1b7f3b; } .ng { color: #b3261e; } #stage { border: 1px solid #ccc; width: 240px; }
+</style>
+</head>
+<body>
+<h1>環境自檢（Konva／OpenCV.js／ONNX Runtime Web）</h1>
+<p>只在本機檢查三個程式庫能不能載入、能不能跑最小範例；不扣點、不上傳。</p>
+<ul id="out"></ul>
+<div id="stage"></div>
+<script src="vendor/konva/konva.min.js"></script>
+<script src="vendor/onnxruntime/ort.wasm.min.js"></script>
+<script>
+  const out = document.getElementById('out');
+  const report = (name, ok, msg) => { const li = document.createElement('li'); li.className = ok ? 'ok' : 'ng'; li.textContent = `${ok ? '✓' : '✗'} ${name}：${msg}`; out.appendChild(li); (window.__env = window.__env || {})[name] = { ok, msg }; };
+  // 1. Konva：SVG 路徑畫到畫布上
+  try {
+    const stage = new Konva.Stage({ container: 'stage', width: 240, height: 160 });
+    const layer = new Konva.Layer(); stage.add(layer);
+    const path = new Konva.Path({ data: 'M40 80 C60 20 180 20 200 80 C180 140 60 140 40 80 Z', fill: 'rgba(230,120,100,0.5)', stroke: '#b05', strokeWidth: 2, draggable: true });
+    layer.add(path); layer.draw();
+    report('Konva', path.getClientRect().width > 100, `版本 ${Konva.version}，SVG 路徑可拖曳`);
+  } catch (e) { report('Konva', false, e.message); }
+  // 2. ONNX Runtime Web：最小模型 y = 2x
+  (async () => {
+    try {
+      ort.env.wasm.wasmPaths = new URL('vendor/onnxruntime/', location.href).href;   // 要完整網址，相對路徑會被當成模組名稱 ort.env.wasm.numThreads = 1;
+      const s = await ort.InferenceSession.create('vendor/selftest/mul2.onnx');
+      const r = await s.run({ x: new ort.Tensor('float32', Float32Array.from([1, 2, 3]), [1, 3]) });
+      const y = Array.from(r.y.data);
+      report('ONNX Runtime Web', y.join(',') === '2,4,6', `推論結果 [${y}]（應為 2,4,6）`);
+    } catch (e) { report('ONNX Runtime Web', false, e.message); }
+  })();
+  // 3. OpenCV.js：畫一個白色橢圓 → 找輪廓 → 化簡成向量點
+  window.Module = { onRuntimeInitialized() { window.__cvReady = true; } };
+  const s = document.createElement('script'); s.src = 'vendor/opencv/opencv.js'; s.async = true;
+  s.onload = async () => {
+    try {
+      let C = window.cv;
+      if (C instanceof Promise) C = await C;
+      if (C && !C.Mat) await new Promise((ok) => { const t = setInterval(() => { if (window.cv && window.cv.Mat) { clearInterval(t); ok(); } }, 50); });
+      C = window.cv && window.cv.Mat ? window.cv : C;
+      const m = C.Mat.zeros(120, 160, C.CV_8UC1);
+      C.ellipse(m, new C.Point(80, 60), new C.Size(50, 30), 15, 0, 360, new C.Scalar(255), -1);
+      const cs = new C.MatVector(), hi = new C.Mat();
+      C.findContours(m, cs, hi, C.RETR_EXTERNAL, C.CHAIN_APPROX_NONE);
+      const c0 = cs.get(0), ap = new C.Mat(); C.approxPolyDP(c0, ap, 1.5, true);
+      report('OpenCV.js', cs.size() === 1 && ap.rows > 8, `找到 ${cs.size()} 個輪廓，原始 ${c0.rows} 點 → 化簡成 ${ap.rows} 點`);
+      [m, cs, hi, c0, ap].forEach((x) => x.delete());
+    } catch (e) { report('OpenCV.js', false, e.message); }
+  };
+  s.onerror = () => report('OpenCV.js', false, '載入失敗');
+  document.body.appendChild(s);
+</script>
+</body>
+</html>

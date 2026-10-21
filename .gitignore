@@ -1,0 +1,18 @@
+# 臉部照片與分數是個人資料，只留本機
+/photos/
+/runs/
+.env
+.env.*
+*.env
+*.pem
+*.key
+.claude/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# 品牌色號資料只留本機（比賽規則不得含未經許可的第三方商標）
+app/partner_shades*.json
+app/brand_codes_local.json
+app/brand_alias.json

@@ -1,0 +1,15 @@
+{
+  "name": "好氣色試妝",
+  "short_name": "好氣色試妝",
+  "description": "先取膚色、對色號，再給保養、防曬與完整妝容；只加妝、不改膚質",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf3f1",
+  "theme_color": "#fbf3f1",
+  "lang": "zh-Hant",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

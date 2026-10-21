@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="google" content="notranslate">   <!-- 本身有中英兩版，不讓瀏覽器再跳「要翻譯網頁嗎」 -->
+  <meta name="theme-color" content="#fbf3f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title data-i18n="s0001">好氣色試妝</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="mode-banner" class="banner" hidden></div>
+
+  <!-- 0 封面：直接點照片選入口 -->
+  <main id="view-start" class="view start">
+    <header class="brandbar">
+      <div class="logo"><img src="icon.svg" alt=""><span data-i18n="s0001">好氣色試妝</span></div>
+      <div class="toggles">
+        <button class="icon-toggle lang-btn" id="lang-toggle" type="button">EN</button>
+        <label class="icon-toggle" title="怕光模式" data-i18n-attr="title:s0002"><input type="checkbox" id="opt-dark"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><span class="sr" data-i18n="s0003">怕光模式（暗色畫面）</span></label>
+      </div>
+    </header>
+    <!-- 官網風格第 2 步：手機上下堆疊（標題→說明→大數字→入口→步驟）；≥768px 左欄入口封面、右欄文字 -->
+    <div class="start-grid">
+      <section class="hero">
+        <h1><span data-i18n="s0005">先找到你的膚色，</span><br><span data-i18n="s0006">再談妝容</span></h1>
+        <p class="sub" data-i18n="s0007">每一種膚色都有自己的好氣色：拍一張照片，取膚色、對色號，再給保養、防曬和一套完整妝容。只加妝；YouCam 的磨皮固定為 0。</p>
+        <!-- 數字由 /api/status 的 catalog_stats 填入（實際載入的型錄）；色號頁 1–10 級色卡 -->
+        <dl class="stats">
+          <div><dt><b id="stat-shades">–</b><small data-i18n="s0008">個</small></dt><dd id="stat-shades-label" data-i18n="s0009">專櫃現行色號可對照</dd></div>
+          <div><dt><b id="stat-brands">–</b><small data-i18n="s0008">個</small></dt><dd id="stat-brands-label" data-i18n="s0010">品牌</dd></div>
+          <div><dt><b>10</b><small data-i18n="s0011">級</small></dt><dd data-i18n="s0012">膚色色卡，分冷中暖</dd></div>
+        </dl>
+      </section>
+      <div class="start-visual">
+        <div id="condition-options" class="cover-cards" role="radiogroup" aria-label="入口" data-i18n-attr="aria-label:s0013"></div>
+        <p class="credit" data-i18n="s0014">封面照片：Pexels（示意，照片中人與本作品無關）</p>
+      </div>
+      <ol class="how">
+        <li><b>1</b><span data-i18n="s0015">拍照</span></li><li><b>2</b><span data-i18n="s0016">取膚色</span></li><li><b>3</b><span data-i18n="s0017">對色號</span></li><li><b>4</b><span data-i18n="s0018">保養建議</span></li><li><b>5</b><span data-i18n="s0019">試妝</span></li>
+      </ol>
+    </div>
+  </main>
+
+  <!-- 開場提醒（彈窗，簡短） -->
+  <div id="warn-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="warn-title">
+    <div class="modal-card">
+      <h2 id="warn-title" data-i18n="s0020">開始前提醒</h2>
+      <ul class="warn-list">
+        <li><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></span><span data-i18n="s0021">照光治療當天不上妝</span></li>
+        <li><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 12V6.5a1.5 1.5 0 0 1 3 0V11M10 11V5a1.5 1.5 0 0 1 3 0v6M13 11V6a1.5 1.5 0 0 1 3 0v6M16 12V9a1.5 1.5 0 0 1 3 0v5c0 4-3 7-7 7-3 0-5-1.5-6.5-4.5L3.8 13.5a1.5 1.5 0 0 1 2.5-1.5L7 13"/></svg></span><span data-i18n="s0022">新產品先在耳後小範圍試</span></li>
+        <li><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 9h8v11a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1z"/><path d="M10 9V6h4v3M9 3h6v3H9z"/></svg></span><span data-i18n="s0023">出門前先擦防曬</span></li>
+      </ul>
+      <p class="src" data-i18n="s0943">依據：一般衛教與美妝資料的整理，不是醫療建議；皮膚有新的變化請找皮膚科醫師。</p>
+      <button class="btn primary big" id="btn-warn-ok" data-i18n="s0025">我知道了</button>
+      <button class="btn ghost big" id="btn-warn-dark" type="button" hidden aria-pressed="false" data-i18n="s0026">怕光？改成暗色畫面</button>
+    </div>
+  </div>
+
+  <!-- 1 拍照或上傳 -->
+  <section id="view-capture" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0027">拍一張，或上傳一張</h2>
+    <div class="tips">
+      <div><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0M9 9.5h.01M15 9.5h.01"/></svg></span><span data-i18n="s0028">正面、整張臉入鏡</span></div>
+      <div><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18M4 12h16"/></svg></span><span data-i18n="s0029">窗邊柔和自然光</span></div>
+      <div><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span><span data-i18n="s0960">光太亮可以改成暗色畫面</span></div>
+    </div>
+    <div class="capture-actions">
+      <button class="big-action" id="btn-start"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg></span><b data-i18n="s0015@web/index.html:73">拍照</b><span data-i18n="s0031">像照鏡子一樣，自動拍</span></button>
+      <label class="big-action"><span class="ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg></span><b data-i18n="s0032">上傳照片</b><span data-i18n="s0033">從相簿選一張正面照</span><input type="file" accept="image/*" id="file-upload" hidden></label>
+    </div>
+    <button class="btn link" id="btn-demo" data-i18n="s0034">先用示範照片看看</button>
+    <p class="muted small center" data-i18n="s0035">照片在手機上取膚色；遮罩與試妝由伺服器在記憶體中處理、不會存檔（真實模式下試妝會把照片送到 YouCam）。</p>
+    <div class="dock"><button class="btn ghost" id="btn-capture-back" data-i18n="s0036">返回</button></div>
+  </section>
+
+  <!-- 1b 取景 -->
+  <section id="view-mirror" class="view mirror" hidden>
+    <div class="mirror-top">
+      <div id="hint" class="hint" aria-live="polite" data-i18n="s0037">準備鏡頭中…</div>
+      <div class="checks">
+        <span id="chk-face" class="chk" data-i18n="s0038">臉</span>
+        <span id="chk-dist" class="chk" data-i18n="s0039">距離</span>
+        <span id="chk-front" class="chk" data-i18n="s0040">正面</span>
+        <span id="chk-light" class="chk" data-i18n="s0041">光線</span>
+      </div>
+    </div>
+    <div id="YMK-module"></div>
+    <div id="native-cam" hidden>
+      <video id="video" playsinline muted autoplay></video>
+      <div class="oval"></div>
+    </div>
+    <div class="mirror-bar">
+      <button class="btn ghost" id="btn-cancel-cam" data-i18n="s0036">返回</button>
+      <label class="btn ghost file"><span data-i18n="s0042">相簿</span><input type="file" accept="image/*" id="file-input" hidden></label>
+      <button class="btn primary" id="btn-shutter" hidden data-i18n="s0043">拍</button>
+    </div>
+  </section>
+
+  <!-- 2 取膚色 -->
+  <section id="view-check" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0016">取膚色</h2>
+    <!-- 拍攝小幫手：選照片或拍照後檢查這張照片能不能用（web/capture_guide.js；依據 docs/EVIDENCE_LIMITS.md） -->
+    <div id="guide-card" class="card guide" hidden aria-live="polite">
+      <div class="guide-head"><h3 data-i18n="s0044">拍攝小幫手</h3><span id="guide-chip" class="guide-chip"></span></div>
+      <p id="guide-sum" class="guide-sum"></p>
+      <ul id="guide-list" class="guide-list"></ul>
+      <button class="btn ghost" id="btn-guide-retake" type="button" data-i18n="s0045">重拍或換一張</button>
+    </div>
+    <div class="photo-stage">
+      <div class="photo-wrap">
+        <img id="check-photo" alt="你的照片，點一下可以改取色位置" data-i18n-attr="alt:s0046">
+        <span id="sample-dot" class="sample-dot" hidden></span>
+        <div id="auto-dots" class="auto-dots" aria-hidden="true"></div>
+        <div id="brow-dots" class="auto-dots" aria-hidden="true"></div>
+      </div>
+    </div>
+    <p id="auto-status" class="small auto-status" aria-live="polite"></p>
+    <div class="sample-card">
+      <div class="skin-sample"><span id="skin-swatch" class="small-sw"></span><span id="skin-text" class="small" data-i18n="s0047">膚色：自動取色中…</span></div>
+      <div class="skin-sample" id="patch-row" hidden><span id="patch-swatch" class="small-sw"></span><span id="patch-text" class="small" data-i18n="s0048">淺色區塊：還沒取</span></div>
+      <div class="skin-sample"><span id="brow-swatch" class="small-sw"></span><span id="brow-text" class="small" data-i18n="s0049">眉色：還沒取</span></div>
+      <div class="chips" role="radiogroup" aria-label="點照片要取哪一個顏色" data-i18n-attr="aria-label:s0050">
+        <button class="chip" id="mode-skin" role="radio" aria-checked="true" data-i18n="s0051">點照片取膚色</button>
+        <button class="chip" id="mode-patch" role="radio" aria-checked="false" hidden data-i18n="s0052">點照片取淺色區塊</button>
+        <button class="chip" id="mode-brow" role="radio" aria-checked="false" data-i18n="s0053">點照片取眉色</button>
+        <button class="chip" id="mode-browpts" role="radio" aria-checked="false" hidden data-i18n="s0054">點眉形（眉頭→眉峰→眉尾）</button>
+      </div>
+      <p class="small brow-tip" id="browpts-tip" hidden data-i18n="s0055">你的眉毛顏色很淡：自動試妝抓不準眉毛位置，所以試妝不畫眉，眉毛保留原樣。</p>
+      <p class="small muted" id="browpts-status" hidden></p>
+    </div>
+    <div id="check-msgs" class="msgs" aria-live="polite"></div>
+    <div class="dock row">
+      <button class="btn ghost" id="btn-retake" data-i18n="s0056">重拍</button>
+      <button class="btn primary" id="btn-try" data-i18n="s0057">看我的色號</button>
+    </div>
+  </section>
+
+  <!-- 2b 預期妝容（模擬）：有的話先看目標，再從它取色號 -->
+  <section id="view-expect" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0058">預期妝容</h2>
+    <div class="expect-stage">
+      <img id="expect-img" alt="預期妝容（模擬）" data-i18n-attr="alt:s0059">
+      <span class="sim-tag" id="expect-tag" data-i18n="s0060">模擬</span>
+    </div>
+    <div class="chips center-row"><button class="chip" id="btn-expect-toggle" aria-pressed="false" data-i18n="s0061">看你的照片</button></div>
+    <p class="muted small" id="expect-how"></p>
+    <h3 data-i18n="s0062">從預期妝容取色</h3>
+    <div id="expect-zones" class="zone-row"></div>
+    <div class="dock row">
+      <button class="btn ghost" id="btn-expect-back" data-i18n="s0063">上一步</button>
+      <button class="btn primary" id="btn-expect-next" data-i18n="s0064">用它對色號</button>
+    </div>
+  </section>
+
+  <!-- 3 色卡與色號 -->
+  <section id="view-shade" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0065">你的色卡與色號</h2>
+    <p class="care-tip" data-i18n="s0066">☀︎ 淺色肌膚的光防護是第一步：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。</p>
+    <div id="shade-pair" class="pair" hidden>
+      <figure><span id="sk-normal" class="big-sw"></span><figcaption><span id="sk-normal-label" data-i18n="s0067">原本膚色</span><br><span id="sk-normal-hex" class="hex"></span></figcaption></figure>
+      <figure><span id="sk-patch" class="big-sw"></span><figcaption><span data-i18n="s0068">淺色區塊</span><br><span id="sk-patch-hex" class="hex"></span></figcaption></figure>
+    </div>
+    <p id="shade-summary" class="sk-summary"></p>
+    <div id="shade-zones" class="zone-row" hidden></div>
+    <section class="card pick-card">
+      <h3 data-i18n="s0069">選你覺得最像的膚色</h3>
+      <p class="muted small" id="pick-note"></p>
+      <div class="chips" id="pick-tone" role="radiogroup" aria-label="冷暖" data-i18n-attr="aria-label:s0070"></div>
+      <div class="pick-strip" id="pick-strip" role="radiogroup" aria-label="膚色色卡 1 到 10 級" data-i18n-attr="aria-label:s0071"></div>
+    </section>
+    <div id="shade-rows" class="color-card"></div>
+    <p class="muted small" id="shade-note"></p>
+    <section class="card" id="pv-card" hidden>
+      <h3 data-i18n="s0072">妝容預覽（手機上即時看，不扣點）</h3>
+      <p class="muted small" data-i18n="s0073">在手機上把色號疊到臉上比較；真正的上妝效果，到後面「試試看」用 YouCam 試妝。</p>
+      <div class="chips" id="pv-looks" role="radiogroup" aria-label="妝容模板" data-i18n-attr="aria-label:s0074"></div>
+      <div class="photo-wrap pv-wrap"><img id="pv-img" alt="底妝預覽" data-i18n-attr="alt:s0075"><div id="pv-svg" class="pv-svg" hidden></div><span id="pv-dot" class="sample-dot" hidden></span></div>
+      <div class="chips" id="pv-shades" role="radiogroup" aria-label="預覽的色號" data-i18n-attr="aria-label:s0076"></div>
+      <label class="pv-cov"><span data-i18n="s0077">遮蓋力</span> <input type="range" id="pv-cov" min="0" max="100" step="5" value="60"> <span id="pv-cov-v"></span></label>
+      <div class="chips">
+        <button class="chip" id="pv-pick" aria-pressed="false" data-i18n="s0078">吸管：點照片取色</button>
+        <button class="chip" id="pv-orig" aria-pressed="false" data-i18n="s0061">看你的照片</button>
+        <button class="chip" id="pv-area" aria-pressed="false" data-i18n="s0079">顯示範圍</button>
+      </div>
+      <p class="muted small" id="pv-status"></p>
+      <div id="pv-match" class="color-card"></div>
+      <div id="pv-look-match" class="color-card"></div>
+    </section>
+    <section class="card" id="camo-card" hidden>
+      <h3 data-i18n="s0080">淺色區塊局部遮瑕（手機上模擬，不扣點）</h3>
+      <p class="muted small" data-i18n="s0081">自動找出每一塊淺色區塊的邊界（綠色外框）。點外框選取，拖拉圓點調整邊界；「開／關這一塊」決定要不要遮。</p>
+      <div class="chips">
+        <button class="chip" id="camo-mode-mk" aria-pressed="true" data-i18n="s0977">化妝塗層</button>
+        <button class="chip" id="camo-mode-algo" aria-pressed="false" data-i18n="s0083">影像融合版</button>
+      </div>
+      <div class="photo-wrap camo-wrap"><img id="camo-img" alt="局部遮瑕預覽" data-i18n-attr="alt:s0084"><div id="camo-stage" class="camo-stage"></div></div>
+      <div id="mk-controls">
+        <p class="muted small" data-i18n="s0085">照化妝順序一層一層上：每層用推薦的實際色號、只上在該產品的範圍內；點下面的層可以開關，看每一層的作用。</p>
+        <div class="chips" id="mk-layers"></div>
+        <div class="chips"><button class="chip" id="mk-ideal" aria-pressed="false" data-i18n="s0086">換成理想色號對照（＝你的膚色）</button></div>
+        <label class="pv-cov"><span data-i18n="s0087">妝感濃淡</span> <input type="range" id="mk-strength" min="30" max="140" step="10" value="60"> <span id="mk-strength-v"></span></label>
+      </div>
+      <div id="camo-algo" hidden>
+      <label class="pv-cov"><span data-i18n="s0088">遮瑕覆蓋度</span> <input type="range" id="camo-cov" min="0" max="100" step="5" value="85"> <span id="camo-cov-v"></span></label>
+      <label class="pv-cov"><span data-i18n="s0089">邊緣羽化</span> <input type="range" id="camo-feather" min="1" max="25" step="1" value="11"> <span id="camo-feather-v"></span></label>
+      <label class="pv-cov"><span data-i18n="s0090">範圍外擴</span> <input type="range" id="camo-expand" min="0" max="12" step="1" value="3"> <span id="camo-expand-v"></span></label>
+      <label class="pv-cov"><span data-i18n="s0091">保留光澤</span> <input type="range" id="camo-shine" min="0" max="100" step="10" value="50"> <span id="camo-shine-v"></span></label>
+      <label class="pv-cov"><span data-i18n="s0092">打亮</span> <input type="range" id="camo-hi" min="0" max="100" step="5" value="50"> <span id="camo-hi-v"></span></label>
+      <label class="pv-cov"><span data-i18n="s0093">遮瑕次數</span> <input type="range" id="camo-passes" min="1" max="3" step="1" value="1"> <span id="camo-passes-v"></span></label>
+      <div class="chips">
+        <button class="chip" id="camo-corr" aria-pressed="true" data-i18n="s0094">校色層</button>
+        <button class="chip" id="camo-light" aria-pressed="true" data-i18n="s0095">保留明暗</button>
+        <button class="chip" id="camo-refine" data-i18n="s0096">抓留白再補一輪</button>
+        <button class="chip" id="camo-refine-clear" data-i18n="s0097">清掉補的輪次</button>
+      </div>
+      </div>
+      <div class="chips">
+        <button class="chip" id="camo-toggle" data-i18n="s0098">開／關這一塊</button>
+        <button class="chip" id="camo-edges" aria-pressed="true" data-i18n="s0099">顯示邊界</button>
+        <button class="chip" id="camo-orig" aria-pressed="false" data-i18n="s0061">看你的照片</button>
+        <button class="chip" id="camo-guide-btn" data-i18n="s0100">看圖文步驟</button>
+      </div>
+      <p class="muted small" id="camo-status"></p>
+      <div id="camo-guide-box" hidden>
+        <h4 data-i18n="s0101">局部遮瑕怎麼做（用你的照片在手機上模擬每一步）</h4>
+        <ol id="camo-guide" class="camo-guide"></ol>
+        <p class="muted small" data-i18n="s0102">示意圖是手機上的模擬，不是實際上妝結果；色號以專櫃自然光試色為準。</p>
+      </div>
+    </section>
+    <div class="dock row">
+      <button class="btn ghost" id="btn-shade-back" data-i18n="s0103">重新取色</button>
+      <button class="btn primary" id="btn-shade-next" data-i18n="s0104">下一步</button>
+    </div>
+  </section>
+
+  <!-- 4 敏感三題 -->
+  <section id="view-sens" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0105">三個小問題</h2>
+    <p class="muted small" data-i18n="s0106">用來調整保養和妝容建議；答案只用來算這次的建議，不會存檔。</p>
+    <div class="qcard"><p class="q" data-i18n="s0107">擦保養品或化妝品後，會刺痛或發紅嗎？</p>
+      <div class="chips" data-q="irritation" role="radiogroup"><button class="chip" data-v="often" data-i18n="s0108">常常</button><button class="chip" data-v="sometimes" data-i18n="s0109">偶爾</button><button class="chip" data-v="never" data-i18n="s0110">不會</button></div></div>
+    <div class="qcard"><p class="q" data-i18n="s0111">最近在做照光治療，或臉上有擦藥嗎？</p>
+      <div class="chips" data-q="phototherapy" role="radiogroup"><button class="chip" data-v="true" data-i18n="s0112">有</button><button class="chip" data-v="false" data-i18n="s0113">沒有</button></div></div>
+    <div class="qcard"><p class="q" data-i18n="s0114">對香料或某些成分過敏過嗎？</p>
+      <div class="chips" data-q="fragrance" role="radiogroup"><button class="chip" data-v="yes" data-i18n="s0112">有</button><button class="chip" data-v="unsure" data-i18n="s0115">不確定</button><button class="chip" data-v="no" data-i18n="s0113">沒有</button></div></div>
+    <div class="dock row">
+      <button class="btn ghost" id="btn-sens-skip" data-i18n="s0116">略過</button>
+      <button class="btn primary" id="btn-sens-next" data-i18n="s0117">看建議</button>
+    </div>
+  </section>
+
+  <!-- 5 保養與底妝建議 -->
+  <section id="view-advice" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0118">你的保養與上妝建議</h2>
+    <div id="adv-personal" class="card personal" hidden></div>
+    <section class="card">
+      <h3 data-i18n="s0119">先保養、再保護、最後才上妝</h3>
+      <ol id="adv-care" class="timeline"></ol>
+    </section>
+    <section class="card sensitive" id="adv-sensitive"></section>
+    <section class="card look-card">
+      <h3 data-i18n="s0120">為你配的一套完整妝容</h3>
+      <div class="chips" id="adv-styles" role="radiogroup" aria-label="妝感" data-i18n-attr="aria-label:s0121"></div>
+      <p id="adv-look-why" class="small"></p>
+      <ul id="adv-look" class="look-list"></ul>
+      <ul id="adv-look-adj" class="adj-list"></ul>
+      <p class="muted small" id="adv-look-src"></p>
+    </section>
+    <!-- 定案妝容（模擬）：/api/final-look，只讀 demo/final/（授權） -->
+    <section class="card final-card" id="final-card" hidden>
+      <h3 data-i18n="s0122">定案妝容</h3>
+      <div class="chips" id="final-who" role="radiogroup" aria-label="選擇示範" data-i18n-attr="aria-label:s0123"></div>
+      <!-- 流程：本地逐層底妝 → 官方 makeup-vto 這一步 → 成品與配方卡；展示模式只放錄好的官方結果、不扣點 -->
+      <div class="final-flow">
+        <div class="final-stage"><p class="stage-h" data-i18n="s0124">① 本地逐層底妝</p>
+          <figure class="final-fig"><span class="sim-tag" data-i18n="s0060">模擬</span><img id="final-base" alt="本地逐層底妝（模擬）" data-i18n-attr="alt:s0125"></figure></div>
+        <div class="final-stage"><p class="stage-h" data-i18n="s0126">② 官方這一步（YouCam 試妝）</p>
+          <figure class="final-fig" id="final-off-fig"><span class="sim-tag" data-i18n="s0060">模擬</span><img id="final-off" alt="官方這一步（模擬）" data-i18n-attr="alt:s0127"></figure>
+          <p id="final-off-note" class="muted small"></p></div>
+      </div>
+      <p class="stage-h" data-i18n="s0128">③ 成品與配方卡</p>
+      <figure class="final-fig"><span class="sim-tag" data-i18n="s0060">模擬</span><img id="final-img" alt="定案妝容（模擬）" data-i18n-attr="alt:s0129"><figcaption class="muted small" data-i18n="s0130">模擬畫面，不是實際上妝照片</figcaption></figure>
+      <ol id="final-steps" class="final-steps"></ol>
+      <p id="final-credit" class="muted small"></p>
+      <p id="final-msg" class="muted small" hidden></p>
+    </section>
+    <div class="dock row">
+      <button class="btn ghost" id="btn-adv-card" data-i18n="s0131">直接存配色卡</button>
+      <button class="btn primary" id="btn-adv-try" data-i18n="s0132">試試看這套妝</button>
+    </div>
+  </section>
+
+  <!-- 6 試試看（YouCam 試妝） -->
+  <section id="view-base" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0133">試試看</h2>
+    <div class="flipcard" id="base-compare">
+      <div class="fc-stage" id="base-stage">
+        <img id="base-original" class="on" alt="你的照片" data-i18n-attr="alt:s0134">
+        <img id="base-current" alt="目前的樣子" data-i18n-attr="alt:s0135">
+        <span class="fc-hint" id="base-hint" aria-hidden="true"></span>
+      </div>
+      <p class="fc-cap" aria-live="polite"><span id="base-cap-orig" data-i18n="s0134">你的照片</span><span id="base-caption" data-i18n="s0136" hidden>完整妝容</span></p>
+      <div class="chips center-row"><button class="chip" id="btn-base-flip" type="button" aria-pressed="false" data-i18n="s0957">看你選的樣子</button></div>
+    </div>
+    <div class="toolstrip" role="group" aria-label="接著試" data-i18n-attr="aria-label:s0137">
+      <button class="tool" id="btn-base-keep"><span class="ico">○</span><span data-i18n="s0138">保留原樣</span></button>
+      <button class="tool" id="btn-base-full" aria-pressed="true"><span class="ico">✦</span><span data-i18n="s0136">完整妝容</span></button>
+      <button class="tool" id="btn-base-foundation"><span class="ico">◐</span><span data-i18n="s0139">只上底妝</span></button>
+      <button class="tool" id="btn-base-glow"><span class="ico">❀</span><span data-i18n="s0140">好氣色</span></button>
+      <button class="tool" id="btn-base-clear"><span class="ico">◎</span><span data-i18n="s0141">清晰</span></button>
+    </div>
+    <p class="muted small" id="base-desc"></p>
+    <p class="muted small" id="base-source"></p>
+    <section class="card sensitive" id="base-sensitive" hidden></section>
+    <div id="base-shades" class="color-card"></div>
+    <details id="base-vit" class="card" hidden>
+      <summary data-i18n="s0142">淺色區塊的遮瑕做法（局部校色、遮瑕、修邊）</summary>
+      <div id="base-vit-rows" class="color-card"></div>
+      <ol id="base-vit-steps" class="steps"></ol>
+    </details>
+    <p class="muted small" id="base-note"></p>
+    <div class="dock row">
+      <button class="btn ghost" id="btn-base-adjust" data-i18n="s0143">逐項調整</button>
+      <button class="btn primary" id="btn-base-card" data-i18n="s0144">做成配色卡</button>
+    </div>
+  </section>
+
+  <!-- 快速三選（沒有色號時的退路） -->
+  <section id="view-quick" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0145">先看三種</h2>
+    <p class="muted small" id="quick-note" data-i18n="s0146">點一張你喜歡的，下一步可以再逐項調整。</p>
+    <div id="quick-cards" class="quick-cards"></div>
+  </section>
+
+  <!-- 逐項調整 -->
+  <section id="view-adjust" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0143">逐項調整</h2>
+    <div class="flipcard" id="adj-compare">
+      <div class="fc-stage" id="adj-stage">
+        <img id="adj-original" class="on" alt="你的照片" data-i18n-attr="alt:s0134">
+        <img id="adj-current" alt="目前的妝" data-i18n-attr="alt:s0147">
+        <span class="fc-hint" id="adj-hint-flip" aria-hidden="true"></span>
+      </div>
+      <p class="fc-cap" aria-live="polite"><span id="adj-cap-orig" data-i18n="s0134">你的照片</span><span id="adj-caption" data-i18n="s0147" hidden>目前的妝</span></p>
+      <div class="chips center-row"><button class="chip" id="btn-adj-flip" type="button" aria-pressed="false" data-i18n="s0957">看你選的樣子</button></div>
+    </div>
+    <p id="adj-hint" class="advice" hidden></p>
+    <div id="item-tabs" class="tabs" role="tablist"></div>
+    <div id="item-options" class="chips"></div>
+    <p id="item-note" class="muted small" hidden></p>
+    <p class="muted small" id="adj-cost"></p>
+    <section class="card">
+      <button class="btn ghost" id="btn-layers" data-i18n="s0148">逐層看這個妝</button>
+      <div id="layer-strip" class="layer-strip" hidden></div>
+    </section>
+    <section class="card face-card">
+      <button class="btn ghost" id="btn-face" data-i18n="s0149">依五官給建議（多 10 點）</button>
+      <ul id="face-tips" class="steps" hidden></ul>
+      <div id="face-suggest" class="chips"></div>
+    </section>
+    <div class="dock row">
+      <button class="btn ghost" id="btn-back-quick" data-i18n="s0150">回上一步</button>
+      <button class="btn primary" id="btn-to-card" data-i18n="s0144">做成配色卡</button>
+    </div>
+  </section>
+
+  <!-- 7 配色卡 -->
+  <section id="view-card" class="view sheet" hidden>
+    <div class="stepper"></div>
+    <h2 data-i18n="s0151">我的配色卡</h2>
+    <p class="care-tip" data-i18n="s0066">☀︎ 淺色肌膚的光防護是第一步：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。</p>
+    <section class="card sensitive" id="card-sensitive"></section>
+    <section class="card care">
+      <h3 data-i18n="s0119">先保養、再保護、最後才上妝</h3>
+      <ol id="care-steps" class="timeline"></ol>
+    </section>
+    <section class="card" id="card-face" hidden>
+      <h3 data-i18n="s0152">依五官的小提醒</h3>
+      <ul id="card-face-tips" class="steps"></ul>
+    </section>
+    <div id="color-card" class="color-card"></div>
+    <p class="muted small" id="catalog-note"></p>
+    <div class="row wrap">
+      <button class="btn ghost" id="btn-show-staff" data-i18n="s0154">給櫃姐看</button>
+      <button class="btn ghost" id="btn-save-card" data-i18n="s0155">存成圖片</button>
+      <button class="btn primary" id="btn-restart" data-i18n="s0156">重新開始</button>
+    </div>
+  </section>
+
+  <div id="staff-view" class="staff" hidden role="dialog" aria-label="給櫃姐看" data-i18n-attr="aria-label:s0154">
+    <div id="staff-content"></div>
+    <button class="btn primary big" id="btn-close-staff" data-i18n="s0157">關閉</button>
+  </div>
+
+  <div id="loading" class="loading" hidden aria-live="assertive"><div class="spinner"></div><p id="loading-text" data-i18n="s0158">試妝中…</p></div>
+
+  <script src="i18n/en.js"></script>
+  <script src="i18n.js"></script>
+  <script src="face_auto.js"></script>
+  <script src="camouflage.js"></script>
+  <script src="camo_editor.js"></script>
+  <script src="makeup_layers.js"></script>
+  <script src="face_check.js"></script>
+  <script src="shade_preview.js"></script>
+  <script src="vendor_loader.js"></script>
+  <script src="capture_guide.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

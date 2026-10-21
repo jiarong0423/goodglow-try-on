@@ -1,0 +1,21 @@
+.git
+.gitignore
+.claude
+.pytest_cache
+**/__pycache__
+**/*.pyc
+docs
+tests
+runs
+photos
+.env
+.env.*
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+# 品牌資料與代稱對照只留本機，絕不進映像
+app/partner_shades.json
+app/partner_shades_official.json
+app/brand_codes_local.json
+app/brand_alias.json

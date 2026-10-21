@@ -1,0 +1,5 @@
+{"version": "1.0", "effects": [
+  {"category": "skin_smooth", "skinSmoothStrength": 0, "skinSmoothColorIntensity": 0},
+  {"category": "blush", "pattern": {"name": "1color1"}, "palettes": [{"color": "#d98a96", "texture": "matte", "colorIntensity": 35}]},
+  {"category": "lip_color", "shape": {"name": "original"}, "palettes": [{"color": "#c9787f", "texture": "satin", "colorIntensity": 45}], "style": {"type": "full"}}
+]}

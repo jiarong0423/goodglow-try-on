@@ -1,0 +1,51 @@
+/* 示範頁「一套妝是怎麼做出來的」：沿用 style.css 的色彩變數（亮／暗色都跟著走） */
+.pr { max-width: 640px; margin: 0 auto; padding: 12px 16px 48px; }
+.pr-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.pr-back { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--card);
+  color: var(--ink); text-decoration: none; font-size: 20px; box-shadow: var(--shadow); }
+.pr-logo { flex: 1; font-weight: 800; color: var(--accent); font-size: 18px; }
+.pr-intro h1 { font-size: 29px; line-height: 1.25; margin: 10px 0 6px; letter-spacing: .02em; }
+.pr-sim { display: inline-block; margin: 4px 0 8px; padding: 5px 12px; border-radius: 999px; background: var(--soft); color: var(--accent); font-weight: 700; font-size: 14px; }
+.pr-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 10px; scroll-snap-type: x proximity; }
+.pr-tabs .chip { white-space: nowrap; scroll-snap-align: start; font-size: 16px; }
+.pr-summary { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+.pr-pill { border-radius: 999px; padding: 5px 12px; font-size: 14px; font-weight: 700; background: var(--card); border: 1px solid var(--line); }
+.pr-pill.local { color: var(--ok); }
+.pr-pill.youcam { color: var(--accent); }
+.pr-stage { position: relative; width: 100%; max-width: 440px; margin: 0 auto; aspect-ratio: 3 / 4; border-radius: 20px; overflow: hidden; background: var(--soft); box-shadow: var(--shadow); }
+.pr-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .55s ease; }
+.pr-stage img.on { opacity: 1; }
+.pr-badge, .pr-tag { position: absolute; top: 10px; padding: 5px 12px; border-radius: 999px; font-size: 14px; font-weight: 700; background: rgba(30, 20, 24, .62); color: #fff; }
+.pr-badge { left: 10px; }
+.pr-tag { right: 10px; }
+.pr-tag.local { background: rgba(63, 122, 92, .88); }
+.pr-tag.youcam { background: rgba(217, 87, 122, .9); }
+.pr-tag.start, .pr-tag.final { background: rgba(30, 20, 24, .62); }
+.pr-count { text-align: center; margin: 10px 0 0; color: var(--muted); font-size: 15px; }
+.pr-step { font-size: 21px; line-height: 1.35; margin: 4px 0 6px; text-align: center; }
+.pr-tech, .pr-metric { text-align: center; margin: 4px 0; color: var(--muted); font-size: 15px; }
+.pr-metric { color: var(--ink); font-weight: 600; }
+.pr-ctrl { display: flex; gap: 10px; justify-content: center; margin: 12px 0 6px; }
+.pr-ctrl .btn { min-width: 96px; padding: 12px 16px; }
+.pr-range { width: 100%; accent-color: var(--accent); margin: 8px 0; height: 32px; }
+.pr-opts { display: flex; justify-content: center; margin: 4px 0 8px; }
+.pr-thumbs { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; scroll-snap-type: x proximity; }
+.pr-thumb { flex: 0 0 64px; border: 3px solid transparent; border-radius: 12px; padding: 0; background: none; cursor: pointer; scroll-snap-align: center; }
+.pr-thumb img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 9px; }
+.pr-thumb[aria-selected="true"] { border-color: var(--accent); }
+.pr-thumb span { display: block; font-size: 12px; color: var(--muted); text-align: center; }
+.pr-tech-sec h2 { margin: 28px 0 10px; }
+.pr-cards { display: grid; gap: 10px; }
+.pr-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+.pr-card b { display: block; font-size: 17px; margin-bottom: 4px; }
+.pr-card p { margin: 0; color: var(--muted); font-size: 15px; }
+.pr-open { display: block; text-align: center; text-decoration: none; margin-top: 18px; }
+.pr-pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 10px; }
+.pr-thumb { position: relative; }
+.pr-thumb::after { content: ''; position: absolute; top: 5px; right: 5px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid #fff; background: #999; }
+.pr-thumb.local::after { background: var(--ok); }
+.pr-thumb.youcam::after, .pr-thumb.final::after { background: var(--accent); }
+@media (min-width: 720px) { .pr-cards { grid-template-columns: 1fr 1fr; } }
+@media (prefers-reduced-motion: reduce) { .pr-stage img { transition: none; } }
+.pr-tiers-sec { margin: 4px 0 8px; }
+.pr-tiers-sec h2 { margin: 16px 0 10px; }

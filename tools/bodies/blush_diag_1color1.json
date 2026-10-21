@@ -1,0 +1,4 @@
+{"version": "1.0", "effects": [
+  {"category": "skin_smooth", "skinSmoothStrength": 0, "skinSmoothColorIntensity": 0},
+  {"category": "blush", "pattern": {"name": "1color1"}, "palettes": [{"color": "#E8A5B8", "texture": "matte", "colorIntensity": 70}]}
+]}
