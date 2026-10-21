@@ -1998,6 +1998,13 @@ $('btn-restart').onclick = () => { state.recommendation = null; state.sens = nul
     const b = $('mode-banner');
     b.hidden = false;
     b.textContent = s.mode === 'mock' ? __t('s0452', '展示模式：不會呼叫 YouCam、不扣點') : __T('s0453', () => `正式模式：本次已試妝 ${s.calls_used}/${s.max_calls} 次`, () => `Live mode: ${s.calls_used}/${s.max_calls} try-ons used this time`);
+    if (s.judge_login) {              // 伺服器開了評審登入（--judge-live）：橫幅加登入／登出入口，連到獨立的英文登入頁
+      const a = document.createElement('a');
+      a.href = '/judge';
+      a.className = 'banner-link';
+      a.textContent = s.judge_signed_in ? 'Judge: sign out' : 'Judge sign-in';
+      b.append(' · ', a);
+    }
   } catch (e) {
     $('mode-banner').hidden = false;
     $('mode-banner').textContent = __t('s0454', '連不上伺服器');

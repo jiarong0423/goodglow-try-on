@@ -146,6 +146,16 @@ class JudgeAuthServer(unittest.TestCase):
         self.assertEqual(ctx.exception.code, 400)
 
 
+class JudgeLinkInApp(unittest.TestCase):
+    def test_banner_links_to_judge_page_only_when_server_enables_it(self):
+        js = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
+        i = js.index("if (s.judge_login)")
+        block = js[i:i + 400]
+        self.assertIn("a.href = '/judge'", block)
+        self.assertIn("s.judge_signed_in", block)
+        self.assertIn("judge_login", (ROOT / "app" / "server.py").read_text(encoding="utf-8"))
+
+
 class NoAuthConfigured(unittest.TestCase):
     def test_routes_do_not_exist_without_judge_login(self):
         with tempfile.TemporaryDirectory() as td:

@@ -438,4 +438,4 @@ html[lang="en"] .hero h1 { font-size: 26px; }
 .mirror-top { position: absolute; z-index: 20; bottom: calc(132px + env(safe-area-inset-bottom)); left: 16px; right: 16px; display: flex; flex-direction: column; gap: 10px; }
 .mirror-top .hint, .mirror-top .checks { position: static; }
 .mirror-top .checks { flex-wrap: wrap; }
-
+.banner-link { color: inherit; text-decoration: underline; }
