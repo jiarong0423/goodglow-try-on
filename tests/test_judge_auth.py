@@ -174,6 +174,15 @@ class JudgeLinkInApp(unittest.TestCase):
         self.assertIn("judge_login", (ROOT / "app" / "server.py").read_text(encoding="utf-8"))
 
 
+class BannerCounterInApp(unittest.TestCase):
+    def test_live_counter_is_reread_after_every_billed_call(self):
+        js = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("const BILLED_ROUTES = /^\\/api\\/(makeup|looks|layers|face)$/;", js)
+        self.assertIn("refreshBanner();", js[js.index("async function api("):js.index("function optionList(")])
+        self.assertIn("async function refreshBanner()", js)
+        self.assertIn("id = 'mode-text'", js)          # the counter text lives in its own node, so the sign-in link survives a refresh
+
+
 class NoAuthConfigured(unittest.TestCase):
     def test_routes_do_not_exist_without_judge_login(self):
         with tempfile.TemporaryDirectory() as td:

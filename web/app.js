@@ -94,9 +94,11 @@ function busy(on, text = __t('s0158', '試妝中…')) {
   $('loading-text').textContent = text;
   if (on) speak(text);
 }
+const BILLED_ROUTES = /^\/api\/(makeup|looks|layers|face)$/;   // routes that can spend a live call or credits: the banner counter is re-read after each one
 async function api(path, body) {
   const lang = { 'X-App-Lang': (window.I18N && window.I18N.lang()) || 'zh' };   // Server-side text returns English according to this (Chinese mode returns unchanged)
   const r = await fetch(path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json', ...lang }, body: JSON.stringify(body) } : { headers: lang });
+  if (body && state.mode && state.mode !== 'mock' && BILLED_ROUTES.test(path)) refreshBanner();
   const j = await r.json().catch(() => ({ ok: false, hint: __t('s0181', '伺服器回應格式錯誤') }));
   if (!r.ok || j.ok === false) throw new Error(j.hint || __t('s0182', '發生問題，請再試一次'));
   return j;
@@ -2032,6 +2034,16 @@ $('judge-form').onsubmit = async (ev) => {
   go.disabled = false;
 };
 
+function bannerText(s) {
+  return s.mode === 'mock' ? __t('s0452', '展示模式：不會呼叫 YouCam、不扣點') : __T('s0453', () => `正式模式：本次已試妝 ${s.calls_used}/${s.max_calls} 次`, () => `Live mode: ${s.calls_used}/${s.max_calls} try-ons used this time`);
+}
+async function refreshBanner() {
+  try {
+    const t = $('mode-text');
+    if (t) t.textContent = bannerText(await api('/api/status'));
+  } catch (_) { /* the counter keeps its last value; the next call refreshes it */ }
+}
+
 (async function init() {
   api('/api/skin-card').then((r) => { state.skinCard = r; }).catch(() => {});
   try {
@@ -2051,7 +2063,11 @@ $('judge-form').onsubmit = async (ev) => {
     $('btn-face').textContent = faceLabel(false);
     const b = $('mode-banner');
     b.hidden = false;
-    b.textContent = s.mode === 'mock' ? __t('s0452', '展示模式：不會呼叫 YouCam、不扣點') : __T('s0453', () => `正式模式：本次已試妝 ${s.calls_used}/${s.max_calls} 次`, () => `Live mode: ${s.calls_used}/${s.max_calls} try-ons used this time`);
+    b.textContent = '';
+    const t = document.createElement('span');
+    t.id = 'mode-text';
+    t.textContent = bannerText(s);
+    b.append(t);
     if (s.judge_login) {              // The server has judge login enabled (--judge-live): the banner gets login / logout entries linking to a separate English login page
       const a = document.createElement('a');
       a.href = '/judge';           // without JavaScript the link still reaches the standalone sign-in page
