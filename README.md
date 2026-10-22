@@ -61,14 +61,14 @@ The same site and the same code serve both. The server decides for each request,
 | Banner says | "Demo mode: replaying saved results from real YouCam calls · no credits used" | "Live mode: n/m try-ons used this time" |
 | YouCam calls | None. It shows pictures saved from **80 real YouCam Makeup VTO calls**, exact for the choices that were recorded and the closest otherwise, labelled simulated | Real calls: Makeup VTO (1 credit), optional Face Attribute (10 credits) |
 | Your own photo | Comes back unchanged with a demo note; the local steps (skin tone card, shade ranking, lighter-patch mask) still work | Sent to YouCam for the try-on; you see the real result |
-| Limits | None needed, it costs nothing | 5 live calls per server start and 30 credits in total; at the limit the server refuses live calls, and signing out returns to the demo page |
+| Limits | None needed, it costs nothing | On the hosted site: 100 live calls per server start and 200 credits in total (the container image defaults are 5 and 30; the platform settings override them); at the limit the server refuses live calls, and signing out returns to the demo page |
 | Why two | A public site must not be able to spend credits | Judges can verify that the real API calls work |
 
 If the four settings that switch live mode on are missing (live switch, YouCam key, judge username, judge password), the site is the demo page only and there is no sign-in. Settings live in the hosting platform, never in this repository ([SECURITY.md](SECURITY.md)).
 
 ## Architecture
 
-Thirteen diagrams (context and deployment, components, operating modes, try-on request, skin tone to shade, uneven-tone pipeline, capture checks, credit ledger, mapping tables, real technique vs simulation, local tools, evidence pipeline, translation pipeline) are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). How it was built (tools, methods, review rounds, and a friction log of what we hit in the YouCam APIs) is in [`docs/PROCESS.md`](docs/PROCESS.md); what we protect and how is in [`THREAT_MODEL.md`](THREAT_MODEL.md); every number in this README is checked against the code and data in CI (`tools/check_claims.py`). The layer-by-layer comparison between real application technique and our simulation is in [`docs/LAYERS_TECHNIQUE_VS_SIMULATION.md`](docs/LAYERS_TECHNIQUE_VS_SIMULATION.md); the local tools are in [`docs/TOOLS_AND_USAGE.md`](docs/TOOLS_AND_USAGE.md).
+Thirteen diagrams (context and deployment, components, operating modes, try-on request, skin tone to shade, uneven-tone pipeline, capture checks, credit ledger, mapping tables, real technique vs simulation, local tools, evidence pipeline, translation pipeline) are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). How it was built (tools, methods, review rounds, and a friction log of what we hit in the YouCam APIs) is in [`docs/PROCESS.md`](docs/PROCESS.md); what we protect and how is in [`THREAT_MODEL.md`](THREAT_MODEL.md); the key numbers in this README (recorded replays, tone levels, credit prices, the capture size limit, the default call and credit caps and the measured gap figures) are checked against the code and data in CI (`tools/check_claims.py`). The layer-by-layer comparison between real application technique and our simulation is in [`docs/LAYERS_TECHNIQUE_VS_SIMULATION.md`](docs/LAYERS_TECHNIQUE_VS_SIMULATION.md); the local tools are in [`docs/TOOLS_AND_USAGE.md`](docs/TOOLS_AND_USAGE.md).
 
 ![System architecture](docs/assets/diagrams/00-system-architecture.png)
 
@@ -100,7 +100,7 @@ python3 -B app/server.py --max-calls 20 --budget-cap 60
 ```
 
 The key stays on the server and never reaches the browser. A credit ledger reserves credits first and records them only when YouCam reports
-success; `--max-calls` limits the number of Makeup VTO try-ons in one run, and `--budget-cap` limits the total credits across runs (Face Attribute calls, 10 credits each, count against the budget cap only). Makeup VTO costs 1 credit per try-on.
+success; `--max-calls` limits the number of billed YouCam calls in one run (Makeup VTO try-ons and Face Attribute checks), and `--budget-cap` limits the total credits across runs (Face Attribute calls, 10 credits each, also take one of the call slots). Makeup VTO costs 1 credit per try-on.
 
 ## Evidence page: how a look is built
 

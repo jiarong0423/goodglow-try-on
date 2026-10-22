@@ -16,7 +16,7 @@ python3 -B app/server.py --mock --catalog demo      # http://127.0.0.1:8787/
 | `--simulate-youcam-error [CODE]` | With `--mock` only: make YouCam steps fail so the local assist layer shows |
 | `--max-heavy N` / `GOODGLOW_MAX_HEAVY` | Concurrent heavy requests (default 2); more wait up to 8 s, then HTTP 503 `busy` |
 | `--port`, `--host` | Defaults 8787, 127.0.0.1 |
-| `--max-calls`, `--budget-cap` | Live mode ceilings (defaults 20 Makeup VTO calls, 60 units in total; Face Attribute counts against the unit budget only); the ledger is `runs/budget_ledger.json` |
+| `--max-calls`, `--budget-cap` | Live mode ceilings (defaults 20 billed YouCam calls per run, 60 units in total; a Face Attribute call counts as one call and costs 10 units); the ledger is `runs/budget_ledger.json` |
 
 Live mode (needs your own key in the environment, never in the repo): `python3 -B app/server.py --max-calls 20 --budget-cap 60`. It exits with code 2 when no key is found.
 

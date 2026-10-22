@@ -3,7 +3,7 @@
 - The credentials come only from the environment variables GOODGLOW_JUDGE_USER / GOODGLOW_JUDGE_PASSWORD (set on the deployment platform, not in the repo, never printed).
   If unset, or the password is shorter than MIN_PASSWORD characters, there is considered to be no judge login and the server will not enable real calls.
 - A successful login issues a signed cookie (HttpOnly, SameSite=Lax, 6 hours); the signing key is generated randomly at each start, so old cookies become invalid after a restart.
-- After FAIL_LIMIT consecutive wrong attempts, lock for FAIL_WINDOW seconds (counted globally, to stop brute-force guessing).
+- After FAIL_LIMIT consecutive wrong attempts, lock for FAIL_WINDOW seconds (counted per source address, with a larger global ceiling, to stop brute-force guessing).
 """
 import hashlib
 import hmac

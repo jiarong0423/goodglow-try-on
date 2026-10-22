@@ -23,7 +23,7 @@ How the project was built during the hackathon, which methods we relied on, what
 | 6 | Translated the interface and the server messages through one reviewed table | `tools/extract_ui_strings.py`, `tools/build_i18n.py`, `docs/i18n/zh_en_map.csv` |
 | 7 | Hardened the server and wrote a threat model | [THREAT_MODEL.md](../THREAT_MODEL.md) |
 | 8 | Tested capture on a phone and fixed what broke | see the friction log |
-| 9 | Published a clean single-commit repository, scanned for secrets and brand data, deployed behind a sign-in for live mode | `.github/workflows/ci.yml`; secret scan by hand: `gitleaks detect --source . --redact` (history) and `gitleaks detect --source . --no-git --redact` (tree) |
+| 9 | Published a clean repository whose history was scanned for secrets and brand data, deployed behind a sign-in for live mode | `.github/workflows/ci.yml`; secret scan by hand: `gitleaks detect --source . --redact` (history) and `gitleaks detect --source . --no-git --redact` (tree) |
 
 ## Review rounds
 

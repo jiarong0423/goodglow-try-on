@@ -1,6 +1,6 @@
 {
  "version": "2026-10-16",
- "note": "完整妝容：入口×妝感的基本表，再依色卡級數與冷暖、敏感程度調整。內容由 外部建議構想，選項已對到 presets.json；來源名稱尚未查證，畫面標「待查證」。兩處依既有規則調整：白斑症自然款唇色由水光莓紅改水光自然色（紅唇只在精緻）；白化症精緻款腮紅由一點血色改淡（精緻款沒有一點血色）。 白斑症理容改成只上一層薄底妝（像 BB 霜），其他彩妝都不加（參考白斑症男性理容影片：整臉均勻、看不出化妝）。 （白化症男生）：「讓膚色一致性提高」→ 白化症理容也改成只上一層薄底妝。 → 白化症理容＝薄底妝＋潤色護唇。 白化症理容底妝改用「自然」（實測紅度不均 3.77→3.11、雀斑仍保留，均勻與保留膚質較平衡）。 10-16 照經驗建議：白化症理容唇改裸粉潤唇（#D99B9B，看不出明顯紅色）。",
+ "note": "Full makeup look: a base table of entry x look style, adjusted by shade-card level, undertone and sensitivity. Option ids match presets.json.",
  "base": {
   "albinism": {
    "grooming": {

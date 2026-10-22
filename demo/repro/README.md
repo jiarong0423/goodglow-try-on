@@ -23,7 +23,7 @@ Expected output (lightness L* gap between the lighter patch and the surrounding 
 Reproduce "when YouCam cannot process a step, a local simulation takes over":
 
 ```bash
-python3 -B app/server.py --mock --simulate-youcam-error --port 8806   # try-on requests return error_face_angle_invalid
+python3 -B app/server.py --mock --simulate-youcam-error --port 8787   # try-on requests return error_face_angle_invalid
 # open http://localhost:8787/?lang=en in a browser and walk to the "Try-on" page with a demo photo
 ```
 

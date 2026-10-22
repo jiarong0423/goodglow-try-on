@@ -133,7 +133,7 @@ class Builder:
         self.subjects.append({"id": sid, **meta, "steps": steps})
 
     def write(self) -> None:
-        data = {"version": "process-20261021", "note": "每一步的累積圖都是模擬；說明為草稿，英文定稿由 owner。不含品牌名、色號、人名、病名。",
+        data = {"version": "process-20261021", "note": "Every cumulative image is simulated. No brand names, shade codes, names or condition names.",
                 "subjects": self.subjects}
         OUT_JSON.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
         root = OUT_JSON.parent                                  # checksum list for the evidence page: sha256 of each image and of process.json
