@@ -17,8 +17,10 @@ from collections import deque
 COOKIE = "gg_judge"
 SESSION_SECONDS = 6 * 3600
 MIN_PASSWORD = 10
-FAIL_LIMIT = 6
+FAIL_LIMIT = 6          # wrong attempts per source within FAIL_WINDOW seconds
+GLOBAL_FAIL_LIMIT = 60  # ceiling across all sources, so spreading guesses over many sources still stops
 FAIL_WINDOW = 60
+MAX_KEYS = 1024
 
 USER_ENV = "GOODGLOW_JUDGE_USER"
 PASSWORD_ENV = "GOODGLOW_JUDGE_PASSWORD"
@@ -31,11 +33,12 @@ def _digest(text: str) -> bytes:
 class JudgeAuth:
     def __init__(self, user: str, password: str):
         if not user or len(password) < MIN_PASSWORD:
-            raise ValueError(f"評審帳號不可空白，密碼至少 {MIN_PASSWORD} 個字元")
+            raise ValueError(f"judge user must not be empty and the password needs at least {MIN_PASSWORD} characters")
         self._user = _digest(user)
         self._password = _digest(password)
         self._secret = secrets.token_bytes(32)
         self._fails: deque[float] = deque()
+        self._by_key: dict[str, deque[float]] = {}
         self._lock = threading.Lock()
 
     @classmethod
@@ -47,25 +50,43 @@ class JudgeAuth:
         return cls(user, password)
 
     # ---- lockout after wrong attempts
-    def locked(self, now: float | None = None) -> bool:
+    def _trim(self, dq: deque, now: float) -> None:
+        while dq and now - dq[0] > FAIL_WINDOW:
+            dq.popleft()
+
+    def locked(self, now: float | None = None, key: str = "") -> bool:
         now = time.time() if now is None else now
         with self._lock:
-            while self._fails and now - self._fails[0] > FAIL_WINDOW:
-                self._fails.popleft()
-            return len(self._fails) >= FAIL_LIMIT
+            self._trim(self._fails, now)
+            if len(self._fails) >= GLOBAL_FAIL_LIMIT:
+                return True
+            dq = self._by_key.get(key)
+            if dq is None:
+                return False
+            self._trim(dq, now)
+            if not dq:
+                del self._by_key[key]
+                return False
+            return len(dq) >= FAIL_LIMIT
 
-    def _record_failure(self, now: float) -> None:
+    def _record_failure(self, now: float, key: str = "") -> None:
         with self._lock:
             self._fails.append(now)
+            if key not in self._by_key and len(self._by_key) >= MAX_KEYS:
+                for k in [k for k, dq in self._by_key.items() if not dq or now - dq[-1] > FAIL_WINDOW]:
+                    del self._by_key[k]
+                if len(self._by_key) >= MAX_KEYS:
+                    return   # table full of live sources: the global ceiling still applies
+            self._by_key.setdefault(key, deque()).append(now)
 
     # ---- credential comparison (compare both, using a constant-time comparison)
-    def check(self, user: str, password: str, now: float | None = None) -> bool:
+    def check(self, user: str, password: str, now: float | None = None, key: str = "") -> bool:
         now = time.time() if now is None else now
         ok_user = hmac.compare_digest(_digest(str(user)), self._user)
         ok_pass = hmac.compare_digest(_digest(str(password)), self._password)
         if ok_user and ok_pass:
             return True
-        self._record_failure(now)
+        self._record_failure(now, key)
         return False
 
     # ---- login-state cookie
@@ -78,11 +99,15 @@ class JudgeAuth:
 
     def valid_token(self, token: str, now: float | None = None) -> bool:
         exp, _, sig = (token or "").partition(".")
-        if not exp.isdigit() or not sig:
+        if not (exp.isascii() and exp.isdigit()) or not sig:
             return False
-        if int(exp) < (time.time() if now is None else now):
+        try:
+            expiry = int(exp)
+            if expiry < (time.time() if now is None else now):
+                return False
+            return hmac.compare_digest(sig.encode("ascii"), self._sign(expiry).encode("ascii"))
+        except (ValueError, UnicodeError, OverflowError):
             return False
-        return hmac.compare_digest(sig, self._sign(int(exp)))
 
     def valid_cookie_header(self, header: str | None, now: float | None = None) -> bool:
         if not header:

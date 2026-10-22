@@ -70,7 +70,7 @@ def log_error(msg: str) -> None:
 
 def list_photos(folder: Path) -> list[Path]:
     if not folder.is_dir():
-        raise PhotoError(f"找不到照片目錄：{folder}")
+        raise PhotoError(f"photo folder not found: {folder}")
     return sorted(p for p in folder.iterdir() if p.is_file() and p.suffix.lower() in PHOTO_SUFFIXES)
 
 
@@ -93,12 +93,12 @@ def prepare_image_bytes(raw: bytes) -> tuple[bytes, int, int]:
         img = img.resize((round(w * scale), round(h * scale)), Image.LANCZOS)
         w, h = img.size
     if min(w, h) < HD_MIN_SHORT:
-        raise PhotoError(f"短邊 {min(w, h)}px，低於 HD 下限 {HD_MIN_SHORT}px")
+        raise PhotoError(f"short side {min(w, h)}px is below the HD minimum of {HD_MIN_SHORT}px")
     buf = io.BytesIO()
     img.save(buf, "JPEG", quality=95)  # no exif argument → EXIF/GPS is not written
     data = buf.getvalue()
     if len(data) >= MAX_UPLOAD_BYTES:
-        raise PhotoError(f"重新編碼後 {len(data)} bytes，超過 10MB")
+        raise PhotoError(f"{len(data)} bytes after re-encoding, over the 10 MB limit")
     return data, w, h
 
 
@@ -166,7 +166,7 @@ class YouCamClient:
                 if attempt < len(RETRY_WAITS):
                     time.sleep(RETRY_WAITS[attempt])
                     continue
-                raise ApiError(None, f"連線失敗 {method} {url.split('?')[0]}：{exc.reason}") from None
+                raise ApiError(None, f"connection failed {method} {url.split('?')[0]}: {exc.reason}") from None
         raise AssertionError("unreachable")
 
     def _json(self, method: str, path: str, payload: dict | None = None) -> dict:
@@ -199,7 +199,7 @@ class YouCamClient:
             if data.get("task_status") in ("success", "error"):
                 return data
             if time.monotonic() > deadline:
-                raise ApiError(None, f"等待逾時（{POLL_TIMEOUT:.0f}s），task_status={data.get('task_status')}")
+                raise ApiError(None, f"timed out after {POLL_TIMEOUT:.0f}s, task_status={data.get('task_status')}")
             time.sleep(POLL_SECONDS)
 
 
@@ -338,9 +338,9 @@ def _f(v, digits=2):
 
 def render_markdown(summary: dict, title: str) -> str:
     lines = [f"# {title}", "",
-             "分數用 raw_score（1–100，越高越好）。雜訊帶 = max(常態 MDC95, 兩兩差距 P95)；",
-             f"n < {MIN_N_FOR_BAND} 時雜訊帶只供參考。", "",
-             "| 條件 | 指標 | 區域 | n | 平均 | SD | 全距 | MDC95 | 兩兩差 P95 | 雜訊帶 | ui SD |",
+             "Scores use raw_score (1-100, higher is better). Noise band = max(normal-theory MDC95, pairwise-difference P95);",
+             f"with n < {MIN_N_FOR_BAND} the noise band is indicative only.", "",
+             "| Condition | Metric | Region | n | Mean | SD | Range | MDC95 | Pairwise P95 | Noise band | ui SD |",
              "|---|---|---|---|---|---|---|---|---|---|---|"]
     for e in summary["per_label"]:
         r = e.get("raw_score")
@@ -353,14 +353,14 @@ def render_markdown(summary: dict, title: str) -> str:
             f"{_f(r['sd'])} | {_f(r['range'])} | {_f(r['mdc95_normal'])} | {_f(r['pair_diff_p95'])} | "
             f"**{_f(r['noise_band'])}** | {_f(ui.get('sd'))} |")
     if summary["conditions"]:
-        lines += ["", "## 拍攝條件影響", "",
-                  "| 指標 | 區域 | 各條件平均 | 最大位移 | 最窄雜訊帶 | 條件影響 > 雜訊 |",
+        lines += ["", "## Effect of capture conditions", "",
+                  "| Metric | Region | Mean per condition | Largest shift | Tightest noise band | Condition effect > noise |",
                   "|---|---|---|---|---|---|"]
         for c in summary["conditions"]:
             means = "、".join(f"{k} {v:.2f}" for k, v in c["label_means"].items())
             lines.append(f"| {c['concern']} | {c['region']} | {means} | {_f(c['max_shift'])} | "
-                         f"{_f(c['tightest_noise_band'])} | {'是' if c['condition_exceeds_noise'] else '否'} |")
-    lines += ["", f"失敗列數：{summary['failed_rows']}", ""]
+                         f"{_f(c['tightest_noise_band'])} | {'yes' if c['condition_exceeds_noise'] else 'no'} |")
+    lines += ["", f"Failed rows: {summary['failed_rows']}", ""]
     return "\n".join(lines)
 
 
@@ -447,7 +447,7 @@ def cmd_run(args) -> int:
                         schema_written = True
                     scores = parse_scores(result)
                     if not scores:
-                        raise ApiError(None, "task 成功但解析不到任何分數，請看 schema_sample.json")
+                        raise ApiError(None, "task succeeded but no score could be parsed; see schema_sample.json")
                     new = [dict(base, concern=c, region=r, raw_score=raw, ui_score=ui, label_value="",
                                 status="success", error_code="", task_seconds=secs)
                            for c, r, raw, ui in scores]
@@ -483,7 +483,7 @@ def cmd_run(args) -> int:
             "stored": "scores only; no photos, masks or result URLs"}
     (run_dir / "run_meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
     (run_dir / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
-    md = render_markdown(summary, f"重拍雜訊測試 {run_id}")
+    md = render_markdown(summary, f"Retake noise test {run_id}")
     (run_dir / "summary.md").write_text(md, encoding="utf-8")
     print(md)
     print(f"Output: {run_dir}")
@@ -512,7 +512,7 @@ def cmd_summarize(args) -> int:
         log_error(f"cannot read scores.csv: {exc}")
         return 2
     summary = summarize_rows(rows)
-    md = render_markdown(summary, "重拍雜訊測試：合併摘要")
+    md = render_markdown(summary, "Retake noise test: combined summary")
     print(md)
     if args.out:
         out = Path(args.out)

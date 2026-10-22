@@ -7,7 +7,7 @@
  ],
  "sha256": "5d7eb8a86ccc6064cf4e65ada47bf3a8a25ac4469db637872dcf7c9303e14406",
  "how": "AI 模擬：把膚色補勻、加上 T 字打亮和修容，只把顏色明暗套回原圖；五官、毛孔、輪廓都是原圖。這是目標示意，不是實際上妝結果。",
- "source": "<本機紀錄>",
+ "source": "local run notes (not shipped)",
  "zones": {
   "base": {
    "hex": "#B38071",
@@ -28,9 +28,7 @@
    "tone": "cool"
   }
  },
- "how_internal": "模板＝AI 影像工具 生成第二張（step2_makeup），欄位轉移工具 --patch-color-only 4 --clamp 6",
  "layer_fit": {
-  "how_internal": " 選 B：化妝塗層的遮瑕、粉底、修容改用「對目標妝容擬合」對到的色號顏色。目標＝<本機紀錄>（無幻覺提示詞生成、已對位）；擬合 tools/fit_layers_to_target.py → 找最近的同類色號；不透明度在瀏覽器實測（tools/measure_layer_render.py）。品牌名稱不用 → 這裡只留顏色，對到哪支色號只記在本機紀錄。只用在這張示範照。",
   "shades": {
    "concealer": {
     "code": "遮瑕（擬合色）",

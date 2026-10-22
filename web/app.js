@@ -73,6 +73,7 @@ function swapView(view) {
       ? __T('s0179', () => `<button class="done" data-step="${i}" aria-label="回到第 ${i + 1} 步：${s}"><b>${i + 1}</b><em>${s}</em></button>`, () => `<button class="done" data-step="${i}" aria-label="Back to step ${i + 1}: ${s}"><b>${i + 1}</b><em>${s}</em></button>`)
       : `<span class="${i === at ? 'on' : ''}"><b>${i + 1}</b><em>${s}</em></span>`)).join('');
     for (const b of bar.querySelectorAll('button[data-step]')) b.onclick = () => goStep(Number(b.dataset.step));
+    bar.dataset.now = __T('s0180', () => `第 ${at + 1} 步，共 ${STEPS.length} 步：${STEPS[at]}`, () => `Step ${at + 1} of ${STEPS.length}: ${STEPS[at]}`);
     bar.setAttribute('aria-label', __T('s0180', () => `第 ${at + 1} 步，共 ${STEPS.length} 步：${STEPS[at]}`, () => `Step ${at + 1} of ${STEPS.length}: ${STEPS[at]}`));
   }
   window.scrollTo(0, 0);
@@ -170,7 +171,7 @@ function chooseCondition(c) {
   applyTheme();
   savePrefs();
   syncWarnDark(c.id === 'albinism');
-  speak(__T('s0185', () => `${c.label}。開始前提醒：照光治療當天不上妝，新產品先在耳後小範圍試，出門前先擦防曬。`, () => `${c.label}. Before you start: no makeup on light-therapy days, patch test new products on a small area behind the ear first, and apply sunscreen before you head out.`));
+  speak(__T('s0185', () => `${c.label}。開始前提醒：照光治療當天不上妝，新產品先在耳後小範圍試，出門前先擦防曬。`, () => `${c.label}. Before you start: skip makeup on days your skin is being treated or is irritated, patch test new products on a small area behind the ear first, and apply sunscreen before you head out.`));
   $('warn-modal').hidden = false;
   $('btn-warn-ok').focus();
 }
@@ -666,6 +667,9 @@ async function onPhotoTap(e) {
   if (pt.x < 0 || pt.x > 1 || pt.y < 0 || pt.y > 1) return;
   const dot = $('sample-dot');
   dot.style.left = `${pt.x * 100}%`; dot.style.top = `${pt.y * 100}%`; dot.hidden = false;
+  clearTimeout(sampleDotTimer);
+  sampleDotTimer = setTimeout(() => { dot.hidden = true; }, 1600);        // the tap marker leaves the face after a moment
+  if ($('auto-dots').children.length) fadeAutoDotsSoon();                  // a tap shows the earlier sample points again, briefly
   const img = await loadImage(state.photo);
   if (state.sampleMode === 'browpts') {
     if (state.browPts.length >= 6) state.browPts = [];
@@ -681,7 +685,15 @@ async function onPhotoTap(e) {
 }
 
 // ---------------------------------------------------------------- Automatic color picking (face_auto.js)
-function clearAutoDots() { $('auto-dots').innerHTML = ''; $('auto-status').textContent = ''; }
+let autoDotTimer = null;
+let sampleDotTimer = null;
+function fadeAutoDotsSoon() {              // markers show where the color was taken, then fade so nothing stays on the face
+  const box = $('auto-dots');
+  box.classList.remove('fade');
+  clearTimeout(autoDotTimer);
+  autoDotTimer = setTimeout(() => box.classList.add('fade'), 2200);
+}
+function clearAutoDots() { $('auto-dots').innerHTML = ''; $('auto-status').textContent = ''; $('auto-dots').classList.remove('fade'); }
 function drawAutoDots(points) {
   const box = $('auto-dots');
   box.innerHTML = '';
@@ -693,6 +705,7 @@ function drawAutoDots(points) {
       box.appendChild(d);
     }
   }
+  fadeAutoDotsSoon();
 }
 async function runAutoColors(img, dataUrl) {
   if (!window.FaceAuto) return;
@@ -779,7 +792,7 @@ function renderPick(rec) {
   if (!state.suggested || !state.cardPick) state.suggested = { level: rec.skin_level, tone: TONE_OF_ID[rec.undertone_id] || 'neutral' };
   const sug = state.suggested, cur = state.cardPick || sug;
   // 10-21 (design decision): the rewritten version A (user's point of view) replaces 'the program suggests...'. Basis: the official skin-tone reading runs dark and yellow for very light skin (measured dE00 9.8-12.5,
-  // <本機紀錄>). This sentence applies only to the entrance for very light skin; the other entrance cannot say 'fair', and only the word 'program' is removed
+  // local run notes (not shipped)). This sentence applies only to the entrance for very light skin; the other entrance cannot say 'fair', and only the word 'program' is removed
   const hint = state.condition === 'albinism'
     ? __t('s0264', '為了不讓白皙的你被配到太深、偏黃的粉底，我們直接用你照片上的膚色來幫你對色。若覺得不像，隨時都能點選別格調整喔！')
     : __T('s0265', () => `建議第 ${sug.level} 級・${TONE_NAME[sug.tone]}（色卡上標「建議」的那格）。照片會受光線影響，覺得不像可以自己點一格。`, () => `Suggested: level ${sug.level}・${TONE_NAME[sug.tone]} (the cell marked "Suggested" on the card). Photos are affected by lighting; if it doesn't look right, you can tap a cell yourself.`);
@@ -803,6 +816,7 @@ function renderPick(rec) {
     const b = document.createElement('button');
     b.className = 'pick-cell';
     b.style.background = c.hex;
+    b.classList.toggle('light', hexLuma(c.hex) > 150);       // dark numerals on pale swatches, white on deep ones
     b.setAttribute('role', 'radio');
     b.setAttribute('aria-checked', String(c.level === cur.level));
     b.setAttribute('aria-label', __T('s0267', () => `第 ${c.level} 級 ${c.level_name}`, () => `Level ${c.level} ${c.level_name}`));
@@ -810,6 +824,10 @@ function renderPick(rec) {
     b.onclick = () => choosePick(c.level, cur.tone);
     sb.appendChild(b);
   }
+}
+function hexLuma(hex) {
+  const n = parseInt(String(hex).replace('#', ''), 16);
+  return 0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255);
 }
 function choosePick(level, tone) {
   state.cardPick = { level, tone };
@@ -854,7 +872,7 @@ async function goShade() {
 // ---------------------------------------------------------------- Foundation preview (shade_preview.js, computed on the phone, no credits spent)
 const pv = { hex: null, list: [], picking: false, look: 'base', gen: 0 };
 // Today's makeup template : color codes come from the full looks of three makeup moods,
-// <本機紀錄> (the three platinum-blonde queen looks) and the fair_male_grooming study (grooming lip balm)
+// local run notes (not shipped) (the three platinum-blonde queen looks) and the fair_male_grooming study (grooming lip balm)
 const LOOK_TEMPLATES = [
   { id: 'base', label: __t('s0281', '只有底妝'), layers: [] },
   { id: 'grooming', label: __t('s0282', '理容'), cov: 50, layers: [{ item: 'lip', hex: '#C99198', a: 0.25, name: __t('s0283', '潤色護唇') }] },
@@ -1444,6 +1462,9 @@ function paintFace(p, face) {
   const b = $(`btn-${p}-flip`);
   b.setAttribute('aria-pressed', String(face === 'look'));
   b.textContent = face === 'photo' ? __t('s0957', '看你選的樣子') : __t('s0061', '看你的照片');
+  $(`${p}-tag`).hidden = face !== 'look';                       // every generated picture says it is simulated
+  $(`${p}-prov`).textContent = face === 'look'                // and says where it came from: a saved real result in demo mode, a real call in live mode
+    ? (state.mode === 'mock' ? __t('s0980', '展示模式：錄好的 YouCam 結果（模擬）') : __t('s0981', '即時 YouCam 結果（真實呼叫）')) : '';
   const hint = $(HINT_ID[p]);
   hint.hidden = HINT_DONE[p];
   hint.textContent = face === 'photo' ? __t('s0958', '點一下看你選的樣子') : __t('s0959', '點一下回到你的照片');      // The hint can be tapped (static, no flashing); it sits on the top edge of the photo and is hidden after the first tap

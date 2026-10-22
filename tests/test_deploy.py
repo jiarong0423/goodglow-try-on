@@ -16,25 +16,52 @@ import server  # noqa: E402
 
 DOCKERFILE = (ROOT / "Dockerfile").read_text(encoding="utf-8")
 DOCKERIGNORE = (ROOT / ".dockerignore").read_text(encoding="utf-8")
+SERVE = (ROOT / "app" / "serve.sh").read_text(encoding="utf-8")
 
 
 class DockerfileChecks(unittest.TestCase):
     def test_runs_mock_with_demo_catalog_as_non_root(self):
-        self.assertIn("--mock --catalog demo", DOCKERFILE)
-        self.assertIn("--host 0.0.0.0", DOCKERFILE)
-        self.assertIn("${PORT}", DOCKERFILE)
+        self.assertIn("--mock --catalog demo", SERVE)
+        self.assertIn("--host 0.0.0.0", SERVE)
+        self.assertIn('"$PORT"', SERVE)
+        self.assertIn('CMD ["sh", "app/serve.sh"]', DOCKERFILE)
         self.assertRegex(DOCKERFILE, r"(?m)^USER goodglow")
         self.assertIn("HEALTHCHECK", DOCKERFILE)
 
-    def test_live_mode_needs_both_switch_and_key_and_is_capped(self):
-        cmd = DOCKERFILE[DOCKERFILE.index("CMD ["):]
-        self.assertIn('"$GOODGLOW_LIVE\\" = \\"1\\"', cmd)
-        self.assertIn('-n \\"$YOUCAM_API_KEY\\"', cmd)                           # missing switch or missing key -> demo mode
-        self.assertIn('-n \\"$GOODGLOW_JUDGE_USER\\"', cmd)
-        self.assertIn('-n \\"$GOODGLOW_JUDGE_PASSWORD\\"', cmd)
-        self.assertIn("--judge-live", cmd)
-        self.assertIn("--max-calls ${GOODGLOW_MAX_CALLS}", cmd)
-        self.assertIn("--budget-cap ${GOODGLOW_BUDGET_CAP}", cmd)
+    def _serve(self, env):
+        """Run app/serve.sh with a stub `python` that prints its arguments, so no server starts."""
+        import os
+        import subprocess
+        with tempfile.TemporaryDirectory() as d:
+            stub = Path(d) / "python"
+            stub.write_text('#!/bin/sh\necho "PYTHON $*"\n', encoding="utf-8")
+            stub.chmod(0o755)
+            full = {"PATH": f"{d}:/usr/bin:/bin", "HOME": d}
+            full.update(env)
+            r = subprocess.run(["sh", str(ROOT / "app" / "serve.sh")], capture_output=True, text=True, env=full, cwd=d, timeout=20)
+        return r.stdout + r.stderr
+
+    LIVE = {"GOODGLOW_LIVE": "1", "YOUCAM_API_KEY": "k", "GOODGLOW_JUDGE_USER": "judge", "GOODGLOW_JUDGE_PASSWORD": "0123456789"}
+
+    def test_live_mode_needs_switch_key_user_and_a_long_password(self):
+        out = self._serve(self.LIVE)
+        self.assertIn("--judge-live", out)
+        self.assertIn("--max-calls 5", out)
+        self.assertIn("--budget-cap 30", out)
+        for drop in self.LIVE:
+            env = {k: v for k, v in self.LIVE.items() if k != drop}
+            out = self._serve(env)
+            self.assertIn("--mock", out, drop)
+            self.assertNotIn("--judge-live", out, drop)
+
+    def test_short_password_starts_demo_mode_and_names_the_problem_without_the_value(self):
+        out = self._serve(dict(self.LIVE, GOODGLOW_JUDGE_PASSWORD="short"))
+        self.assertIn("--mock", out)
+        self.assertNotIn("--judge-live", out)
+        self.assertIn("GOODGLOW_JUDGE_PASSWORD(shorter than 10 characters)", out)
+        self.assertNotIn("short\n", out.replace("shorter", ""))
+
+    def test_defaults_are_capped(self):
         self.assertRegex(DOCKERFILE, r"GOODGLOW_MAX_CALLS=5")
         self.assertRegex(DOCKERFILE, r"GOODGLOW_BUDGET_CAP=30")
         self.assertIn("mkdir -p runs && chown -R goodglow:goodglow runs", DOCKERFILE)

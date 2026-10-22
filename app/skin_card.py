@@ -21,7 +21,7 @@ import color_engine as ce
 LEVEL_BOUNDS = [88, 82, 76, 70, 64, 57, 50, 42, 34, -1]
 LEVEL_NAMES = ["極淺", "很淺", "淺", "淺中", "中", "中深", "深", "很深", "極深", "最深"]
 TONES = ("cool", "neutral", "warm")
-# ranking weights ( ranking C, isolation comparison <本機紀錄>): every 3 of ΔE00 is about one level;
+# ranking weights (10-17 ranking C, isolation comparison local run notes (not shipped)): every 3 of ΔE00 is about one level;
 # a shade lighter than the skin counts its level gap double (albinism rule "do not pick whiter"; makeup tutorials: too light looks grey)
 DE_WEIGHT = 3.0
 LIGHTER_PENALTY = 2.0

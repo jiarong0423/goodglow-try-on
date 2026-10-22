@@ -24,7 +24,7 @@ Reproduce "when YouCam cannot process a step, a local simulation takes over":
 
 ```bash
 python3 -B app/server.py --mock --simulate-youcam-error --port 8806   # try-on requests return error_face_angle_invalid
-# open http://localhost:8806/?lang=en in a browser and walk to the "Try-on" page with a demo photo
+# open http://localhost:8787/?lang=en in a browser and walk to the "Try-on" page with a demo photo
 ```
 
 Expected: the try-on page says "YouCam could not process this step…", the source line reads "Local simulation (YouCam could not process this step)", and the picture is the local fill. Automated check: `python3 -B -m unittest tests.test_assist_layer`.

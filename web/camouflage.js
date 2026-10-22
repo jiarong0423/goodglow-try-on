@@ -136,7 +136,7 @@
    *   V7 can be reproduced with { centerMode: 'gauss' }; V6 with { centerMode: 'ellipse', center: 8, warm: [0, 0], extend: 0, darkSpot: 0 } and strength 0.85.
    * strength: 0-1 (default 0.88: bring the color difference down to about 5.5-6.5 and no further; do not force it to 0)
    * opts.center = how much brighter (L*, default 9) the face center stays than its surroundings after concealing: 外部建議suggested +6, but measured locally the center was only 12 brighter than the outer cheek,
-   *   the target is 18-20, which +9 / range 0.20 reaches; see <本機紀錄>); opts.centerMode = 'gauss' (default: centered on the nose bridge and the two apples of the cheeks,
+   *   the target is 18-20, which +9 / range 0.20 reaches; see local run notes (not shipped)); opts.centerMode = 'gauss' (default: centered on the nose bridge and the two apples of the cheeks,
    *   decreasing to 0 toward the patch edge) or 'ellipse' (V6: an ellipse centered on the nose plus a T-band). This user's patches lie in a naturally highlighted area,
    *   and pulling the whole area to the dark skin tone of the outer contour would look flat and dirty
    * opts.warm = [delta a*, delta b*] warm compensation (default [1.8, 1.2], more red than yellow; V5's [3, 4] looked orange and dirty, V6's [0, 0] looked cold gray)

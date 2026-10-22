@@ -229,8 +229,14 @@ def three_stripes(skin_hex: str, category: str = "foundation", undertone: str | 
     numbered = num(me["code"]) is not None and all(num(r["code"]) is not None for r in rows)
 
     def pick(cands, ref):
-        cands = sorted(cands, key=lambda r: (r["tone"] != me["tone"], abs(ref(r) - ref(me))))
-        return cands[0] if cands else None
+        """The adjacent step first (smallest distance in depth), then the same undertone among steps about as close.
+        Never jump past nearer shades just to keep the undertone: that put a deep brown next to an ivory."""
+        if not cands:
+            return None
+        d0 = min(abs(ref(r) - ref(me)) for r in cands)
+        group = [r for r in cands if abs(ref(r) - ref(me)) <= d0 * 1.5]
+        pool = [r for r in group if r["tone"] == me["tone"]] or group
+        return min(pool, key=lambda r: abs(ref(r) - ref(me)))
     if numbered:
         # when shade digits exist, follow the brand's own depth order (the web display colors of official swatches sometimes disagree with the numbering)
         n0 = num(me["code"])

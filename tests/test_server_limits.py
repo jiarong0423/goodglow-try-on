@@ -57,7 +57,7 @@ class _Base(unittest.TestCase):
             return e.code, json.loads(e.read() or b"{}")
 
 
-@unittest.skipUnless(Image, "沒有 Pillow")
+@unittest.skipUnless(Image, "Pillow is not installed")
 class ImageLimitTests(_Base):
     def test_huge_canvas_in_a_tiny_png_is_rejected_before_decoding(self):
         raw = png_bytes((12000, 12000))
@@ -103,7 +103,74 @@ class RequestShapeTests(_Base):
         self.assertTrue(reply.startswith(b"HTTP/1.0 400") or reply.startswith(b"HTTP/1.1 400"), reply[:40])
 
 
+class BodyHandlingTests(_Base):
+    def test_post_without_json_content_type_is_415(self):
+        req = urllib.request.Request(self.base + "/api/match", data=b"{}", method="POST")
+        with self.assertRaises(urllib.error.HTTPError) as ctx:
+            urllib.request.urlopen(req, timeout=10)
+        self.assertEqual(ctx.exception.code, 415)
+
+    def test_body_over_the_limit_is_413_and_not_read(self):
+        s = socket.create_connection(("127.0.0.1", int(self.base.rsplit(":", 1)[1])), timeout=10)
+        try:
+            s.sendall(f"POST /api/match HTTP/1.1\r\nHost: x\r\nContent-Type: application/json\r\nContent-Length: {server.MAX_BODY + 1}\r\nConnection: close\r\n\r\n".encode())
+            reply = s.recv(4096)
+        finally:
+            s.close()
+        self.assertIn(b" 413 ", reply.split(b"\r\n")[0])
+
+    def test_invalid_utf8_and_bad_fields_are_clean_400s(self):
+        self.assertEqual(self.post("/api/match", None, raw=b"\xff\xfe{")[0], 400)
+        self.assertEqual(self.post("/api/match", {"hex": ["x"], "category": 5, "top": "z"})[0], 400)
+
+    def test_slow_body_gets_408_after_the_deadline(self):
+        old = server.BODY_DEADLINE
+        server.BODY_DEADLINE = 1
+        try:
+            s = socket.create_connection(("127.0.0.1", int(self.base.rsplit(":", 1)[1])), timeout=10)
+            try:
+                s.sendall(b"POST /api/match HTTP/1.1\r\nHost: x\r\nContent-Type: application/json\r\nContent-Length: 100\r\nConnection: close\r\n\r\n{")
+                import time as _t
+                _t.sleep(1.3)
+                s.sendall(b"\"")                         # one more byte arrives after the deadline
+                reply = s.recv(4096)
+            finally:
+                s.close()
+        finally:
+            server.BODY_DEADLINE = old
+        self.assertIn(b" 408 ", reply.split(b"\r\n")[0])
+
+
 class HardeningTests(_Base):
+    def test_security_headers_also_on_404(self):
+        for path in ("/nope-not-here", "/../server.py"):
+            req = urllib.request.Request(self.base + path)
+            with self.assertRaises(urllib.error.HTTPError) as ctx:
+                urllib.request.urlopen(req, timeout=10)
+            h = ctx.exception.headers
+            self.assertEqual(ctx.exception.code, 404, path)
+            self.assertEqual(h.get("X-Content-Type-Options"), "nosniff", path)
+            self.assertEqual(h.get("X-Frame-Options"), "DENY", path)
+            self.assertEqual(h.get("Referrer-Policy"), "no-referrer", path)
+
+    def test_path_traversal_never_leaves_web_dir(self):
+        s = socket.create_connection(("127.0.0.1", int(self.base.rsplit(":", 1)[1])), timeout=10)
+        try:
+            s.sendall(b"GET /../app/server.py HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n")
+            reply = s.recv(65536)
+        finally:
+            s.close()
+        self.assertIn(b" 404 ", reply.split(b"\r\n")[0])
+        self.assertNotIn(b"BoundedHTTPServer", reply)
+
+    def test_simulated_tag_is_wired_in_the_page(self):
+        html = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
+        js = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
+        for ident in ("base-tag", "adj-tag"):
+            self.assertIn(f'id="{ident}"', html)
+            self.assertIn("-tag", js)
+        self.assertIn("sim-tag", html)
+
     def test_security_headers_on_api_and_static(self):
         for path in ("/api/status", "/index.html"):
             with urllib.request.urlopen(self.base + path, timeout=20) as r:

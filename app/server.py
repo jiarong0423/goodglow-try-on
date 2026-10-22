@@ -44,8 +44,10 @@ import brand_alias  # noqa: E402
 import judge_auth  # noqa: E402
 
 WEB_DIR = ROOT / "web"
-MAX_BODY = 16 * 1024 * 1024
-MAX_PIXELS = 40_000_000                   # images whose header declares more pixels than this are rejected before decoding (small file, huge image = decompression bomb)
+MAX_BODY = 8 * 1024 * 1024               # request body cap (the app sends photos of at most about 2 MB after in-browser resizing)
+BODY_DEADLINE = 15                        # whole-body read deadline in seconds: a trickle upload cannot hold a thread
+MAX_RESULT_BYTES = 12 * 1024 * 1024       # cap on a result image downloaded from YouCam
+MAX_PIXELS = 16_000_000                   # images whose header declares more pixels than this are rejected before decoding (small file, huge image = decompression bomb)
 ALLOWED_FORMATS = {"JPEG", "PNG", "WEBP"}
 SOCKET_TIMEOUT = 20                       # read/write timeout of a single connection (seconds): slow or stalled connections must not hold a thread forever
 MAX_CONNECTIONS = 64                      # upper limit of concurrently handled connections; when full, new connections are closed immediately
@@ -325,7 +327,7 @@ class State:
         self.heavy = threading.BoundedSemaphore(max(1, int(max_heavy)))
         # simulate_error (--simulate-youcam-error): only used with --mock; makes try-on requests return a YouCam error code, reproducing "the local simulation takes over when YouCam cannot process it"
         if simulate_error and not mock:
-            raise ValueError("--simulate-youcam-error 只能和 --mock 一起用")
+            raise ValueError("--simulate-youcam-error can only be used with --mock")
         self.simulate_error = simulate_error
         self.est_units = 0           # estimate of "how many points this would cost in live mode" while in demo mode (official prices in app/budget.py PRICES); spends no points and does not call YouCam
         self.est_calls = {}
@@ -383,18 +385,24 @@ class State:
             return to_data_url(mock_label(jpeg))
         if not self.key:
             raise RequestError(500, "no_key", "伺服器找不到 API key")
+        cost = self._reserve_call("makeup-vto")
+        try:
+            return self._render_live(jpeg, selection, data_holder := {})
+        finally:
+            self.budget.settle("makeup-vto", cost, data_holder.get("ok", False))
+
+    def _reserve_call(self, feature: str) -> int:
+        """Take one slot of the per-start call cap and reserve points; give the slot back if the points are refused."""
         with self.lock:
             if self.calls >= self.max_calls:
                 raise RequestError(429, "max_calls", f"已達本次上限 {self.max_calls} 次，防止誤扣點")
             self.calls += 1
         try:
-            cost = self.budget.reserve("makeup-vto")
+            return self.budget.reserve(feature)
         except bg.BudgetExceeded as exc:
+            with self.lock:
+                self.calls -= 1
             raise RequestError(429, "budget", f"已達點數總預算：{exc}") from None
-        try:
-            return self._render_live(jpeg, selection, data_holder := {})
-        finally:
-            self.budget.settle("makeup-vto", cost, data_holder.get("ok", False))
 
     def _render_live(self, jpeg: bytes, selection: dict, holder: dict) -> str:
         body = looks.build_body(selection, self.presets)
@@ -421,8 +429,10 @@ class State:
         if not urls:
             raise RequestError(502, "no_result", "試妝結果是空的，請再試一次")
         with urllib.request.urlopen(urls[0], timeout=60) as r:
-            result = r.read()
-        print(f"makeup-vto ok，已用 {self.calls}/{self.max_calls}，預算剩 {self.budget.remaining()}", file=sys.stderr, flush=True)
+            result = r.read(MAX_RESULT_BYTES + 1)
+        if len(result) > MAX_RESULT_BYTES:
+            raise RequestError(502, "no_result", "試妝結果是空的，請再試一次")
+        print(f"makeup-vto ok, used {self.calls}/{self.max_calls}, budget left {self.budget.remaining()}", file=sys.stderr, flush=True)
         return to_data_url(result)
 
     # ---- endpoint logic
@@ -513,10 +523,7 @@ class State:
             return {"ok": True, "available": True, "mode": "mock", "advice": face_rules.advise(results, style)}
         if not self.key:
             raise RequestError(500, "no_key", "伺服器找不到 API key")
-        try:
-            cost = self.budget.reserve("face-attr-analysis(1-5)")
-        except bg.BudgetExceeded as exc:
-            raise RequestError(429, "budget", f"已達點數總預算：{exc}") from None
+        cost = self._reserve_call("face-attr-analysis(1-5)")   # counts against the same per-start cap: a face check costs 10 points
         ok = False
         try:
             file_id = self.client.upload(jpeg, "selfie.jpg")
@@ -697,35 +704,85 @@ class Handler(BaseHTTPRequestHandler):
         """Not logged in is always demo mode; only requests carrying a valid judge cookie take real calls."""
         return self.live_state if (self.live_state is not None and self._logged_in()) else type(self).state
 
+    def _read_body(self, limit: int) -> bytes | None:
+        """Read the request body under a total deadline; answer the error and return None when it is bad."""
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except ValueError:
+            self._json(400, {"ok": False, "error_code": "bad_length", "hint": "請求格式錯誤"})
+            return None
+        if length <= 0 or length > limit:
+            self._json(413, {"ok": False, "error_code": "body_size", "hint": "照片太大"})
+            return None
+        ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        if ctype != "application/json":
+            self._json(415, {"ok": False, "error_code": "bad_type", "hint": "請求格式錯誤"})
+            return None
+        deadline = time.monotonic() + BODY_DEADLINE
+        chunks, got = [], 0
+        try:
+            while got < length:
+                left = deadline - time.monotonic()
+                if left <= 0:
+                    raise TimeoutError
+                self.connection.settimeout(min(left, SOCKET_TIMEOUT))   # each wait is bounded by what is left of the total deadline
+                chunk = self.rfile.read1(min(64 * 1024, length - got))
+                if not chunk:
+                    self.close_connection = True
+                    self._json(400, {"ok": False, "error_code": "bad_length", "hint": "請求格式錯誤"})
+                    return None
+                chunks.append(chunk)
+                got += len(chunk)
+        except TimeoutError:
+            self.close_connection = True
+            self.connection.settimeout(SOCKET_TIMEOUT)
+            self._json(408, {"ok": False, "error_code": "slow_body", "hint": "上傳太慢，請再試一次"})
+            return None
+        except OSError:                           # connection reset
+            self.close_connection = True
+            return None
+        self.connection.settimeout(SOCKET_TIMEOUT)
+        return b"".join(chunks)
+
+    def _source_key(self) -> str:
+        """Lockout key: the last X-Forwarded-For entry (added by the trusted proxy), else the socket peer."""
+        fwd = (self.headers.get("X-Forwarded-For") or "").split(",")[-1].strip()
+        return (fwd or self.client_address[0])[:64]
+
     def _judge_post(self, path: str):
         """/api/judge-login, /api/judge-logout: bypass the photo routes and take no compute slot."""
         secure = self._secure()
         if path == "/api/judge-logout":
             self._set_cookies = [judge_auth.clear_cookie_value(secure)]
             return self._json(200, {"ok": True})
-        try:
-            length = int(self.headers.get("Content-Length", 0))
-        except ValueError:
-            length = 0
-        if length <= 0 or length > 4096:
-            return self._json(400, {"ok": False, "error_code": "bad_length", "hint": "bad request"})
-        raw = self.rfile.read(length)
-        if self.auth.locked():
+        raw = self._read_body(4096)
+        if raw is None:
+            return
+        key = self._source_key()
+        if self.auth.locked(key=key):
             return self._json(429, {"ok": False, "error_code": "locked", "hint": "too many attempts"})
         try:
             body = json.loads(raw)
             user, password = str(body.get("username", "")), str(body.get("password", ""))
-        except (json.JSONDecodeError, AttributeError):
+        except (ValueError, AttributeError):    # JSONDecodeError and bad UTF-8 are both ValueError
             return self._json(400, {"ok": False, "error_code": "bad_json", "hint": "bad request"})
-        if not self.auth.check(user, password):
+        if not self.auth.check(user, password, key=key):
             return self._json(401, {"ok": False, "error_code": "bad_login", "hint": "wrong username or password"})
         self._set_cookies = [judge_auth.set_cookie_value(self.auth.issue(), secure)]
         return self._json(200, {"ok": True})
 
     def _security_headers(self):
+        self._sec_sent = True
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
+
+    def end_headers(self):
+        """Every response carries the security headers, including the 404 and 4xx pages from send_error."""
+        if not getattr(self, "_sec_sent", False):
+            self._security_headers()
+        self._sec_sent = False
+        super().end_headers()
 
     def log_message(self, fmt, *args):  # log only method and path
         sys.stderr.write(f"{self.log_date_time_string()} {self.command} {self.path.split('?')[0]}\n")
@@ -814,13 +871,9 @@ class Handler(BaseHTTPRequestHandler):
         if path not in routes:
             self.send_error(404)
             return
-        try:
-            length = int(self.headers.get("Content-Length", 0))
-        except ValueError:
-            return self._json(400, {"ok": False, "error_code": "bad_length", "hint": "請求格式錯誤"})
-        if length <= 0 or length > MAX_BODY:
-            return self._json(413, {"ok": False, "error_code": "body_size", "hint": "照片太大"})
-        raw = self.rfile.read(length)                 # read the whole request before queueing, so a slow upload does not hold a compute slot
+        raw = self._read_body(MAX_BODY)               # read the whole request before queueing, so a slow upload does not hold a compute slot
+        if raw is None:
+            return
         heavy = path in HEAVY_ROUTES
         if heavy and not self.state.heavy.acquire(timeout=HEAVY_WAIT_SECONDS):
             return self._json(503, {"ok": False, "error_code": "busy", "hint": "現在使用的人比較多，請幾秒後再試一次"})
@@ -829,7 +882,8 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(payload, dict):
                 return self._json(400, {"ok": False, "error_code": "bad_json", "hint": "請求格式錯誤"})
             return self._json(200, routes[path](payload))
-        except json.JSONDecodeError:
+        except (ValueError, TypeError, KeyError, AttributeError) as exc:   # malformed JSON or payload fields: a 400, never a dropped connection
+            print(f"ERROR bad request on {path}: {type(exc).__name__}", file=sys.stderr, flush=True)
             return self._json(400, {"ok": False, "error_code": "bad_json", "hint": "請求格式錯誤"})
         except RequestError as exc:
             return self._json(exc.status, {"ok": False, "error_code": exc.code, "hint": exc.hint})
@@ -878,26 +932,26 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8787)
-    ap.add_argument("--mock", action="store_true", help="不連 YouCam、不扣點")
-    ap.add_argument("--max-calls", type=int, default=20, help="本次啟動最多呼叫幾次真 API")
-    ap.add_argument("--budget-cap", type=int, default=60, help="跨次啟動的點數總預算（帳本 runs/budget_ledger.json）")
+    ap.add_argument("--mock", action="store_true", help="do not call YouCam, spend no credits")
+    ap.add_argument("--max-calls", type=int, default=20, help="maximum real YouCam calls per server start")
+    ap.add_argument("--budget-cap", type=int, default=60, help="total credit budget across starts (ledger: runs/budget_ledger.json)")
     ap.add_argument("--judge-live", action="store_true",
-                    help="公開部署：預設展示模式（免登入）；用 GOODGLOW_JUDGE_USER／GOODGLOW_JUDGE_PASSWORD 登入的評審才走真實 YouCam 呼叫（要有 YOUCAM_API_KEY）")
+                    help="public deployment: demo mode for everyone by default (no sign-in); only a judge signed in with GOODGLOW_JUDGE_USER / GOODGLOW_JUDGE_PASSWORD gets real YouCam calls (needs YOUCAM_API_KEY)")
     ap.add_argument("--catalog", choices=("all", "demo"), default="all",
-                    help="demo＝只顯示虛構示範型錄（錄影片、截圖用，畫面不出現品牌名稱）")
+                    help="demo = show only the fictional demo catalog (for recordings and screenshots; no brand names on screen)")
     ap.add_argument("--brand-alias", action="store_true",
-                    help="畫面上的真實品牌名換成字母代稱（M 牌）、產品名換成品類；內部仍用真實色號比對（錄影、截圖用）")
+                    help="replace real brand names on screen with letter aliases and product names with categories; matching still uses real shade data (for recordings and screenshots)")
     ap.add_argument("--simulate-youcam-error", nargs="?", const="error_face_angle_invalid", default=None, metavar="CODE",
-                    help="（只能和 --mock 用）試妝類請求回 YouCam 的錯誤碼，重現「YouCam 處理不了時改由本機模擬接手」；預設 error_face_angle_invalid")
+                    help="(only with --mock) make try-on requests return a YouCam error code, to reproduce the local simulation taking over when YouCam cannot process a photo; default error_face_angle_invalid")
     ap.add_argument("--max-heavy", type=int, default=int(os.environ.get("GOODGLOW_MAX_HEAVY", DEFAULT_MAX_HEAVY)),
-                    help="同時處理的重運算請求上限（遮罩、試妝、逐層、五官），預設 2；環境變數 GOODGLOW_MAX_HEAVY")
+                    help="maximum concurrent heavy requests (mask, try-on, layers, face), default 2; environment variable GOODGLOW_MAX_HEAVY")
     ap.add_argument("--api-base", default=nt.API_BASE, help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
     if not check_api_base(args.api_base):
-        print("ERROR --api-base 只能是 YouCam 的 https 主機（*.makeupar.com）或本機測試伺服器", file=sys.stderr)
+        print("ERROR --api-base must be a YouCam https host (*.makeupar.com) or a local test server", file=sys.stderr)
         return 2
     if args.judge_live and args.mock:
-        print("ERROR --judge-live 不能和 --mock 一起用", file=sys.stderr)
+        print("ERROR --judge-live cannot be combined with --mock", file=sys.stderr)
         return 2
     live_state = auth = None
     try:
@@ -907,22 +961,22 @@ def main(argv=None) -> int:
         if args.judge_live:
             auth = judge_auth.JudgeAuth.from_env()
             if auth is None:
-                print(f"ERROR --judge-live 需要環境變數 {judge_auth.USER_ENV} 與 {judge_auth.PASSWORD_ENV}", file=sys.stderr)
+                print(f"ERROR --judge-live needs the environment variables {judge_auth.USER_ENV} and {judge_auth.PASSWORD_ENV}", file=sys.stderr)
                 return 2
             live_state = State(False, args.max_calls, args.api_base, args.budget_cap, catalog=args.catalog,
                                alias=args.brand_alias, max_heavy=args.max_heavy)
     except (FileNotFoundError, ValueError) as exc:
-        print(f"ERROR 啟動參數有問題：{exc}", file=sys.stderr)
+        print(f"ERROR invalid startup settings: {exc}", file=sys.stderr)
         return 2
     if not args.mock and not (live_state or state).key:
-        print(f"ERROR 找不到 {nt.KEY_ENV}：設環境變數或寫進 {ROOT / '.env'}；只想看介面請加 --mock", file=sys.stderr)
+        print(f"ERROR {nt.KEY_ENV} not found: set the environment variable or write it to {ROOT / '.env'}; add --mock to only look at the interface", file=sys.stderr)
         return 2
     httpd = make_server(args.host, args.port, state, live_state, auth)
     if args.judge_live:
-        mode = f"展示模式（免登入）＋評審登入後 live（本次上限 {args.max_calls} 次；總預算 {live_state.budget.status()}）"
+        mode = f"demo for everyone + live after judge sign-in (max {args.max_calls} calls per start; budget {live_state.budget.status()})"
     else:
-        mode = "mock（不扣點）" if args.mock else f"live（本次上限 {args.max_calls} 次；總預算 {state.budget.status()}）"
-    print(f"http://{args.host}:{args.port}  模式：{mode}  presets {state.presets['version']}", flush=True)
+        mode = "mock (no credits)" if args.mock else f"live (max {args.max_calls} calls per start; budget {state.budget.status()})"
+    print(f"http://{args.host}:{args.port}  mode: {mode}  presets {state.presets['version']}", flush=True)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

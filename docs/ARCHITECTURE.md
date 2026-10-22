@@ -169,7 +169,7 @@ flowchart TB
   M2 --> M3["Exclude dark hair, tiny specks, specular glints"]
   M3 --> MASK["Lighter-area mask (kept in memory, not stored)"]
   P -.->|"server unreachable"| FB["Browser fallback: camouflage.js"]
-  MASK --> LAY["makeup_layers.js: corrector, concealer, concealer2, edge, foundation, powder, touch_up"]
+  MASK --> LAY["makeup_layers.js: corrector, conceal, conceal2, edge, foundation, powder, touch_up"]
   FB --> LAY
   LAY --> OUT["Preview labelled Simulated"]
   VTO["YouCam Makeup VTO: whole-face try-on, no region parameter"] --> OUT2["Look shown next to it"]

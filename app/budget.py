@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import os
+import sys
 import threading
 from pathlib import Path
 
@@ -32,9 +34,11 @@ class Budget:
 
     def _save(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps({"cap_last_used": self.cap, "spent": self.spent,
-                                         "events": self.events[-500:]}, ensure_ascii=False, indent=1),
-                             encoding="utf-8")
+        tmp = self.path.with_name(self.path.name + ".tmp")
+        tmp.write_text(json.dumps({"cap_last_used": self.cap, "spent": self.spent,
+                                   "events": self.events[-500:]}, ensure_ascii=False, indent=1),
+                       encoding="utf-8")
+        os.replace(tmp, self.path)   # atomic: a crash mid-write never leaves a half-written ledger
 
     def remaining(self) -> int:
         return max(0, self.cap - self.spent - self.reserved)
@@ -54,7 +58,10 @@ class Budget:
                 self.spent += cost
             self.events.append({"at": dt.datetime.now().isoformat(timespec="seconds"), "feature": feature,
                                 "cost": cost if success else 0, "success": success, "note": note})
-            self._save()
+            try:
+                self._save()
+            except OSError as exc:   # the in-memory count stays right even if the disk write fails
+                print(f"ERROR budget ledger not saved: {exc}", file=sys.stderr)
 
     def status(self) -> dict:
         return {"cap": self.cap, "spent": self.spent, "remaining": self.remaining(), "prices": PRICES}

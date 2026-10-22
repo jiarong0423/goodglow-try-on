@@ -1,7 +1,7 @@
 """Audit the text the server returns: send a set of representative requests to a running server (--mock) and check how much Chinese remains in English mode and whether Chinese mode changed.
 
-  python3 tools/audit_api_strings.py http://localhost:8802 --lang en     # list the Chinese strings still left in English-mode responses (not in the table / untranslated)
-  python3 tools/audit_api_strings.py http://localhost:8802 --lang zh --hash   # print a hash of each request's Chinese response (to compare with the server before a change)
+  python3 tools/audit_api_strings.py http://localhost:8787 --lang en     # list the Chinese strings still left in English-mode responses (not in the table / untranslated)
+  python3 tools/audit_api_strings.py http://localhost:8787 --lang zh --hash   # print a hash of each request's Chinese response (to compare with the server before a change)
   Add --strict: exit 1 if English mode still contains Chinese.
 
 When comparing hashes, the code fields added in stage 3 (verdict_code, role_key) are removed first, so "only codes were added" does not count as a change.

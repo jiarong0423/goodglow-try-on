@@ -53,7 +53,4 @@ Never point these at someone else's photo. Use your own or the licensed sample p
 
 About 30 experiment scripts (hair colour, mask experiments, one-off live cases) are kept out of the public export; they hold local paths and run notes and some spend units without a gate. The two offline layer engines and the black-box service (`mcp_blackbox/`) also stay outside the repository. The black-box service sends numeric metrics to an external language model unless its AI review is switched off, so it is not part of the public online version.
 
-## Known gaps to fix before release
-
-- `requirements.txt` does not list what the experiment tools and the offline engines need (opencv, mediapipe, mcp).
-- Five tools carry local paths or dated notes in their docstrings (`audit_api_strings`, `extract_ui_strings`, `export_process_demo`, `export_final_looks`, `record_demo_replays`); the export script rewrites them.
+`requirements.txt` lists only what the shipped app and tools need (numpy, scipy, Pillow); the experiment tools and offline engines that are not shipped need more (opencv, mediapipe, mcp).

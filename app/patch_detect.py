@@ -3,7 +3,7 @@
 Owner's request (10-17): could color detail be detected by scaling frames and covering pixel points; computing on the computer is equivalent to a cloud service;
 the page connects to the computer for the computation. -> The page sends the photo (or the simulated made-up image) and the makeup region to /api/patch-mask, and the mask is computed here and returned.
 
-Approach (a faster version of the isolation prototype <本機紀錄>):
+Approach (a faster version of the isolation prototype local run notes (not shipped)):
 - The same photo is viewed at three scales: fine (light dots a few pixels wide), medium (ordinary light patches and borders), coarse (whole areas).
 - Each pixel is compared with the surrounding skin at the same scale after excluding candidates: score = (lightness difference / 4) + (chroma difference / 3); it counts only if above the threshold and brighter than its surroundings.
 - Excluded: dark hair (L* < 35), specks that are too small, skin shine (small bright spots much brighter than nearby with very low chroma).

@@ -1,11 +1,10 @@
 """Demo mode: run each combination the front end actually sends for the demo photo through real try-on, and record it as an exact replay.
 
-User: "approved 80 units, cap 56→136 … build the replay and recording tools first, do a dry run, then run for real".
 The combination list comes from the browser: the real front-end flow runs once and every /api/makeup request is intercepted
 . Recording goes straight through app/server.py's State.makeup (same code path as live mode),
 and each result is saved to demo/replay/<entry>/exact/<code>.jpg, with demo/replay/<entry>/exact/index.json recording options and sha256.
 
-  python3 -B tools/record_demo_replays.py --payloads <本機紀錄>            # dry run: count only, calls nothing, spends no units
+  python3 -B tools/record_demo_replays.py --payloads local run notes (not shipped)            # dry run: count only, calls nothing, spends no units
   python3 -B tools/record_demo_replays.py --payloads ... --run --cap 136                                         # live run (1 unit per combination)
 Already-recorded combinations (file exists) are skipped, so an interrupted run can simply be rerun.
 """

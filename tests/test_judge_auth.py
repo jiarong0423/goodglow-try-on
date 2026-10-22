@@ -140,10 +140,28 @@ class JudgeAuthServer(unittest.TestCase):
 
     def test_bad_login_bodies(self):
         self.assertEqual(self.req("/api/judge-login", [1, 2])[0], 400)
-        r = urllib.request.Request(self.base + "/api/judge-login", data=b"not json", method="POST")
-        with self.assertRaises(urllib.error.HTTPError) as ctx:
+        for ctype, code in (("application/json", 400), (None, 415), ("text/plain", 415)):
+            h = {"Content-Type": ctype} if ctype else {}
+            r = urllib.request.Request(self.base + "/api/judge-login", data=b"not json", method="POST", headers=h)
+            with self.assertRaises(urllib.error.HTTPError) as ctx:
+                urllib.request.urlopen(r, timeout=10)
+            self.assertEqual(ctx.exception.code, code, ctype)
+        r = urllib.request.Request(self.base + "/api/judge-login", data=b"\xff\xfe{", method="POST", headers={"Content-Type": "application/json"})
+        with self.assertRaises(urllib.error.HTTPError) as ctx:       # bad UTF-8 is a 400, not a dropped connection
             urllib.request.urlopen(r, timeout=10)
         self.assertEqual(ctx.exception.code, 400)
+
+    def test_lockout_is_per_source_so_one_source_cannot_lock_out_the_judge(self):
+        attacker = {"X-Forwarded-For": "203.0.113.9"}
+        for _ in range(judge_auth.FAIL_LIMIT):
+            self.login(password=WRONG, headers=attacker)
+        self.assertEqual(self.login(headers=attacker)[0], 429)
+        self.assertEqual(self.login(headers={"X-Forwarded-For": "198.51.100.7"})[0], 200)
+
+    def test_forged_leading_forwarded_for_entry_does_not_dodge_the_lock(self):
+        for i in range(judge_auth.FAIL_LIMIT):
+            self.login(password=WRONG, headers={"X-Forwarded-For": f"10.0.0.{i}, 203.0.113.9"})
+        self.assertEqual(self.login(headers={"X-Forwarded-For": "10.9.9.9, 203.0.113.9"})[0], 429)
 
 
 class JudgeLinkInApp(unittest.TestCase):

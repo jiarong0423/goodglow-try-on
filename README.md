@@ -48,7 +48,23 @@ One app, two entry points. Take a mirror-like selfie, and the app:
 4. gives a care card (moisturize, protect, then makeup) with the shades, which you can show to a beauty advisor or save as an image.
 
 It only adds makeup and does not smooth the skin through YouCam (smoothing 0); one demo final (very-light-skin Example B) also has a local soft-focus pass that is labelled on the page. Looks are labelled *simulated*, and the app never shows a before/after
-"improvement". Large type and a dark theme are built in; if the light is too bright, the screen can be switched to dark. Auto-capture uses the YouCam Camera Kit and the live camera preview needs HTTPS; it was not tested yet. Photos under 640 px on the short side are rejected (the Camera Kit returns about 680 x 1080 on a phone).
+"improvement". Large type and a dark theme are built in; if the light is too bright, the screen can be switched to dark. Auto-capture uses the YouCam Camera Kit and the live camera preview needs HTTPS; it was tested on one Android phone, while on a plain-HTTP local server only the album option is available. Photos under 640 px on the short side are rejected (the Camera Kit returns about 680 x 1080 on a phone).
+
+## Two ways to try it: the demo page and the judge test version
+
+The same site and the same code serve both. The server decides for each request, from a signed cookie, which one you get ([operating modes](docs/assets/diagrams/03-operating-modes.png), [request flow](docs/assets/diagrams/04-tryon-request.png)).
+
+| | **Demo page** (default) | **Judge test version** |
+|---|---|---|
+| Who it is for | Anyone, no sign-in | Judges and the owner, with the username and password given in the testing instructions |
+| How to get there | Just open the site | Tap **Judge sign-in** in the banner at the top, enter the username and password; the same banner link signs you out (the page `/judge` does the same) |
+| Banner says | "Demo mode: replaying saved results from real YouCam calls · no credits used" | "Live mode: n/m try-ons used this time" |
+| YouCam calls | None. It shows pictures saved from **80 real YouCam Makeup VTO calls**, exact for the choices that were recorded and the closest otherwise, labelled simulated | Real calls: Makeup VTO (1 credit), optional Face Attribute (10 credits) |
+| Your own photo | Comes back unchanged with a demo note; the local steps (skin tone card, shade ranking, lighter-patch mask) still work | Sent to YouCam for the try-on; you see the real result |
+| Limits | None needed, it costs nothing | 5 live calls per server start and 30 credits in total; at the limit the server refuses live calls, and signing out returns to the demo page |
+| Why two | A public site must not be able to spend credits | Judges can verify that the real API calls work |
+
+If the four settings that switch live mode on are missing (live switch, YouCam key, judge username, judge password), the site is the demo page only and there is no sign-in. Settings live in the hosting platform, never in this repository ([SECURITY.md](SECURITY.md)).
 
 ## Architecture
 
@@ -68,7 +84,7 @@ python3 -B app/server.py --mock
 Open <http://127.0.0.1:8787>. In `--mock` mode **no YouCam call is made and no credits are used**: the demo photos show pictures saved earlier from real
 YouCam calls (stored under `demo/`), the picture saved for exactly your choices when one was recorded (80 combinations on the demo photos; re-recorded against the
 current presets), otherwise the closest saved picture (the screen says so), or a pre-computed final look; your own photos come back unchanged with a "Demo mode | simulated" strip. The in-app
-layer-by-layer view is not meaningful in demo mode (most layers show the original photo). Tests: `python3 -B -m unittest discover -s tests` (or `python3 -m pytest tests`).
+layer-by-layer view is not meaningful in demo mode (most layers show the original photo). Tests: `python3 -B -m unittest discover -s tests`.
 
 **Language.** The app follows the browser language (Chinese or English). Force English with `http://127.0.0.1:8787/?lang=en`, or use the
 language button on the start page. All server messages are translated too.
@@ -114,14 +130,14 @@ checks only and is not used for public material.
 
 ## Where YouCam is called
 
-The YouCam REST client is `tools/noise_test.py` (class `Client`: bearer key from the `YOUCAM_API_KEY` environment variable, file upload, task polling, retries); `app/server.py` calls it and wraps every call in the credit ledger (`app/budget.py`).
+The YouCam REST client is `tools/noise_test.py` (class `YouCamClient`: bearer key from the `YOUCAM_API_KEY` environment variable, file upload, task polling, retries); `app/server.py` calls it and wraps every call in the credit ledger (`app/budget.py`).
 
 | Feature | Endpoints (YouCam S2S API) | Code | Credits |
 |---|---|---|---|
 | Makeup VTO (try-on) | `POST /s2s/v2.0/file` then `POST /s2s/v2.0/task/makeup-vto`, poll `GET /s2s/v2.0/task/makeup-vto/{id}` | `app/server.py` (`_render_live`), request bodies from `app/looks.py` | 1 per call |
 | Face Attribute (optional tips, only when the user taps) | `POST /s2s/v2.0/task/face-attr-analysis`, poll `GET …/{id}` | `app/server.py`, rules in `app/face_rules.py` | 10 per call |
 | Camera Kit (capture, auto-capture) | browser SDK loaded from the YouCam CDN | `web/app.js` | none |
-| Skin Analysis HD, Skin Tone Analysis | used offline during development only | `tools/noise_test.py` | 12 / 20 |
+| Skin Analysis HD (12 units), Skin Tone Analysis (20 units) | used offline during development only | `tools/noise_test.py` (Skin Analysis HD), `tools/youcam_probe.py` (both) | 12 / 20 |
 
 In `--mock` mode none of these are called: pictures saved from real calls in `demo/replay/` are shown: the one recorded for your exact choices when it exists, otherwise the closest.
 

@@ -14,7 +14,7 @@ photos
 **/.env.*
 **/*.pem
 **/*.key
-# 品牌資料與代稱對照只留本機，絕不進映像
+# Brand data and alias tables stay local and never enter the image
 app/partner_shades.json
 app/partner_shades_official.json
 app/brand_codes_local.json

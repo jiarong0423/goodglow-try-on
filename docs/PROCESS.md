@@ -23,7 +23,7 @@ How the project was built during the hackathon, which methods we relied on, what
 | 6 | Translated the interface and the server messages through one reviewed table | `tools/extract_ui_strings.py`, `tools/build_i18n.py`, `docs/i18n/zh_en_map.csv` |
 | 7 | Hardened the server and wrote a threat model | [THREAT_MODEL.md](../THREAT_MODEL.md) |
 | 8 | Tested capture on a phone and fixed what broke | see the friction log |
-| 9 | Published a clean single-commit repository, scanned for secrets and brand data, deployed behind a sign-in for live mode | `.github/workflows/ci.yml`, gitleaks |
+| 9 | Published a clean single-commit repository, scanned for secrets and brand data, deployed behind a sign-in for live mode | `.github/workflows/ci.yml`; secret scan by hand: `gitleaks detect --source . --redact` (history) and `gitleaks detect --source . --no-git --redact` (tree) |
 
 ## Review rounds
 
@@ -34,7 +34,7 @@ Before each release we ran independent reviews in parallel (security, key and AP
 | # | Task | Expected vs actual | Severity | What we did | Suggestion |
 |---|---|---|---|---|---|
 | 1 | Conceal only one lighter patch with Makeup VTO | **Expected:** an area or mask parameter. **Actual:** the try-on paints the whole face; on our photo whole-face foundation closed the lightness gap by only about 5 to 6 % | High for this use case | Local patch mask and layers, labelled *Simulated* | A region or mask input for Makeup VTO |
-| 2 | Auto-capture on a phone | **Expected:** the Camera Kit opens and captures. **Actual:** with another browser tab holding the camera the Kit stays on "getting the camera ready" with no event | Medium | A hint after 10 seconds and an album fallback; verified with 12 open and close cycles on a phone | Emit `cameraFailed` when the camera cannot be opened |
+| 2 | Auto-capture on a phone | **Expected:** the Camera Kit opens and captures. **Actual:** with another browser tab holding the camera the Kit stays on "getting the camera ready" with no event | Medium | A hint after 10 seconds and an album fallback; checked with 12 open and close cycles on one Android phone | Emit `cameraFailed` when the camera cannot be opened |
 | 3 | Take the photo | **Expected:** a manual shutter or a timer option. **Actual:** capture is automatic only and needs "Lighting Good", so a dim room can block it | Medium | Album fallback; the hint tells people to find more light | A manual capture method |
 | 4 | Use the captured photo | **Expected:** a photo that meets the size our other tools need (short side 1080 px for HD analysis). **Actual:** about 680 x 1080 on a phone with 1080p video | Medium | Lowered the app's minimum to 640 px short side; Makeup VTO is fed the photo without enlarging it | Document the capture size for each `videoQuality` |
 | 5 | Resize rules | **Expected:** one rule. **Actual:** two different wordings for the maximum image size of one feature (hair color: long side below 1920, or width below 1920 and height below 1080) | Low | Resize so both readings are satisfied | One rule per feature in the reference |

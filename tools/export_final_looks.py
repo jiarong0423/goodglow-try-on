@@ -1,7 +1,5 @@
 """Export each entry point's final makeup looks (simulated) from runs/ to demo/final/, for the App's "final look" cards.
-Design decision,: direct edits to the production files are authorized, to wire the albinism male/female final looks and the vitiligo final look into the App's two entry points.
-Design decision,: wiring in is now approved, and the YouCam service is brought in actively → add vitiligo female U (S48); each look has three stages:
-local layer-by-layer base → the official makeup-vto step (included only if a recording exists; otherwise noted) → recipe card.
+Each look has three stages: local layer-by-layer base → the official makeup-vto step (included only if a recording exists; otherwise noted) → recipe card.
 - Final images are all converted to JPEG, long side capped at 1600. If a source sha256 does not match, stop (print ERROR).
 - The recipe (recipes.json) holds only items, positions and swatch hex values, never brand names or official shade codes (App public-screen rule).
 - Every file is written to SHA256SUMS.txt.
