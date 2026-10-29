@@ -17,7 +17,7 @@
 
   <!-- Judge sign-in (only reachable when the server runs with --judge-live; English only, for the people testing the site) -->
   <dialog id="judge-dialog" class="judge-dialog" aria-labelledby="judge-title">
-    <form id="judge-form">
+    <form id="judge-form" method="post">
       <h2 id="judge-title">Judge sign-in</h2>
       <p class="judge-note">Signing in switches this browser to live mode: your photo is sent to the YouCam API and the result is real. Live calls are capped. Without signing in, the app stays in demo mode. Judges: the username and password are in the Devpost testing instructions.</p>
       <label for="judge-user">Username</label>

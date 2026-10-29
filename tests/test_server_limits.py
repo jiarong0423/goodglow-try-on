@@ -169,6 +169,8 @@ class HardeningTests(_Base):
                 digest = base64.b64encode(hashlib.sha256(body.encode()).digest()).decode()
                 self.assertIn("'sha256-" + digest + "'", server.CSP, "the /judge inline script is not allowed by the CSP hash")
             self.assertIn('<form id="f" method="post"', text, "the sign-in form must never fall back to GET (password in the URL)")
+        index = (server.WEB_DIR / "index.html").read_text(encoding="utf-8")
+        self.assertIn('<form id="judge-form" method="post"', index, "the in-app sign-in form must never fall back to GET")
 
     def test_path_traversal_never_leaves_web_dir(self):
         s = socket.create_connection(("127.0.0.1", int(self.base.rsplit(":", 1)[1])), timeout=10)
