@@ -1,5 +1,5 @@
 'use strict';
-// Capture helper: judges whether this photo has a chance of being recognized by the official service .
+// Capture helper: judges whether this photo has a chance of being recognized by the official service.
 // Pure functions: inputs are numbers already measured by the page (face box, a few landmark points, lightness, detection score); no DOM, no network, and the photo never leaves the phone.
 // Thresholds and sources follow docs/EVIDENCE_LIMITS.md (branch shared/evidence-limits 6b8044d); the evidence field holds the evidence-table row number;
 // rows without a matching entry give a source string (e.g. the HD spec comes from the tools/noise_test.py pre-check).

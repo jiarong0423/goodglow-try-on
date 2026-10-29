@@ -50,7 +50,7 @@ h3 { font-size: 19px; margin: 0 0 10px; }
 .hero h1 { font-size: 31px; line-height: 1.25; margin: 14px 0 8px; letter-spacing: .02em; }
 .hero .sub { margin: 0 0 16px; font-size: 16px; }
 .cover-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-/* Entry cards: the photo on top, the words underneath on a solid card, so no text ever sits on a person's face  */
+/* Entry cards: the photo on top, the words underneath on a solid card, so no text ever sits on a person's face */
 .cover-card { position: relative; display: flex; flex-direction: column; padding: 0; border: 0; border-radius: 22px; overflow: hidden; cursor: pointer;
   background: var(--card); box-shadow: var(--shadow); font: inherit; color: var(--ink); text-align: left; }
 .cover-card img { display: block; width: 100%; aspect-ratio: 3 / 3.4; object-fit: cover; }
@@ -141,7 +141,7 @@ h3 { font-size: 19px; margin: 0 0 10px; }
 .skin-sample { display: flex; gap: 10px; align-items: center; margin: 6px 0; }
 .small-sw { width: 36px; height: 36px; border-radius: 12px; border: 1px solid rgba(0,0,0,.15); display: inline-block; flex: none; }
 .auto-dots { position: absolute; inset: 0; pointer-events: none; transition: opacity .6s ease; }
-.auto-dots.fade { opacity: 0; }   /* the sample markers only show where color was taken, then get out of the face  */
+.auto-dots.fade { opacity: 0; }   /* the sample markers only show where color was taken, then get out of the face */
 .sample-dot { transition: opacity .4s ease; }
 .auto-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; transform: translate(-50%, -50%); border: 1.5px solid #fff; }
 .auto-dot.skin { background: #3f7a5c; }
@@ -238,12 +238,12 @@ h3 { font-size: 19px; margin: 0 0 10px; }
 .compare img { width: 100%; border-radius: 18px; aspect-ratio: 3/4; object-fit: cover; background: var(--soft); box-shadow: var(--shadow); }
 .compare figcaption { text-align: center; color: var(--muted); font-size: 14px; margin-top: 4px; }
 
-/* Flip card (try-on page, item-by-item adjustment page): two images stacked, cross-fading ; only opacity is animated, and for people sensitive to motion it swaps directly */
+/* Flip card (try-on page, item-by-item adjustment page): two images stacked, cross-fading; only opacity is animated, and for people sensitive to motion it swaps directly */
 .flipcard { max-width: min(360px, calc((100dvh - 536px) * 0.75)); min-width: 200px; margin: 0 auto; }      /* The card, hint and buttons must be visible on one screen: height minus the title, step bar and bottom button row */
 .fc-stage { position: relative; width: 100%; aspect-ratio: 3 / 4; cursor: pointer; }
 .fc-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 18px; background: var(--soft); box-shadow: var(--shadow); opacity: 0; transition: opacity .4s ease; }
 .fc-stage img.on { opacity: 1; }
-/* The flip hint no longer covers the photo : the "see your selection" button and the caption below are enough to identify it; the element is kept but not shown */
+/* The flip hint no longer covers the photo: the "see your selection" button and the caption below are enough to identify it; the element is kept but not shown */
 .fc-hint { display: none; }
 .fc-cap { text-align: center; color: var(--muted); font-size: 14px; margin: 6px 0 4px; }
 @media (prefers-reduced-motion: reduce) { .fc-stage img { transition: none; } }
@@ -329,7 +329,7 @@ details.card summary { font-weight: 700; cursor: pointer; }
 .stage-h { font-weight: 700; font-size: 15px; margin: 4px 0 6px; }
 #final-off-note { margin-top: 6px; }
 
-/* 10-21 page-flip effect: slide to change pages, slowed down (owner: "this is fine but it needs to be slow"). To adjust, change only the three constants below.
+/* 10-21 page-flip effect: slide to change pages, slowed down. To adjust, change only the three constants below.
    A new page slides in from the right when going one step forward and from the left when going back; in light-sensitive mode or with the system's reduced-motion setting it only fades in, with no sliding, flashing or bouncing.
    Uses left instead of transform: the page has a position: fixed bottom button row, and transform would make it drift away during the animation. html / body use overflow-x: clip, so no horizontal scrollbar appears while sliding in. */
 :root { --vt-slide-time: .8s; --vt-fade-time: .6s; --vt-distance: 35vw; }
@@ -343,9 +343,9 @@ details.card summary { font-weight: 700; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .view.vt-fwd, .view.vt-back { animation: vt-fade-in var(--vt-fade-time) ease-in-out both; } }
 html, body { overflow-x: clip; }   /* While sliding in, the content temporarily extends past the right edge; clip produces no scrollbar */
 
-/* ===== 10-21 official-site style, step 1 (docs/design/STYLE_GUIDE_20261021.md; owner: "just adjust it following the official-site style")=====
+/* ===== 10-21 official-site style, step 1 (docs/design/STYLE_GUIDE_20261021.md;  "just adjust it following the official-site style")=====
    Only color, type size, corner radius, shadow and spacing change; the layout structure is untouched. Only design parameters are borrowed, and the color codes are our own choice.
-   Body text stays at 18px and was not reduced to 16px as the guide says: the owner's eyesight may be weaker, and small text would be hard to read. */
+   Body text stays at 18px and was not reduced to 16px as the guide says: some readers' eyesight may be weaker, and small text would be hard to read. */
 :root {
   --bg: #ffffff; --card: #ffffff; --ink: #212529; --muted: #5f6770; --line: #e9e2e5;
   --accent: #c2386b; --accent-2: #e9a3bb; --accent-ink: #ffffff; --soft: #faf6f7; --warn: #a8325a; --ok: #2f6b4c;

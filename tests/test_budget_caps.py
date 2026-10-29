@@ -52,6 +52,11 @@ class LedgerTests(unittest.TestCase):
             b.settle("makeup-vto", cost, True)
             self.assertEqual(json.loads(path.read_text(encoding="utf-8"))["spent"], 1)
             self.assertEqual([p.name for p in Path(d).iterdir()], ["l.json"])
+            path.write_text("{not json", encoding="utf-8")                 # an unreadable ledger closes live calls (spent = cap) but does not crash
+            broken = budget.Budget(10, path)
+            self.assertEqual((broken.spent, broken.remaining()), (10, 0))
+            with self.assertRaises(budget.BudgetExceeded):
+                broken.reserve("makeup-vto")
 
     def test_failed_disk_write_does_not_lose_the_in_memory_count(self):
         with tempfile.TemporaryDirectory() as d:

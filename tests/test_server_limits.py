@@ -92,6 +92,8 @@ class RequestShapeTests(_Base):
             status, out = self.post("/api/match", None, raw=raw)
             self.assertEqual(status, 400, raw)
             self.assertEqual(out["error_code"], "bad_json")
+        status, out = self.post("/api/match", None, raw=b"[" * 200000)                  # very deep nesting: a clean 400, not a dropped connection
+        self.assertEqual((status, out["error_code"]), (400, "bad_json"))
 
     def test_non_numeric_content_length_is_a_clean_400(self):
         s = socket.create_connection(("127.0.0.1", int(self.base.rsplit(":", 1)[1])), timeout=10)
@@ -171,6 +173,20 @@ class HardeningTests(_Base):
             self.assertIn('<form id="f" method="post"', text, "the sign-in form must never fall back to GET (password in the URL)")
         index = (server.WEB_DIR / "index.html").read_text(encoding="utf-8")
         self.assertIn('<form id="judge-form" method="post"', index, "the in-app sign-in form must never fall back to GET")
+        # the policy itself, directive by directive: a weakened or widened policy fails here, not only a missing hash
+        csp = {d.strip().split(" ", 1)[0]: d.strip().split(" ", 1)[1].split() for d in server.CSP.split(";") if d.strip()}
+        self.assertEqual(sorted(csp), ["base-uri", "connect-src", "default-src", "font-src", "form-action", "frame-ancestors", "frame-src",
+                                       "img-src", "media-src", "object-src", "script-src", "style-src", "worker-src"])
+        self.assertEqual(csp["default-src"], ["'self'"])
+        self.assertEqual((csp["frame-ancestors"], csp["base-uri"], csp["object-src"], csp["form-action"]),
+                         (["'none'"], ["'none'"], ["'none'"], ["'self'"]))
+        self.assertNotIn("'unsafe-inline'", csp["script-src"])
+        hosts = {"https://cdn.jsdelivr.net", "https://plugins-media.makeupar.com", "https://plugins-media.perfectcorp.com", "https://d161aii70lzc9u.cloudfront.net"}
+        self.assertEqual({t for t in csp["script-src"] if t.startswith(("http", "*"))}, hosts)      # no wildcard or scheme-wide script source
+        for name in ("script-src", "worker-src", "connect-src", "frame-src", "style-src"):
+            self.assertNotIn("https:", csp[name], name)
+            self.assertNotIn("*", csp[name], name)
+        self.assertEqual({t for t in csp["frame-src"]}, {"https://plugins-media.makeupar.com", "https://plugins-media.perfectcorp.com", "https://www.perfectcorp.com"})
 
     def test_path_traversal_never_leaves_web_dir(self):
         s = socket.create_connection(("127.0.0.1", int(self.base.rsplit(":", 1)[1])), timeout=10)
@@ -195,6 +211,10 @@ class HardeningTests(_Base):
             with urllib.request.urlopen(self.base + path, timeout=20) as r:
                 self.assertEqual(r.headers.get("X-Content-Type-Options"), "nosniff", path)
                 self.assertEqual(r.headers.get("X-Frame-Options"), "DENY", path)
+            head = urllib.request.Request(self.base + path, method="HEAD")          # HEAD answers like GET without a body
+            with urllib.request.urlopen(head, timeout=20) as r:
+                self.assertEqual((r.status, r.read()), (200, b""), path)
+                self.assertEqual(r.headers.get("X-Content-Type-Options"), "nosniff", path)
 
     def test_static_files_are_served_byte_for_byte(self):
         want = (ROOT / "web" / "style.css").read_bytes()

@@ -45,7 +45,7 @@
     return lin.map((c) => 255 * Math.max(0, Math.min(1, c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)));
   }
   const hexToLab = (hex) => { const n = parseInt(hex.slice(1), 16); return srgbToLab(n >> 16, (n >> 8) & 255, n & 255); };
-  // Blur inside and outside the patch separately : inside a light patch average only with the patch interior, outside only with the exterior,
+  // Blur inside and outside the patch separately: inside a light patch average only with the patch interior, outside only with the exterior,
   // so the border (the pigment edge) falls into the low frequency and the makeup layer can cover it; if everything is blurred together, the border stays in the texture and the outline remains visible no matter how it is layered.
   // Measured with tools/fit_layers_to_target.py: with the border in the low frequency, the fitting error drops 1.62 -> 1.59 (when color is fitted too).
   // Returns blur(src): the mask blur is computed only once, then each channel needs one more blur.
@@ -122,7 +122,7 @@
     return tris.filter((t) => t[0] < n && t[1] < n && t[2] < n).map((t) => [t[0], t[1], t[2]]);
   }
 
-  // 3D highlight : the 468 MediaPipe mesh points have depth z,
+  // 3D highlight: the 468 MediaPipe mesh points have depth z,
   // triangulate -> vertex normals (average of adjacent triangle faces) -> per-pixel interpolation into a normal map -> Blinn-Phong specular highlight (light source in front and above).
   // Forehead, nose bridge and cheekbones light up following the bone shape, and the faint highlight on the face sides moves with them. Normals are not derived from a grayscale gradient: vitiligo edges would be treated as bumps and light up.
   // Returns core (concentrated highlight, alpha=24) and wide (diffuse, alpha=8, with a bit of warm color mixed at the edge to simulate translucency)
@@ -205,7 +205,7 @@
     };
     const poly = (ids) => { const p = new Path2D(); ids.forEach((i, k) => (k ? p.lineTo(...P(i)) : p.moveTo(...P(i)))); p.closePath(); return p; };
     const skinRaw = raster((cg) => cg.fill(poly(FACE_OVAL)));
-    // Forehead and chin zones :
+    // Forehead and chin zones:
     // the face-mesh outline only reaches the middle of the forehead (point 10); the upper forehead up to the hairline and the chin edge are added from MediaPipe's multi-class segmentation "face skin".
     const xs0 = Math.min(...xs), xs1 = Math.max(...xs);
     const browPts = BROW_TOP.map(P).sort((u, v) => v[0] - u[0]);
@@ -385,7 +385,7 @@
       Ls.push(L[i]); As.push(A[i]); Bs.push(B[i]);                        // raw pixels: blurred colors would mix in light-patch color
     }
     const pct = (v, q) => v.sort((a, b) => a - b)[Math.min(v.length - 1, Math.floor(v.length * q))];
-    // Lightness takes the 70th percentile of the "lit" surrounding, color takes the median (owner,: "skin looks dark; see if the highlight can improve it": the median mixes in shadow on the face sides,
+    // Lightness takes the 70th percentile of the "lit" surrounding, color takes the median (: "skin looks dark; see if the highlight can improve it": the median mixes in shadow on the face sides,
     // the largest patch, sitting in the T-zone at the face center, was filled to 44.3, darker than the pigmented-skin median 47.2; camouflage.js also used the lit half earlier)
     p.ring = Ls.length >= 30 ? [pct(Ls, RING_L_PCT), pct(As, 0.5), pct(Bs, 0.5)] : S.normal.slice();     // if nothing is found around, use the overall original skin color
     p.ringN = Ls.length;
@@ -524,7 +524,7 @@
     const kL = keepLight ? 0.6 : 1;                                   // keep light/shade: lightness moves only 60% toward the surrounding skin, so the center looks lit rather than unconcealed
     // Color-correction layer: the whiter the spot, the more it neutralizes (like a makeup artist adding a bit of correction only at the whitest spots); the thicker the concealer, the less correction shows through
     const decay = concealer ? 1 - 0.25 * coverage : 1;
-    // Multiple thin passes : pass 1 applies the whole patch (with color correction); each later pass only fills the places that "still show a difference",
+    // Multiple thin passes: pass 1 applies the whole patch (with color correction); each later pass only fills the places that "still show a difference",
     // filling as much as the difference (residual / 6 as weight), leaving already blended places untouched -> more natural than one thick coat, and the face does not flatten.
     const passes = Math.min(3, Math.max(1, Math.round(Number(opt.passes ?? 1))));
     const cL = Float32Array.from(L), cA = Float32Array.from(A), cB = Float32Array.from(B);
@@ -547,7 +547,7 @@
         cB[i] += cc * (tB[i] - lB[i]) + cw * WARM[1];
       }
     }
-    // From round 2 on :
+    // From round 2 on:
     // each blank area found by findResidual becomes a new SVG patch (round >= 1) whose target color = the "already concealed" skin around it;
     // each round adds another layer on the previous result, filling as much as the difference (same as multiple thin passes), still keeping texture and excluding protected zones.
     const maxRound = Math.max(0, ...S.patches.map((p) => p.round || 0));

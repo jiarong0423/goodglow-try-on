@@ -90,7 +90,7 @@ DEMOS = {
                  "expected": DEMO_DIR / "expected" / "vitiligo_20551205.json"},
 }
 
-# finalized looks (simulated) per entry: tools/export_final_looks.py exports from runs/ to demo/final/ (, owner authorized wiring them into both entries)
+# finalized looks (simulated) per entry: tools/export_final_looks.py exports from runs/ to demo/final/
 FINAL_DIR = DEMO_DIR / "final"
 FINAL_KEYS = {("albinism", "F"): "albinism_F", ("albinism", "M"): "albinism_M", ("vitiligo", "M"): "vitiligo_M", ("vitiligo", "F"): "vitiligo_F"}
 FINAL_DEFAULT_WHO = {"albinism": "F", "vitiligo": "M"}
@@ -303,24 +303,25 @@ def mock_label(jpeg: bytes, text: str = "") -> bytes:
     return buf.getvalue()
 
 
-def nearest_replay(condition: str, style: str = "natural") -> bytes | None:
+def nearest_replay(condition: str, style: str = "natural") -> tuple[bytes, bool] | None:
     """When a demo photo has no recording for exactly the same set of options in demo mode, fall back to the closest recorded official result (no burned-in text;
-    the caption below the image and MOCK_SAME state that demo mode recorded only a few combinations)."""
+    the caption below the image and MOCK_SAME state that demo mode recorded only a few combinations).
+    Returns (image, recorded): recorded is False when the picture is the finalized look made locally (demo/final, labelled Simulated), not a saved YouCam call."""
     folder = DEMOS[condition]["replay"]
     cands = [folder / f"{style}_glow.jpg", folder / f"{style}_clear.jpg", folder / "natural_glow.jpg"] + sorted(folder.glob("*.jpg"))
     f = next((c for c in cands if c.is_file()), None)
     if f:
-        return f.read_bytes()
-    # no named recording: use this entry's finalized look image (the full look made on the same demo photo, demo/final), and only then any exact recording
+        return f.read_bytes(), True
+    # no named recording: use this entry's finalized look image (made locally on the same demo photo, demo/final: a simulation), and only then any exact recording
     try:
         key = FINAL_KEYS.get((condition, FINAL_DEFAULT_WHO[condition]))
         rel = json.loads((FINAL_DIR / "recipes.json").read_text(encoding="utf-8"))[key]["images"].get("final")
         if rel and (FINAL_DIR / rel).is_file():
-            return (FINAL_DIR / rel).read_bytes()
+            return (FINAL_DIR / rel).read_bytes(), False
     except (OSError, KeyError, ValueError):
         pass
     exact = sorted((folder / "exact").glob("*.jpg"))
-    return exact[0].read_bytes() if exact else None
+    return (exact[0].read_bytes(), True) if exact else None
 
 
 def replay_key(selection: dict, which: str | None) -> str:
@@ -403,6 +404,7 @@ class State:
         {"kind": "live"}                              a real YouCam call made for this request
         {"kind": "replay_exact", "recorded_at": ...}  the saved result of a real YouCam call with exactly these options (date from demo/replay/*/exact/index.json)
         {"kind": "replay_closest"}                    the saved result of a real YouCam call with the closest recorded options (or recorded layer)
+        {"kind": "sim_look"}                          demo mode, no saved call for these options: the finalized look made locally (labelled Simulated), not a YouCam result
         {"kind": "demo_label"}                        demo mode with the person's own photo: no YouCam call, the photo comes back with a label"""
         if self.mock:
             self._estimate("makeup-vto")
@@ -424,9 +426,9 @@ class State:
                         data = replay_image(demo, replay_key(dict(selection, foundation="keep"), which), style)
                     if data:
                         return to_data_url(data), {"kind": "replay_closest"}
-                    data = nearest_replay(demo, style)
-                    if data:
-                        return to_data_url(data), {"kind": "replay_closest"}
+                    near = nearest_replay(demo, style)
+                    if near:
+                        return to_data_url(near[0]), {"kind": "replay_closest" if near[1] else "sim_look"}
             return to_data_url(mock_label(jpeg)), {"kind": "demo_label"}
         if not self.key:
             raise RequestError(500, "no_key", "伺服器找不到 API key")
@@ -725,7 +727,7 @@ class State:
         who_options = sorted(w for (c, w) in FINAL_KEYS if c == condition)
         img = {k: (to_data_url((FINAL_DIR / v).read_bytes()) if v else None) for k, v in r["images"].items()}
         # flow: local layered foundation -> this official makeup-vto step -> recipe card. Demo mode only shows recorded official results, with no YouCam call and no points;
-        # without a recording only the local result is shown, with a note (, owner: proactively slot in the YouCam service; the backend for real calls is handled separately by shared/auto-finish)
+        # without a recording only the local result is shown, with a note
         official = ({"image": img["official"], "status": "replay", "note": "官方這一步：YouCam 試妝錄好的結果（展示模式重播，不扣點）"}
                     if img["official"] else
                     {"image": None, "status": "not_recorded", "note": "官方這一步尚未錄製；展示模式不呼叫 YouCam，以下顯示本地結果"})
@@ -800,6 +802,8 @@ class Handler(BaseHTTPRequestHandler):
         """/api/judge-login, /api/judge-logout: bypass the photo routes and take no compute slot."""
         secure = self._secure()
         if path == "/api/judge-logout":
+            if (self.headers.get("Content-Type") or "").split(";")[0].strip().lower() != "application/json":
+                return self._json(415, {"ok": False, "error_code": "bad_type", "hint": "bad request"})
             self._set_cookies = [judge_auth.clear_cookie_value(secure)]
             return self._json(200, {"ok": True})
         raw = self._read_body(4096)
@@ -811,7 +815,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             body = json.loads(raw)
             user, password = str(body.get("username", "")), str(body.get("password", ""))
-        except (ValueError, AttributeError):    # JSONDecodeError and bad UTF-8 are both ValueError
+        except (ValueError, AttributeError, RecursionError):    # JSONDecodeError and bad UTF-8 are both ValueError; deeply nested JSON raises RecursionError
             return self._json(400, {"ok": False, "error_code": "bad_json", "hint": "bad request"})
         if not self.auth.check(user, password, key=key):
             return self._json(401, {"ok": False, "error_code": "bad_login", "hint": "wrong username or password"})
@@ -909,6 +913,29 @@ class Handler(BaseHTTPRequestHandler):
         with target.open("rb") as fh:                      # send in chunks, so a large file (the 14 MB wasm) is not read into memory whole
             shutil.copyfileobj(fh, self.wfile, 64 * 1024)
 
+    def do_HEAD(self):
+        """Same status and headers as GET, no body (the tools that probe a site with HEAD get an answer instead of 501)."""
+        real = self.wfile
+
+        class _HeadOnly:
+            def __init__(self):
+                self.first = True
+
+            def write(self, data):
+                if self.first:                      # the first write is the header block; everything after it is the body
+                    self.first = False
+                    real.write(data)
+                return len(data)
+
+            def flush(self):
+                real.flush()
+
+        self.wfile = _HeadOnly()
+        try:
+            self.do_GET()
+        finally:
+            self.wfile = real
+
     def do_POST(self):
         _REQ.lang = self._lang()
         self.state = self._pick_state()
@@ -933,7 +960,7 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(payload, dict):
                 return self._json(400, {"ok": False, "error_code": "bad_json", "hint": "請求格式錯誤"})
             return self._json(200, routes[path](payload))
-        except (ValueError, TypeError, KeyError, AttributeError) as exc:   # malformed JSON or payload fields: a 400, never a dropped connection
+        except (ValueError, TypeError, KeyError, AttributeError, RecursionError) as exc:   # malformed JSON or payload fields (including very deep nesting): a 400, never a dropped connection
             print(f"ERROR bad request on {path}: {type(exc).__name__}", file=sys.stderr, flush=True)
             return self._json(400, {"ok": False, "error_code": "bad_json", "hint": "請求格式錯誤"})
         except RequestError as exc:

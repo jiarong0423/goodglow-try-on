@@ -129,6 +129,11 @@ class JudgeAuthServer(unittest.TestCase):
         st, _, hdr = self.req("/api/judge-logout", {})
         self.assertEqual(st, 200)
         self.assertIn("Max-Age=0", hdr["Set-Cookie"])
+        r = urllib.request.Request(self.base + "/api/judge-logout", data=b"x=1", method="POST",
+                                   headers={"Content-Type": "application/x-www-form-urlencoded"})
+        with self.assertRaises(urllib.error.HTTPError) as cm:                 # a cross-site form post cannot sign a judge out
+            urllib.request.urlopen(r, timeout=10)
+        self.assertEqual(cm.exception.code, 415)
 
     def test_login_page_is_public_and_does_not_leak_credentials(self):
         st, raw, _ = self.req("/judge")

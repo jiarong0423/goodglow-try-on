@@ -134,7 +134,7 @@ class RecommendTests(unittest.TestCase):
         self.assertIn("防曬", " ".join(c["text"] for c in r["care"]))
 
     def test_vitiligo_foundation_matches_surrounding_skin(self):
-        # owner changed back: the full-face foundation picks a shade for the pigmented skin around the vitiligo patches (not a balanced color)
+        #  the full-face foundation picks a shade for the pigmented skin around the vitiligo patches (not a balanced color)
         n, p = "#946D60", "#B49B96"
         plan = ce.vitiligo_plan(n, p)
         self.assertEqual(plan["card"]["hex"], n)

@@ -20,5 +20,5 @@ Public Pexels photos (Pexels License: free to use and modify, not to be resold a
 ## Licence and limits
 
 - Pexels License: free to use and modify; not to be resold as-is or redistributed on other stock sites. https://www.pexels.com/license/
-- The people in the photos gave us only the copyright licence of the photographer, no separate likeness release. So: no before/after storytelling, no suggestion that they endorse this project, and every AI-generated or try-on image is labelled *Simulated*.
+- The people in the photos gave us only the copyright licence of the photographer, no separate likeness release. So: no picture is presented as an improvement or a before/after result (the app only lets you compare your own photo with the look you chose), no suggestion that they endorse this project, and every AI-generated or try-on image is labelled *Simulated*.
 - These photos are not covered by this repository's MIT licence.

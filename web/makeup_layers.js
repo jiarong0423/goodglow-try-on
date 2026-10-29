@@ -14,7 +14,7 @@
     { id: 'edge', name: __t('s0738', '修邊'), product: __t('s0739', '交界') },
     { id: 'foundation', name: __t('s0740', '粉底'), product: __t('s0740', '粉底') },
     { id: 'powder', name: __t('s0741', '蜜粉'), product: __t('s0741', '蜜粉') },
-    // Touch-up : after the base makeup, look again;
+    // Touch-up: after the base makeup, look again;
     // wherever light skin is still visible (brighter and less saturated than its surroundings), dab the same concealer only there and pat the edges out; small amounts, several times, re-detecting each time.
     // Basis: makeup artists' pinpoint concealing (dab only on the blemish, pat, push the edge until invisible); makeup tutorial 'if one layer cannot cover it, add a second layer in small amounts, several times';
     // vitiligo concealing guide (the border has the most obvious contrast, so the edge needs special handling)
@@ -205,7 +205,7 @@
     for (let i = 0; i < n; i++) unk[i] = grow[i] > 0.02 ? 1 : 0;
     const M = CE.membrane(unk, opt.lift ?? 3), light = new Float32Array(n);   // lift: brighten toward the lit side (so that it does not look dull after concealing; 10-17 brightened 2 -> 3)
     for (let i = 0; i < n; i++) light[i] = (M && M[3][i] && unk[i]) ? M[0][i] : S.lowL[i];
-    // Add the face's light and shade back inside the light patches : the lighting extended from the surroundings is smooth,
+    // Add the face's light and shade back inside the light patches: the lighting extended from the surroundings is smooth,
     // so when the nose lies entirely inside a patch, the bright nose bridge and the shadowed nose sides get flattened -> use the 3D face mesh's lighting (determined by face shape, unaffected by the vitiligo's own brightness),
     // subtract the broad average to keep only the 'shape' variation, and add it back converted to L*
     if (spec && spec.diffuse) {
@@ -373,7 +373,7 @@
       o[i * 4] = rgb[0]; o[i * 4 + 1] = rgb[1]; o[i * 4 + 2] = rgb[2];
     }
     ctx.putImageData(out, 0, 0);
-    // High-resolution output :
+    // High-resolution output:
     // the layers are computed at 720 width; the delta (after makeup - original) is almost always a smooth base-color change -> upscale it bilinearly and overlay it on the original, so the original's pore detail is preserved at high resolution
     let imageHi = null, hiSize = null;
     if (opt.outLong) {

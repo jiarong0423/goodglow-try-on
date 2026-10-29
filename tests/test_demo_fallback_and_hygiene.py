@@ -68,11 +68,11 @@ class NearestReplayTests(unittest.TestCase):
             try:
                 server.DEMOS = {"albinism": {"replay": td}}
                 server.FINAL_DIR = td / "final"
-                self.assertEqual(server.nearest_replay("albinism"), b"EXACT")           # exact recording only
+                self.assertEqual(server.nearest_replay("albinism"), (b"EXACT", True))           # exact recording only: a saved YouCam call
                 (td / "final").mkdir()
                 (td / "final" / "f.jpg").write_bytes(b"FINAL")
                 (td / "final" / "recipes.json").write_text(json.dumps({"albinism_F": {"images": {"final": "f.jpg"}}}), encoding="utf-8")
-                self.assertEqual(server.nearest_replay("albinism"), b"FINAL")           # use the final image if there is one
+                self.assertEqual(server.nearest_replay("albinism"), (b"FINAL", False))           # the final image is a local simulation, flagged as not recorded
             finally:
                 server.DEMOS, server.FINAL_DIR = old_demos, old_final
 
@@ -142,7 +142,7 @@ class TrackedDataHygiene(unittest.TestCase):
         self.assertEqual(hits, [])
 
     def test_tracked_text_files_name_no_real_people(self):
-        """Tracked code, documents and mapping tables name no real people (red team 10-21 #8)."""
+        """Tracked code, documents and mapping tables name no real people (Security review)."""
         import subprocess
         files = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True).stdout.split()
         if not files:

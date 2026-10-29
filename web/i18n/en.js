@@ -1,6 +1,6 @@
 'use strict';
 // 由 tools/build_i18n.py 產生，勿手改。來源 docs/i18n/zh_en_map.csv（英文欄雜湊見下）＋ docs/i18n/position_overrides.csv
-// CSV 英文欄 sha256=d7d9bdd7bd5c450e4c881b4e852859263a9386bad3107071359d31ae5bbd8630
+// CSV 英文欄 sha256=aae16fe17a2e1b896626753c010380c750c6356bfd4cb5cf11c2998a5638e23a
 window.I18N_EN = {
  "s0001": "Good Glow Try-On",
  "s0002": "Light-sensitive mode",
@@ -9,7 +9,7 @@ window.I18N_EN = {
  "s0006": "then talk makeup",
  "s0007": "Every skin tone has its own good glow: take a photo, pick your skin tone, match a shade, then get skincare, sun protection and a full makeup look. We only add makeup; YouCam's smoothing is fixed at 0.",
  "s0008": "",
- "s0009": "current counter shades you can match against",
+ "s0009": "shades you can match against",
  "s0010": "brands",
  "s0011": "levels",
  "s0012": "skin tone cards, split into cool, neutral and warm",
@@ -22,7 +22,7 @@ window.I18N_EN = {
  "s0018": "Skincare tips",
  "s0019": "Try-on",
  "s0020": "Before you start",
- "s0021": "Skip makeup on days your skin is being treated or is irritated",
+ "s0021": "On treatment days",
  "s0022": "Patch test new products on a small area behind the ear first",
  "s0023": "Apply sunscreen before you head out",
  "s0025": "Got it",
@@ -287,7 +287,7 @@ window.I18N_EN = {
  "s0332": "Detection on the server is temporarily unreachable; using detection on your phone for now.",
  "s0336": "<li><span></span><p>Generating step images…</p></li>",
  "s0337": "Moisturizer + sunscreen",
- "s0338": "Apply moisturizer first, then sunscreen, and wait for them to absorb before makeup. Lighter patches have no melanin protection and are especially sensitive to the sun. Skip makeup on days your skin is being treated or is irritated.",
+ "s0338": "Apply moisturizer first, then sunscreen, and wait for them to absorb before makeup. Lighter patches have no melanin protection and are especially sensitive to the sun. On treatment days, follow your doctor's advice on whether to wear makeup.",
  "s0339": "Color correcting: dab only on the lighter patch",
  "s0340": "The green dashed line is the area. With a fingertip or a small brush, dab a thin layer of peach/orange in the middle of the lighter patch, without getting it on the regular skin next to it.",
  "s0341": "Concealer: push outward from the center",
@@ -303,7 +303,7 @@ window.I18N_EN = {
  "s0351": "Contour + highlight: bring back dimension",
  "s0352": "Contour under the cheekbones, along the jawline and at the sides of the nose, pushing the edges out; highlight only on top of the cheekbones and the nose bridge (stopping before the tip of the nose), and for a natural look don't highlight the whole forehead.",
  "s0354": "<li><span></span><p>Generating the next step…</p></li>",
- "s0355": "Apply moisturizer first, then untinted sunscreen; lighter patches are especially sensitive to UV. Skip makeup on days your skin is being treated or is irritated.",
+ "s0355": "Apply moisturizer first, then untinted sunscreen; lighter patches are especially sensitive to UV. On treatment days, follow your doctor's advice on whether to wear makeup.",
  "s0356": "With a fingertip, dab a thin layer of peach/orange for color correcting within the green dashed area, in small sections, not over the whole face; don't use green (it turns gray under skin-tone foundation).",
  "s0357": "Concealer first layer: sponge-press",
  "s0358": "Use a concealer close to the skin tone \"around\" the lighter patch, dab only on the lighter patch, and press with a sponge without rubbing back and forth (friction may cause new lighter patches).",
@@ -315,7 +315,7 @@ window.I18N_EN = {
  "s0367": "Brow",
  "s0368": "You tend to be more sensitive: choose fragrance-free, low-irritation products; the makeup has been scaled back for you.",
  "s0369": "Sometimes uncomfortable: patch test new products behind the ear or on the jawline for 2–3 days first.",
- "s0370": "Treatment or active products: skip makeup on days your skin is being treated or is irritated; for areas with prescribed products, ask a doctor before putting on makeup.",
+ "s0370": "Treatment or active products: follow your doctor's advice on whether to wear makeup on those days; for areas with prescribed products, ask a doctor before putting on makeup.",
  "s0371": "Putting together skincare and makeup suggestions…",
  "s0373": "Female demo",
  "s0374": "Male demo",
@@ -345,8 +345,8 @@ window.I18N_EN = {
  "s0404": "Each change runs one try-on (1 credit).",
  "s0405": "Demo mode: no credits are deducted.",
  "s0407": "Pick a skin tone from the photo first, so the foundation shade can be matched automatically.",
- "s0411": "The shades on screen come from a demo catalog (fictional brand). In real use, they can be matched to the current shades on partner brands' official sites: first match your skin tone to the skin tone card (10 depth levels × cool/warm), then find the shade in the same cell. Go by a try-on in natural light at the counter.",
- "s0412": "Foundation and concealer: first match your skin tone to the skin tone card (10 depth levels × cool/warm), then look for the shade in the same cell among each brand's current shades on its official site; for cool/warm, use the brand's own labeling. Official site swatches are colors shown on a web page, so go by a try-on in natural light at the counter.",
+ "s0411": "The shades on screen come from a demo catalog (fictional brand). In real use, a brand-supplied shade file can be loaded: the app ranks shades by the skin tone card's depth and cool/warm plus the color difference to the skin, and lists the closest ones. Go by a try-on in natural light at the counter.",
+ "s0412": "Foundation and concealer: the app lists the closest shade from each brand's shade file, ranked by the skin tone card (10 depth levels × cool/warm) and color difference; for cool/warm, use the brand's own labeling. Swatches are colors shown on a web page, so go by a try-on in natural light at the counter.",
  "s0415": "Currently keeping as is, so there is no makeup to layer.",
  "s0416": "Trying on layer by layer…",
  "s0418": ", ",
@@ -507,7 +507,7 @@ window.I18N_EN = {
  "s0606": "Watch for ingredients that may trigger lighter patches",
  "s0608": "Try new products on a small area first; do not rush to buy a large size",
  "s0609": "Stop using a product if you notice irritation or an allergic reaction.",
- "s0610": "Skip makeup on days your skin is being treated or is irritated; if you are not sure what it is, or the lighter patches are getting larger, please have a dermatologist check",
+ "s0610": "On treatment days, follow your doctor's advice on whether to wear makeup; if you are not sure what it is, or the lighter patches are getting larger, please have a dermatologist check",
  "s0612": "Two colors are needed: one dot on your natural skin tone and one on the lighter patch",
  "s0613": "Pick your skin tone first: tap a spot on the cheek or jawline",
  "s0614": "Cool/warm is estimated from the photo, so please confirm it yourself; the shade is best judged by trying it at a beauty counter in natural light.",
@@ -818,7 +818,7 @@ window.I18N_EN = {
  "s0946": "Spot color correcting: dab peach/orange only on the lighter patches (no green), in small sections, not over the whole face.",
  "s0947": "Layer on concealer where needed; the color difference is most noticeable at the edges of the lighter patches, so dab a slightly lighter concealer on the edges and fade it outward.",
  "s0948": "Set with a little loose powder, pressed on lightly.",
- "s0949": "Skip makeup on days your skin is being treated or is irritated.",
+ "s0949": "On treatment days",
  "s0950": "Use sunscreen, shade, long sleeves, and UV-blocking sunglasses together.",
  "s0951": "Long-term sun exposure gradually changes the skin; have any new spot, uneven color or change in shape checked by a dermatologist.",
  "s0952": "Apply sunscreen over a wide area; if the surrounding skin does not tan, the color difference is also smaller.",
@@ -863,13 +863,14 @@ window.I18N_EN = {
  "s0993": "Summary for the beauty advisor",
  "s0995": "Shade list (brand, product, code):",
  "s0996": "Confirm by swatching at the counter in natural light.",
- "s0998": "The official step (saved result of a real YouCam try-on)"
+ "s0998": "The official step (saved result of a real YouCam try-on)",
+ "s1000": "Simulated: no saved YouCam result for these options in demo mode; this is the pre-made look composed locally"
 };
 window.I18N_EN_TPL = {
  "s0179": "<button class=\"done\" data-step=\"${i}\" aria-label=\"Back to step ${i + 1}: ${s}\"><b>${i + 1}</b><em>${s}</em></button>",
  "s0180": "Step ${at + 1} of ${STEPS.length}: ${STEPS[at]}",
  "s0183": "<img src=\"${c.img}\" alt=\"\" loading=\"eager\"><span class=\"cc-text\"><strong>${c.label}</strong><span>${c.desc}</span><em>Start →</em></span>",
- "s0185": "${c.label}. Before you start: skip makeup on days your skin is being treated or is irritated, patch test new products on a small area behind the ear first, and apply sunscreen before you head out.",
+ "s0185": "${c.label}. Before you start: on treatment days, follow your doctor's advice on whether to wear makeup, patch test new products on a small area behind the ear first, and apply sunscreen before you head out.",
  "s0200": "Brightness differs by ${Math.round((1 - fp.ratio) * 100)}% between left and right; light from straight ahead will be more accurate.",
  "s0205": "Resolution is too low (short side ${short}px, ${MIN_SHORT}px or more needed). Please retake with the front camera at its highest quality; enlarged photos distort the try-on.",
  "s0222": "${label}: ${hex} (${SRC_TEXT[src]})",

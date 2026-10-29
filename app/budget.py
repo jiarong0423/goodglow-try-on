@@ -27,9 +27,15 @@ class Budget:
         self.cap = cap
         self.path = path
         self.lock = threading.Lock()
-        data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-        self.spent = int(data.get("spent", 0))
-        self.events = data.get("events", [])
+        try:
+            data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+            self.spent = int(data.get("spent", 0))
+            self.events = list(data.get("events", []))
+        except (OSError, ValueError, TypeError, AttributeError) as exc:
+            # an unreadable ledger must not take the demo down, and must not reset the spend: live calls stay closed (spent = cap) until the file is fixed
+            print(f"ERROR budget ledger unreadable ({type(exc).__name__}); live calls stay closed until it is fixed: {path}", file=sys.stderr)
+            self.spent = cap
+            self.events = []
         self.reserved = 0
 
     def _save(self):

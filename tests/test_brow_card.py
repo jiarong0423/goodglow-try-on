@@ -45,14 +45,14 @@ class BrowTargetTests(unittest.TestCase):
 
 class FullLookBrowTests(unittest.TestCase):
     def test_full_look_never_lightens_dark_brows(self):
-        # 10-16 owner feedback "brow shade has a problem": black brows must not be swapped by the full look into light gold-brown / grey-brown
+        #  "brow shade has a problem": black brows must not be swapped by the full look into light gold-brown / grey-brown
         for style in ("grooming", "natural", "polished"):
             r = rec.recommend("vitiligo", style, normal_hex="#B38071", patch_hex="#B49B96", brow_hex="#1B1B1B")
             b = r["full_look"]["selection"]["brow"]
             self.assertIn(b, ("keep", "photo_soft", "photo_defined"), style)
 
     def test_albinism_full_look_brows_stay_light(self):
-        # 10-16 owner feedback "do not draw white brows": the full look skips brows (the official engine cannot locate white brows accurately); the brow card reference shade still never gives black
+        #  "do not draw white brows": the full look skips brows (the official engine cannot locate white brows accurately); the brow card reference shade still never gives black
         for style in ("natural", "polished"):
             r = rec.recommend("albinism", style, skin_hex="#E1CDC6", brow_hex="#CBB4A8")
             self.assertEqual(r["full_look"]["selection"]["brow"], "keep", style)

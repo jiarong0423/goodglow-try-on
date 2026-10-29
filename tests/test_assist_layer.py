@@ -1,4 +1,4 @@
-"""Assist layer: parts YouCam cannot do or handle on its own are filled in by local coloring on the phone .
+"""Assist layer: parts YouCam cannot do or handle on its own are filled in by local coloring on the phone.
 Reproduction steps are in demo/repro/README.md: `app/server.py --mock --simulate-youcam-error`, go to the try-on page."""
 import json
 import tempfile

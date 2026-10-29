@@ -1,8 +1,8 @@
 """Brow color card: first tag every brow-pencil shade (6 depth levels x 5 color families), then match by tag (local, no points spent).
 
 Owner's request (10-16): brow shades looked wrong, so build the tags first and then match. Basis:
-- Albinism makeup notes supplied by the owner: for very pale skin avoid black and dark grey; use light brown, golden brown, caramel, adjusting along the natural brow; for evening, caramel or grey-brown can deepen it.
-- Videos of people with the condition (supplied by the owner): some use taupe grey-brown brow gel, some use Blonde 02 light-gold brow pencil.
+- Albinism makeup notes supplied for this project: for very pale skin avoid black and dark grey; use light brown, golden brown, caramel, adjusting along the natural brow; for evening, caramel or grey-brown can deepen it.
+- Videos of people with the condition (supplied for this project): some use taupe grey-brown brow gel, some use Blonde 02 light-gold brow pencil.
 - A skincare brand's vitiligo makeup guide: gold brow pencil for light skin, brown for deeper skin; fill light patches on the brow with the pencil and blend with a brush.
 - Existing rule: if the brow is already visible, fill in the natural brow color or go one level deeper for definition; never shift toward lighter.
 Color family prefers the cool / warm / neutral wording in the brand description (same approach as foundation); only if absent is it computed from the color.

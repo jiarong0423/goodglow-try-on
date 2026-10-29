@@ -354,7 +354,7 @@ def face_shades(skin_hex: str, zones: dict | None = None, undertone: str | None 
 
 
 def skin_balance(normal_hex: str, patch_hex: str, patch_ratio: float | None = None) -> dict:
-    """Skin-color balance point for vitiligo (reference only; since 10-16 the owner decided to return to whole-face foundation matched to the surrounding skin, so this is no longer used to pick foundation):
+    """Skin-color balance point for vitiligo (reference only; since  decided to return to whole-face foundation matched to the surrounding skin, so this is no longer used to pick foundation):
     the natural skin color and the patch color mixed by their area share on the face (Lab weighted average).
     patch_ratio: approximate share of face sampling points on the patch (computed by clustering on auto-sampling); 0.5 if absent."""
     known = patch_ratio is not None
@@ -409,7 +409,7 @@ def vitiligo_plan(normal_hex: str, patch_hex: str, undertone: str | None = None,
         "面中打亮：額頭中央、鼻樑、下巴、眼下三角，霧面或微光；T 字少量蜜粉按壓控油。",
         "需要的地方再疊一層遮瑕；淺色區塊邊緣色差最明顯，點上淺一點的遮瑕修邊、往外淡化。",
         "少量蜜粉輕壓定妝。",
-        "照光治療當天不上妝。",
+        "照光治療日是否上妝，請依醫師指示。",
         "選色時在下顎線試三條（淺一階、最接近、深一階），到窗邊自然光看、等 15–30 分鐘再決定：底妝和皮脂混合、變乾後會稍微變深，"
         "猶豫時選略淺半階的。",
     ]
@@ -479,7 +479,7 @@ _CARE = {
         ("防曬 SPF50+，大範圍擦", "淺色區塊處容易曬傷；周圍皮膚不曬黑，色差也比較小。"),
         _CARE_COMMON[2],
         ("避開可能誘發淺色區塊的成分", "染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白產品；在哪裡用、哪裡出現淺色區塊就停用並看醫師。"),
-        ("照光治療當天不上妝", "照光前 2 小時不擦乳霜、化妝品、香水；一般保濕可以。"),
+        ("照光治療日是否上妝，請依醫師指示", "照光前 2 小時不擦乳霜、化妝品、香水；一般保濕可以。"),
         ("局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色）", "淺色區塊缺色素，先校色粉底才不會泛灰；不要整臉上。"),
         ("底妝：對淺色區塊周圍的膚色選色，面中最多、往外推薄；T 字平刷、眼周最薄；海綿點壓", "照配色卡的底妝色號；往外推到脖子一致。T 字少量蜜粉按壓控油。不想上可以跳過。"),
         ("面中打亮：額頭中央、鼻樑、下巴、眼下三角，選霧面或微光", "讓臉中間亮一點、更立體；珠光太多會讓紋理和淺色區塊更明顯。"),
@@ -562,7 +562,7 @@ _SENSITIVE = {
             ("不要搓、抓、用力刷", "摩擦可能讓該處長出新的淺色區塊。上妝、卸妝都用點壓。"),
             ("留意可能誘發淺色區塊的成分", "染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白成分（如杜鵑醇）；在哪裡用、哪裡出現淺色區塊就停用並看醫師。"),
             ("新產品先小範圍試，不要急著買大罐", "出現刺激、過敏就停用。"),
-            ("照光治療當天不上妝；不確定是什麼、或淺色區塊範圍變大，請皮膚科確認", "以醫師或衛教人員的說明為準。"),
+            ("照光治療日是否上妝，請依醫師指示；不確定是什麼、或淺色區塊範圍變大，請皮膚科確認", "以醫師或衛教人員的說明為準。"),
         ],
     },
 }

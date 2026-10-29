@@ -1,7 +1,7 @@
 'use strict';
 // Local concealer simulation for vitiligo patches (computed on the phone; the photo is not uploaded and no points are deducted).
 // Why we build this ourselves: the YouCam try-on foundation can only be applied evenly over the whole face and its concealer only to fixed areas, so a vitiligo patch cannot be targeted;
-// the actual technique (from videos supplied by the owner and a vitiligo-covering guide) is to dab a foundation close to the surrounding skin color "onto the patch" first, then blend it over the whole face.
+// the actual technique (from reference videos and a vitiligo-covering guide) is to dab a foundation close to the surrounding skin color "onto the patch" first, then blend it over the whole face.
 // Method:
 // 1. Face landmarks (MediaPipe) outline the face; eyes and mouth are cut out.
 // 2. Each pixel on the face is compared with two sampled colors (original skin, patch): a pixel that looks more like the patch and is brighter than the original skin counts as patch.
@@ -151,7 +151,7 @@
    *   opts.centerMode = 'tband': the center brightening weight uses a T shape (forehead center to nose tip + chin) decreasing progressively outward; brightening amount = opts.center
    * opts.transition = how much concealment is kept at the patch center (0-1, default unset = same strength over the whole patch): the edge keeps strength to level with the surrounding skin,
    *   the closer to the patch center the less is concealed, the center only reaches transition times, leaving a lighter middle tone -- a transition rather than a uniform dark fill
-   *   . opts.transitionWidth = depth blur radius (x face width, default 0.035),
+   *. opts.transitionWidth = depth blur radius (x face width, default 0.035),
    *   opts.transitionStart = how deep before it starts to fade (default 0.5; raising it widens the fully concealed band at the edge)
    * opts.split = conceal color and lightness separately : { chroma: 0.90, edgeL: strength, centerL: 0.52, rim: 15, falloff: 35,
    *   seam: 8, seamSigma: 4 } (distance unit = original-image pixels). Color (a*, b* + warm color) is concealed at chroma over the whole patch; only lightness L* keeps edgeL for
@@ -213,7 +213,7 @@
       }
     }
     if (!sum.p[3] || normals.length < 20) return null;
-    // Target color = the "lit" surrounding skin after try-on (the brighter half): using the overall average would include shadows and pull the patch into a dull block (owner: "too heavy")
+    // Target color = the "lit" surrounding skin after try-on (the brighter half): using the overall average would include shadows and pull the patch into a dull block
     normals.sort((u, v) => v[0] - u[0]);
     const lit = normals.slice(0, Math.max(10, Math.floor(normals.length / 2)));
     for (const q of lit) { sum.n[0] += q[1]; sum.n[1] += q[2]; sum.n[2] += q[3]; sum.n[3]++; }

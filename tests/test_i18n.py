@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CSV_EN_SHA = "d7d9bdd7bd5c450e4c881b4e852859263a9386bad3107071359d31ae5bbd8630"   # per-row sha256 of id<TAB>en (945 rows)
+CSV_EN_SHA = "aae16fe17a2e1b896626753c010380c750c6356bfd4cb5cf11c2998a5638e23a"   # per-row sha256 of id<TAB>en (946 rows)
 CJK = re.compile(r"[㐀-鿿]")
 
 
@@ -23,7 +23,7 @@ class TestTable(unittest.TestCase):
         self.rows = list(csv.DictReader(open(ROOT / "docs/i18n/zh_en_map.csv", encoding="utf-8")))
 
     def test_en_column_hash_and_count(self):
-        self.assertEqual(len(self.rows), 945)
+        self.assertEqual(len(self.rows), 946)
         sha = hashlib.sha256("\n".join(f"{r['id']}\t{r['en']}" for r in self.rows).encode()).hexdigest()
         self.assertEqual(sha, CSV_EN_SHA)
 

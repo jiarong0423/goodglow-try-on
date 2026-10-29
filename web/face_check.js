@@ -1,5 +1,5 @@
 'use strict';
-// Cross-check of face landmarks :
+// Cross-check of face landmarks:
 // a second, independent face detector, YuNet (OpenCV Zoo, MIT, a YOLO-style single-stage detector: face box + 5 points), runs on the phone (ONNX Runtime Web),
 // and its distance is compared (in units of eye distance) with the 5 corresponding MediaPipe face-mesh points (two eye centers, nose tip, two mouth corners).
 // If the two models differ too much -> the makeup area may be drawn crooked; prompt the user to retake or drag the points manually. The photo is not uploaded.

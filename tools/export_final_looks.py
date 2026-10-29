@@ -51,7 +51,7 @@ FINALS = {
                    "report": None},
     # 10-21 design decision: for the vitiligo entry's female demo, drop the side-view photo and use the final look of the frontal version (frontal_F_20261020) → option A:
     # base = local layered C4; official = the returned image of C4 → official blush → official eyeshadow 2colors2 (smoothing 0), which is also the final (same as the vitiligo male)
-    # 10-21 owner's reply "simulated": the AI turned-view image may be reused, always labelled as simulated on screen, with the note that it is an AI-generated turned-view illustration, not the person's original photo
+    #  "simulated": the AI turned-view image may be reused, always labelled as simulated on screen, with the note that it is an AI-generated turned-view illustration, not the person's original photo
     "vitiligo_F": {"title": "局部輕遮瑕", "credit": CREDIT["uCt9uA9r1Rw_frontal"],
                    "source_note": "原照 Unsplash uCt9uA9r1Rw（側臉）→ AI 影像工具（AI）轉成正面示意圖（非本人原照，輪廓未驗證）→ 本地逐層 F_C4 → 官方腮紅＋眼影（磨皮 0）；畫面標「模擬」",
                    "base": ("layer_rule_20261018/F_compose/F_C4.png", "e6085ea0de4b0ab782771844c1a87306d97386347ad18aa25b38909aab0a9884"),

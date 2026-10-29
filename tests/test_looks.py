@@ -48,7 +48,7 @@ class LooksTests(unittest.TestCase):
         self.assertEqual(set(pal), {"color", "colorIntensity", "glowIntensity", "coverageIntensity"})  # official schema
         self.assertNotIn("pattern", effects[1])
         self.assertEqual(self.p["foundation"][0]["id"], "keep")
-        # good-complexion coverage : when there is a nearest-skin shade, both quick looks apply foundation first; without a shade, no foundation
+        # good-complexion coverage: when there is a nearest-skin shade, both quick looks apply foundation first; without a shade, no foundation
         # albinism (default condition) uses "sheer" to keep skin texture
         want = {"grooming": "light", "natural": "light", "polished": "light"}
         for q in ("glow", "clear"):
@@ -109,7 +109,7 @@ class LooksTests(unittest.TestCase):
         self.assertEqual([i for i, _ in looks.layers(sel)], ["foundation", "highlight", "blush"])
 
     def test_albinism_quick_looks_add_contour_nose_highlight_and_brow(self):
-        # owner: albinism "define features to improve complexion" -> contour + nose-bridge glow + brow fill; grey-brown, no bronze
+        #  albinism "define features to improve complexion" -> contour + nose-bridge glow + brow fill; grey-brown, no bronze
         import color_engine as ce
         want = {"grooming": "soft", "natural": "soft", "polished": "defined"}
         for style in self.p["styles"]:
@@ -150,7 +150,7 @@ class LooksTests(unittest.TestCase):
         self.assertEqual(looks.quick_selection("natural", "glow", "neutral", self.p).get("contour", "keep"), "keep")
 
     def test_vitiligo_quick_looks_use_tzone_highlight_without_shimmer(self):
-        # owner: vitiligo "cover the patches, highlight the T-zone"; no shimmer, so the patches on the T-zone do not stand out more
+        #  vitiligo "cover the patches, highlight the T-zone"; no shimmer, so the patches on the T-zone do not stand out more
         for style in self.p["styles"]:
             sel = looks.quick_selection(style, "glow", "neutral", self.p, foundation_hex="#A77557", condition="vitiligo")
             self.assertEqual(sel["highlight"], "tzone", style)

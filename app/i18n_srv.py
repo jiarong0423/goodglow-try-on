@@ -6,7 +6,7 @@ Chinese mode never passes through here, and the response is byte-identical to be
 - f-string sentences (e.g. the "N levels apart" template with {level_diff}) -> matched by pattern, then the captured values are put into the English template; if a captured value is itself Chinese (e.g. a level name) it is replaced once more.
 - Strings made of several chained sentences (joined by the Chinese full stop or semicolon) -> split and replaced only if every sentence is in the table, English joined with a single space; if any sentence is missing the string stays as is (the audit tool tools/audit_api_strings.py finds these so the table can be filled in).
 Strings not in the table are always returned unchanged: no guessing, no rewriting.
-Protection (red team 10-21 F1): strings sent by the client can also be echoed back into the response, and the pattern regexes have several any-character groups, which become polynomial time for a malicious long string.
+Protection (Security review): strings sent by the client can also be echoed back into the response, and the pattern regexes have several any-character groups, which become polynomial time for a malicious long string.
 So: strings longer than MAX_TEMPLATE characters skip pattern matching (sentences the server generates are all short, the longest being 133 characters);
 strings longer than MAX_TOTAL characters are not processed at all; before pattern matching, check that the fixed text in the pattern appears in order (if not, the regex need not run).
 """

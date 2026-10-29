@@ -1,5 +1,5 @@
 'use strict';
-// Third-party libraries: loaded only when needed .
+// Third-party libraries: loaded only when needed.
 // OpenCV.js (10.9 MB) and ONNX Runtime Web (14 MB) are large and are not downloaded when the app opens; they load on first use,
 // and the service worker stores /vendor/ in a separate cache (version pinned), so they work offline afterward. Sources and sha256 are in vendor/SOURCES.md.
 (function () {

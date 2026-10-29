@@ -336,7 +336,7 @@ flowchart TB
   EFL --> FIN["demo/final/* + SHA256SUMS.txt"]
   PH["demo/photos/*.jpg"] --> RG
   VF["demo/repro/: YouCam foundation results, local layers result, patch mask + SHA256SUMS.txt"] --> RG["tools/repro_region_gap.py"]
-  RG --> TBL["Table: original 7.4, YouCam foundation about 5 to 6 % smaller, local fill about 42 % smaller"]
+  RG --> TBL["Table: original 7.4, YouCam foundation about 5 to 6 % smaller, local fill about 42 % smaller (offline layered fill fitted to a target image; one photo; not the browser layers)"]
   TBL --> VIEW
 ```
 

@@ -1,6 +1,6 @@
 """End-to-end tests for English mode and brand aliases (really starts a --mock server and goes over HTTP).
 
-Red team 10-21 F5: previously the English / alias paths had unit tests only, and no test went through HTTP. Each case here fails if anyone removes the aliasing or English localization in server.py's
+Security review: previously the English / alias paths had unit tests only, and no test went through HTTP. Each case here fails if anyone removes the aliasing or English localization in server.py's
 `_json`, or lets some response bypass it:
 - English: every response in the audit plan (requests from tools/audit_api_strings.py) must have no Chinese left.
 - Chinese: the same requests without a language must return what they did before (Chinese present, not English-localized).
@@ -101,7 +101,7 @@ class EnglishAndChineseTests(unittest.TestCase):
         self.assertNotIn("<b>661</b>", html)
 
     def test_hostile_echo_does_not_stall_the_server(self):
-        """Red team F1: when a very long malicious user string is echoed into a response, English localization must not bog down the server."""
+        """Security review: when a very long malicious user string is echoed into a response, English localization must not bog down the server."""
         import time
         evil = "http://" + (":" + " 模式：") * 1500
         t = time.time()

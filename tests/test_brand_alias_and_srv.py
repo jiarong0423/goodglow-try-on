@@ -132,7 +132,7 @@ class ShadeAliasTests(unittest.TestCase):
 
 
 class OpaqueStringTests(unittest.TestCase):
-    """Red team F2: a brand string that happens by chance inside image base64 must not be corrupted by substitution."""
+    """Security review: a brand string that happens by chance inside image base64 must not be corrupted by substitution."""
 
     def setUp(self):
         self.ba = brand_alias.BrandAlias({"XYZ": "M"}, {})
@@ -180,7 +180,7 @@ class LoadAllPartnerFilesTests(unittest.TestCase):
 
 
 class LocalizerSafetyTests(unittest.TestCase):
-    """Red team F1: when a client string is echoed into a response, pattern matching must not be dragged down by a long malicious string."""
+    """Security review: when a client string is echoed into a response, pattern matching must not be dragged down by a long malicious string."""
 
     def setUp(self):
         self.loc = i18n_srv.Localizer({"exact": {}, "templates": [["http://{a}:{b} 模式：{c} presets {d}", "x {a} {b} {c} {d}"]]})

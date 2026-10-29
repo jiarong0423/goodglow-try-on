@@ -47,7 +47,7 @@ const state = {
 
 // ---------------------------------------------------------------- Utilities
 const $ = (id) => document.getElementById(id);
-// 10-21 page-turn effect (owner's request: change the cover image together with the page-turn effect, and make it slow): going forward the new page slides in from the right, going back from the left, over 0.8 seconds.
+// 10-21 page-turn effect: going forward the new page slides in from the right, going back from the left, over 0.8 seconds.
 // In light-sensitive mode (dark screen) or with the system 'reduce motion' setting, only a 0.6 second fade-in. Timing and distance are in style.css as --vt-slide-time / --vt-fade-time / --vt-distance. The page switch itself is still synchronous (later code can measure the layout right away); the animation is only added to the new page.
 let currentView = 'view-start';
 function show(view) {
@@ -173,7 +173,7 @@ function chooseCondition(c) {
   applyTheme();
   savePrefs();
   syncWarnDark(c.id === 'albinism');
-  speak(__T('s0185', () => `${c.label}。開始前提醒：照光治療當天不上妝，新產品先在耳後小範圍試，出門前先擦防曬。`, () => `${c.label}. Before you start: skip makeup on days your skin is being treated or is irritated, patch test new products on a small area behind the ear first, and apply sunscreen before you head out.`));
+  speak(__T('s0185', () => `${c.label}。開始前提醒：照光治療日是否上妝，請依醫師指示，新產品先在耳後小範圍試，出門前先擦防曬。`, () => `${c.label}. Before you start: on treatment days, follow your doctor's advice on whether to wear makeup, patch test new products on a small area behind the ear first, and apply sunscreen before you head out.`));
   $('warn-modal').hidden = false;
   $('btn-warn-ok').focus();
 }
@@ -873,7 +873,7 @@ async function goShade() {
 }
 // ---------------------------------------------------------------- Foundation preview (shade_preview.js, computed on the phone, no credits spent)
 const pv = { hex: null, list: [], picking: false, look: 'base', gen: 0 };
-// Today's makeup template : color codes come from the full looks of three makeup moods,
+// Today's makeup template: color codes come from the full looks of three makeup moods,
 // local run notes (not shipped) (the three platinum-blonde queen looks) and the fair_male_grooming study (grooming lip balm)
 const LOOK_TEMPLATES = [
   { id: 'base', label: __t('s0281', '只有底妝'), layers: [] },
@@ -1087,8 +1087,8 @@ async function camoDrawEditor() {
   camo.layer.draw();
 }
 // Notes on the forehead / chin zone detection (camo_editor.js zoneDetect): each zone uses its own lit brightness as the reference
-// Products for the makeup-layer mode : shades come straight from the recommendation; the concealer is picked from the recommendation list as the one 'closest to the surrounding skin once converted to this photo'
-// Demo photo: concealer, foundation and contour use the shades and opacities fitted by 'fitting to the target makeup' .
+// Products for the makeup-layer mode: shades come straight from the recommendation; the concealer is picked from the recommendation list as the one 'closest to the surrounding skin once converted to this photo'
+// Demo photo: concealer, foundation and contour use the shades and opacities fitted by 'fitting to the target makeup'.
 // The fit was done under the conversion of the expected makeup's base color (base.normal), so it applies only when 'match shades using the expected makeup' is on; the user's own photo has no target image.
 function camoFit() {
   return state.useExpected && state.expected && state.expected.layer_fit ? state.expected.layer_fit : null;
@@ -1192,7 +1192,7 @@ function camoStatus() {
 }
 const camoOpt = () => ({ coverage: Number($('camo-cov').value) / 100, feather: Number($('camo-feather').value),
   corrector: camoOn('camo-corr'), keepLight: camoOn('camo-light'), passes: Number($('camo-passes').value), highlight: Number($('camo-hi').value) / 100, shine: Number($('camo-shine').value) / 100 });
-// Catch the blanks and fill one more round :
+// Catch the blanks and fill one more round:
 // places that still show a difference after concealing -> OpenCV catches the outline -> new SVG patch (changeable color, can be toggled and its points dragged) -> cover with another layer using the already-concealed skin tone around it. At most 3 rounds.
 // Demo photo measurement: blanks 56% -> 19% -> 1%, color difference 5.5 -> 2.8 -> 2.0; from round 2 the nose-bridge highlight gets flattened, so one round is recommended.
 async function camoRefine() {
@@ -1282,7 +1282,7 @@ function camoRender() {
     } catch (e) { $('camo-status').textContent = e.message; }
   }, 40);
 }
-// Illustrated step tutorial :
+// Illustrated step tutorial:
 // each step uses the user's own photo to compute, on the phone, how that step looks + how to do it + recommended shade + color difference; the text is condensed from the recommendation data (base.steps, with sources).
 async function camoGuide() {
   const base = state.recommendation && state.recommendation.base;
@@ -1313,7 +1313,7 @@ async function camoGuide() {
     // Makeup-layer mode: each step is drawing up to that layer (the same 8 layers), and the text follows the makeup tutorial
     const cols = camoColors(prods), strength = Number($('mk-strength').value) / 100;
     const msteps = [
-      { t: __t('s0337', '保濕＋防曬'), d: __t('s0338', '先擦保濕，再擦防曬，等吸收再上妝；淺色區塊沒有黑色素保護，特別怕曬。照光治療當天不上妝。') },
+      { t: __t('s0337', '保濕＋防曬'), d: __t('s0338', '先擦保濕，再擦防曬，等吸收再上妝；淺色區塊沒有黑色素保護，特別怕曬。照光治療日是否上妝，請依醫師指示。') },
       { t: __t('s0339', '校色：只點在淺色區塊上'), d: __t('s0340', '綠色虛線就是範圍。用指尖或小刷在淺色區塊中央薄薄點上蜜桃／橘色，不要沾到旁邊的正常皮膚。'), up: 'corrector', outline: true, m: prods.corrector },
       { t: __t('s0341', '遮瑕：從中央往外推'), d: __t('s0342', '用最接近淺色區塊「周圍」膚色的遮瑕，先點在區塊中央，再用海綿拍按、往外推進周圍皮膚，邊緣才不會有一圈。拍按不要搓。'), up: 'conceal', m: prods.concealer },
       { t: __t('s0343', '第二層：只補還看得出來的地方'), d: __t('s0344', '等第一層服貼，再薄薄補在還看得出差異的地方。兩到三層薄的，比一層厚的自然。'), up: 'conceal2', m: prods.concealer },
@@ -1337,7 +1337,7 @@ async function camoGuide() {
   }
   const cov = 0.6;
   const steps = [
-    { t: __t('s0337', '保濕＋防曬'), d: __t('s0355', '先擦保濕，再擦無色防曬；淺色區塊對紫外線特別敏感。照光治療當天不上妝。'), r: { coverage: 0, concealer: false, corrector: false } },
+    { t: __t('s0337', '保濕＋防曬'), d: __t('s0355', '先擦保濕，再擦無色防曬；淺色區塊對紫外線特別敏感。照光治療日是否上妝，請依醫師指示。'), r: { coverage: 0, concealer: false, corrector: false } },
     { t: __t('s0255', '局部校色（只點在淺色區塊上）'), d: __t('s0356', '用指尖在綠色虛線範圍內薄點蜜桃／橘色校色，分小區塊，不要整臉上；不用綠色（疊上膚色粉底會發灰）。'), r: { coverage: 0, concealer: false, corrector: true }, outline: true, m: (base.corrector || [])[0] },
     { t: __t('s0357', '遮瑕第一層：海綿點壓'), d: __t('s0358', '用接近淺色區塊「周圍」膚色的遮瑕，只點在淺色區塊上，用海綿點壓、不要來回搓（摩擦可能長出新的淺色區塊）。'), r: { coverage: cov, passes: 1 }, m: (base.concealer || [])[0] },
     { t: __t('s0343', '第二層：只補還看得出來的地方'), d: __t('s0359', '等一下讓第一層服貼，再薄薄補在還看得出差異的地方；已經融合的地方不要再疊，才不會厚重。'), r: { coverage: cov, passes: 2 }, m: (base.concealer || [])[0] },
@@ -1378,7 +1378,7 @@ function personalAdvice() {
   const s = state.sens || {}, out = [];
   if (s.irritation === 'often' || s.fragrance === 'yes') out.push(__t('s0368', '你比較容易敏感：選無香料、低刺激的產品，妝容已幫你減量。'));
   else if (s.irritation === 'sometimes' || s.fragrance === 'unsure') out.push(__t('s0369', '偶爾會不舒服：新產品先在耳後或下顎試 2–3 天。'));
-  if (s.phototherapy) out.push(__t('s0370', '正在照光或擦藥：照光當天不上妝；擦藥的地方先問醫師再上妝。'));
+  if (s.phototherapy) out.push(__t('s0370', '正在照光或擦藥：這些日子要不要上妝，請依醫師指示；擦藥的地方先問醫師再上妝。'));
   return out;
 }
 async function goAdvice() {
@@ -1413,7 +1413,7 @@ async function goAdvice() {
   speak(__T('s0372', () => `建議：${(rec.care || []).map((c) => c.text).join('，')}。妝容：${full.why}`, () => `Suggestions: ${(rec.care || []).map((c) => c.text).join(', ')}. Makeup: ${full.why}`));
 }
 
-// ---------------------------------------------------------------- Final look (simulated): /api/final-look (10-19 owner authorized hooking it into both entrances)
+// ---------------------------------------------------------------- Final look (simulated): /api/final-look ( hooking it into both entrances)
 const FINAL_WHO_LABEL = { F: __t('s0373', '女生示範'), M: __t('s0374', '男生示範') };
 async function loadFinalLook(who) {
   const card = $('final-card'), msg = $('final-msg');
@@ -1475,7 +1475,7 @@ function paintFace(p, face) {
   hint.textContent = face === 'photo' ? __t('s0958', '點一下看你選的樣子') : __t('s0959', '點一下回到你的照片');      // The hint can be tapped (static, no flashing); it sits on the top edge of the photo and is hidden after the first tap
 }
 function flipFace(p, face) { if (FACE[p] !== face) { HINT_DONE[p] = true; paintFace(p, face); } }
-// Where the picture on each flip card came from: kind = replay_exact | replay_closest | live | demo_label | local (from /api/makeup "source"), plus the local parts added on the phone
+// Where the picture on each flip card came from: kind = replay_exact | replay_closest | sim_look | live | demo_label | local (from /api/makeup "source"), plus the local parts added on the phone
 const SOURCE = { base: { kind: 'photo', local: [] }, adj: { kind: 'photo', local: [] } };
 function setSource(p, source, localParts) { SOURCE[p] = { ...(source || {}), local: localParts || [] }; }
 function provBadge(src) {
@@ -1489,6 +1489,7 @@ function provLine(src) {
   else if (src.kind === 'replay_exact' && src.recorded_at) main = __T('s0982', () => `重播真實 YouCam 呼叫結果（錄於 ${src.recorded_at}）`, () => `Replayed real YouCam call (recorded ${src.recorded_at})`);
   else if (src.kind === 'replay_exact' || src.kind === 'replay_closest') main = __t('s0983', '重播真實 YouCam 呼叫結果（最接近的已錄組合）');
   else if (src.kind === 'local') main = __t('s0967', '本機模擬（YouCam 暫時處理不了）');
+  else if (src.kind === 'sim_look') main = __t('s1000', '模擬：展示模式沒有這組選項的 YouCam 錄製結果，顯示的是本機預先合成的完成妝容');
   else main = __t('s0984', '模擬：展示模式未呼叫 YouCam（你的照片原樣加上標示）');
   return [main].concat(src.local || []).join(' + ');
 }
@@ -1514,6 +1515,11 @@ async function localAssistImage() {
     }
     return image;
   } catch (_) { return null; }
+}
+function sourceName(src) {
+  if (src && src.kind === 'live') return __t('s0963', 'YouCam 試妝');
+  if (src && (src.kind === 'replay_exact' || src.kind === 'replay_closest')) return __t('s0985', 'YouCam 重播');
+  return __t('s0060', '模擬');
 }
 function sourceLine(parts) { return __t('s0962', '來源：') + parts.join(' + '); }
 
@@ -1586,7 +1592,7 @@ async function applyBase(which) {
     $('base-current').src = image;
     $('base-caption').textContent = baseTitle(which) + (extra && /^[＋+]/.test(extra) ? __sp() + __t('s0390', '＋局部遮瑕') : '');
     $('base-desc').textContent = describe(sel) + (extra ? __t('s0391', '。') + extra : '') + (sameAsBefore ? __T('s0392', () => `。${MOCK_SAME}`, () => `. ${MOCK_SAME}`) : '');
-    $('base-source').textContent = sourceLine([__t('s0963', 'YouCam 試妝'), usedCam ? __t('s0964', '本機局部遮瑕（模擬）') : null, local ? __t('s0965', '本機畫眉（模擬）') : null].filter(Boolean));
+    $('base-source').textContent = sourceLine([sourceName(res.source), usedCam ? __t('s0964', '本機局部遮瑕（模擬）') : null, local ? __t('s0965', '本機畫眉（模擬）') : null].filter(Boolean));
     setSource('base', res.source, [usedCam ? __t('s0964', '本機局部遮瑕（模擬）') : null, local ? __t('s0965', '本機畫眉（模擬）') : null].filter(Boolean));
     if (state.mode === 'mock' && state.demo) $('base-desc').textContent += __sp() + __t('s0988', '示範模式下，這兩張示範照的各個妝容與原圖平均每個像素只差約 3–8（滿分 255），因為畫面是錄好的真實呼叫結果，示範模式不能重新試妝；點圖片在「你的照片／你選的樣子」之間切換比較。');
     paintFace('base', FACE.base);
@@ -1778,8 +1784,8 @@ async function changeOption(item, id) {
 function catalogNote() {
   // Demo catalog mode (for recording videos and screenshots): no third-party brand names appear on screen
   return state.catalogKind === 'demo'
-    ? __t('s0411', '畫面上的色號是示範型錄（虛構品牌）。實際使用時，可對應合作品牌官網現行色號：先把膚色對到膚色色卡（深淺 10 級×冷暖），再找同一格的色號。請以專櫃自然光試色為準。')
-    : __t('s0412', '底妝、遮瑕：先把膚色對到膚色色卡（深淺 10 級×冷暖），再找各品牌官網現行色號裡同一格的；冷暖用品牌自己的標示。官網色票是網頁顯示色，請以專櫃自然光試色為準。');
+    ? __t('s0411', '畫面上的色號是示範型錄（虛構品牌）。實際使用時，可改載入品牌提供的色號檔：系統依膚色色卡的深淺與冷暖，再加上與膚色的色差排序，列出最接近的色號。請以專櫃自然光試色為準。')
+    : __t('s0412', '底妝、遮瑕：系統依膚色色卡（深淺 10 級×冷暖）與色差，從各品牌色號檔列出最接近的；冷暖用品牌自己的標示。色票是網頁顯示色，請以專櫃自然光試色為準。');
 }
 
 // ---------------------------------------------------------------- View layer by layer: foundation -> + blush -> + lips -> + brows -> + lashes

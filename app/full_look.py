@@ -98,14 +98,14 @@ def full_look(condition: str, style: str, level: int, tone_id: str, sensitivity:
         if sel["lip"] == "red3":
             setv("lip", "natural_gloss", "容易敏感：霧面唇容易乾，改水光自然色")
 
-    # ---- brow already visible (e.g. black brows): the fixed colors are all lighter than the natural brow, so always switch to the natural brow color (, owner: the brow shades looked wrong)
+    # ---- brow already visible (e.g. black brows): the fixed colors are all lighter than the natural brow, so always switch to the natural brow color
     if brow_visible and has_brow_sample and sel["brow"] in ("fill_light", "light_brown", "taupe", "taupe_deep", "greige"):
         new = "photo_defined" if sel["brow"] == "taupe_deep" else "photo_soft"
         if new in allowed["brow"]:
             sel["brow"] = new
             notes.append("眉毛本來就看得見：照原眉色補，不換成較淺的顏色")
 
-    # ---- very faint brow (white brow): the official try-on cannot locate a white brow, and in three people's tests the brow was drawn above the natural brow (, owner: do not draw white brows)
+    # ---- very faint brow (white brow): the official try-on cannot locate a white brow, and in three people's tests the brow was drawn above the natural brow
     brow_pale = has_brow_sample and brow_visible is False
     if brow_pale and sel["brow"] != "keep":
         sel["brow"] = "keep"

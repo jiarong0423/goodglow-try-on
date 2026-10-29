@@ -114,7 +114,7 @@ _NAME_WORDS = [(r"\b(cool|warm|neutral)\b", None), (r"\b(golden|olive)\b", "warm
 
 
 def label_tone(code: str, brand: str | None = None) -> str | None:
-    """The undertone marked by the shade name / brand code itself (owner's rule,: if the brand name already marks undertone (C/W/Golden etc.), use the brand marking; use relative position only when unmarked).
+    """The undertone marked by the shade name / brand code itself.
     Some brands' code letters are the opposite of the usual reading (e.g. one set of letters leans yellow and another leans pink); the lookup table lives only in the local brand file brand_codes_local.json."""
     for rx, tone in _BRAND_CODE.get(brand or "", []) + _GENERIC_CODE:
         if re.search(rx, code, re.I):
@@ -184,7 +184,7 @@ def counter_shades(target: dict, rows: list[dict], category: str = "foundation",
         if r["category"] == category:
             lines.setdefault((r["brand"], r["product"], r["source"]), []).append(r)
     tL = level_mid_L(target["level"]) if "L" not in target else target["L"]
-    # within the same cell pick the one whose color is closest to the skin ;
+    # within the same cell pick the one whose color is closest to the skin;
     # the color difference is used only for ordering inside the cell, because photos and swatches differ overall, so it is not used to judge whether something is close
     t_lab = tuple(target["profile"]["lab"]) if target.get("profile") else None
     # keep threshold: if the current ranking's (brand undertone + ΔE/40) first place has color difference < KEEP_DE, it is pinned at first

@@ -115,8 +115,8 @@ technology list, and the cross-checks. It lives in the repository only; the app 
 
 This repository ships a **fictional demo catalog** (`app/catalog.json`: brands, shades and colors are all made up). The home page numbers
 and the shade page notes come from the catalog that is actually loaded (`/api/status`), so a fresh clone shows the demo catalog.
-The code can load an authorized brand shade file (`app/partner_shades_official.json`) and prefers it when present; such data is not
-part of this repository. Recordings and screenshots for the public (video, Devpost) always use `--catalog demo`, the fictional catalog, so no third-party brand name or brand shade code
+The code can load a brand shade file you supply (`app/partner_shades_official.json`) and prefers it when present; such data is not
+part of this repository. Shades are ranked by the skin tone card's depth and cool/warm plus the color difference to the skin, and a first-place shade within the keep threshold stays pinned at the top. Recordings and screenshots for the public (video, Devpost) always use `--catalog demo`, the fictional catalog, so no third-party brand name or brand shade code
 appears. `--brand-alias` (letter aliases such as Brand M, product names turned into categories, shade names dropped, codes kept) is for local
 checks only and is not used for public material.
 
@@ -161,8 +161,10 @@ The reason for the split is that a reader has to be able to tell which pixels ca
 ## Privacy
 
 Photos are processed in memory (orientation fix, resize, re-encode without EXIF) and dropped after the try-on; results go straight back to the
-browser. Face landmarks run in the browser (the MediaPipe models and scripts are fetched from public CDNs at run time, and the YouCam Camera Kit script from the YouCam CDN, so a visit loads third-party code from those hosts; the hosted demo is also served behind Cloudflare, whose proxy can add its own analytics script (Cloudflare Web Analytics) to pages; that script is not in this repository's code and is set at the hosting layer); the lighter-patch mask is computed on the app server, in memory. In live mode the photo is sent to YouCam for the try-on; in demo mode it is not. Tone, shade matching and the color card are computed locally. Only light fingerprints (brightness and
+browser. Face landmarks run in the browser (the MediaPipe models and scripts are fetched from public CDNs at run time, and the YouCam Camera Kit script from the YouCam CDN, so a visit loads third-party code from those hosts; the hosted demo is also served behind Cloudflare, whose proxy can add its own analytics script (Cloudflare Web Analytics) to pages; that script is not in this repository's code and is set at the hosting layer); the lighter-patch mask is computed on the app server, in memory. In live mode the photo is sent to YouCam for the try-on; in demo mode it is not. Shade matching, recommendations and the color card are computed on the app server, in memory and not stored, from the fields the page sends (the entry, sensitivity, undertone and the skin, brow and foundation colour numbers); no photo is sent for them. Only light fingerprints (brightness and
 colour-temperature numbers) and preferences are kept in the browser.
+
+Every response carries a Content-Security-Policy that limits scripts and connections to this site and the CDNs listed above, plus `Strict-Transport-Security`, `Permissions-Policy` (camera only), `X-Frame-Options: DENY` and `nosniff` (see `THREAT_MODEL.md`, T6). The page keeps no cookies of its own; the judge sign-in cookie is HttpOnly and exists only after a judge signs in.
 
 ## Licence
 

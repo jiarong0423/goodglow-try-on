@@ -37,9 +37,13 @@ class ProvenanceMockTests(ServerTestBase):
         self.assertRegex(res["source"]["recorded_at"], r"^\d{4}-\d{2}-\d{2}$")
 
     def test_unrecorded_options_report_closest_replay(self):
-        code, res = self.post("/api/makeup", dict(EXACT_ALBINISM, selection={"lip": "tinted_balm", "blush": "flush"}))
+        # vitiligo has named recordings: the closest saved YouCam call. albinism has none: the pre-made local look, which must be reported as a simulation
+        code, res = self.post("/api/makeup", dict(EXACT_ALBINISM, condition="vitiligo", selection={"lip": "tinted_balm", "blush": "flush"}))
         self.assertEqual(code, 200, res)
         self.assertEqual(res["source"], {"kind": "replay_closest"})
+        code, res = self.post("/api/makeup", dict(EXACT_ALBINISM, selection={"lip": "tinted_balm", "blush": "flush"}))
+        self.assertEqual(code, 200, res)
+        self.assertEqual(res["source"], {"kind": "sim_look"})
 
     def test_own_photo_in_demo_mode_is_a_labelled_simulation(self):
         code, res = self.post("/api/makeup", {"style": "natural", "undertone": "neutral", "selection": {"lip": "tinted_balm"},
@@ -134,8 +138,9 @@ class PageWiringTests(unittest.TestCase):
             self.assertNotIn("data-i18n", tag)
         for fn in ("function provBadge", "function provLine", "function setSource", "setSource('base', res.source", "setSource('adj', res.source"):
             self.assertIn(fn, self.js)
-        for kind in ("replay_exact", "replay_closest", "'live'", "'local'", "'photo'"):
+        for kind in ("replay_exact", "replay_closest", "sim_look", "'live'", "'local'", "'photo'"):
             self.assertIn(kind, self.js)
+        self.assertIn("sourceLine([sourceName(res.source)", self.js)                 # the "Source:" line follows the provenance, never a fixed "YouCam try-on"
         self.assertNotIn("__t('s0980'", self.js)                                  # the old "Saved YouCam result · simulated" line is gone
         self.assertIn('id="final-off-fig"><span class="sim-tag" data-i18n="s0985">YouCam 重播</span>', self.html)
         self.assertIn('<span class="sim-tag" id="expect-tag" data-i18n="s0060">模擬</span>', self.html)   # the AI expected look stays Simulated

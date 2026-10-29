@@ -1,5 +1,5 @@
 """Tests for the decision rules of the capture helper (web/capture_guide.js).
-10-21 owner request: "attach the failure evidence" and "then add guidance for the photographer"; thresholds and sources follow docs/EVIDENCE_LIMITS.md.
+ "attach the failure evidence" and "then add guidance for the photographer"; thresholds and sources follow docs/EVIDENCE_LIMITS.md.
 JS pure functions are run with node; skipped when node is unavailable.
 """
 import json
