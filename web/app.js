@@ -1588,7 +1588,7 @@ async function applyBase(which) {
     $('base-desc').textContent = describe(sel) + (extra ? __t('s0391', '。') + extra : '') + (sameAsBefore ? __T('s0392', () => `。${MOCK_SAME}`, () => `. ${MOCK_SAME}`) : '');
     $('base-source').textContent = sourceLine([__t('s0963', 'YouCam 試妝'), usedCam ? __t('s0964', '本機局部遮瑕（模擬）') : null, local ? __t('s0965', '本機畫眉（模擬）') : null].filter(Boolean));
     setSource('base', res.source, [usedCam ? __t('s0964', '本機局部遮瑕（模擬）') : null, local ? __t('s0965', '本機畫眉（模擬）') : null].filter(Boolean));
-    if (state.mode === 'mock' && state.demo) $('base-desc').textContent += __sp() + __t('s0988', '示範照上的妝刻意很淡：底妝對到膚色、磨皮 0、不做「改善前後」；點圖片在「你的照片／你選的樣子」之間切換，才看得出差別。');
+    if (state.mode === 'mock' && state.demo) $('base-desc').textContent += __sp() + __t('s0988', '示範模式下，這兩張示範照的各個妝容與原圖平均每個像素只差約 3–8（滿分 255），因為畫面是錄好的真實呼叫結果，示範模式不能重新試妝；點圖片在「你的照片／你選的樣子」之間切換比較。');
     paintFace('base', FACE.base);
     busy(false);
     speak(__T('s0393', () => `${baseTitle(which)}。${describe(sel)}`, () => `${baseTitle(which)}. ${describe(sel)}`));

@@ -105,7 +105,7 @@ s0107,擦保養品或化妝品後，會刺痛或發紅嗎？,"After using skinca
 s0108,常常,Often,html text,web/index.html:251
 s0109,偶爾,Sometimes,html text,web/index.html:251
 s0110,不會,Never,html text,web/index.html:251
-s0111,最近在做照光治療，或臉上有擦藥嗎？,"Are you currently using any prescribed or active products on your face?",html text,web/index.html:252
+s0111,最近在做照光治療，或臉上有擦藥嗎？,Are you currently using any prescribed or active products on your face?,html text,web/index.html:252
 s0112,有,Yes,html text,web/index.html:253 web/index.html:255
 s0113,沒有,No,html text,web/index.html:253 web/index.html:255
 s0114,對香料或某些成分過敏過嗎？,Have you ever had an allergic reaction to fragrance or certain ingredients?,html text,web/index.html:254
@@ -612,9 +612,9 @@ s0647,深,Deep,py 字串,app/skin_card.py:22 app/skin_card.py:22
 s0648,很深,Very deep,py 字串,app/skin_card.py:22 app/skin_card.py:22
 s0649,極深,Extra deep,py 字串,app/skin_card.py:22 app/skin_card.py:22
 s0650,最深,Deepest,py 字串,app/skin_card.py:22 app/skin_card.py:22
-s0651,同深淺、同冷暖,"Same depth · same undertone",py 字串,app/skin_card.py:171 app/skin_card.py:171
-s0652,同深淺、冷暖相近,"Same depth · similar undertone",py 字串,app/skin_card.py:173 app/skin_card.py:173
-s0653,同深淺、冷暖不同,"Same depth · different undertone",py 字串,app/skin_card.py:173 app/skin_card.py:173
+s0651,同深淺、同冷暖,Same depth · same undertone,py 字串,app/skin_card.py:171 app/skin_card.py:171
+s0652,同深淺、冷暖相近,Same depth · similar undertone,py 字串,app/skin_card.py:173 app/skin_card.py:173
+s0653,同深淺、冷暖不同,Same depth · different undertone,py 字串,app/skin_card.py:173 app/skin_card.py:173
 s0654,差一級,1 level apart,py 字串,app/skin_card.py:175 app/skin_card.py:175
 s0655,這條產品線沒有同深淺的色號：一淺一深各取一半混合。,This product line has no shade at the same depth: take one lighter and one deeper and mix them half and half.,py 字串,app/skin_card.py:224 app/skin_card.py:224
 s0656,臉要完整出現在畫面裡,Your whole face needs to be in the frame,py 字串,app/server.py:65 app/server.py:65
@@ -861,10 +861,10 @@ s0902,照你原本的眉色深一級，加強立體感,"One level deeper than yo
 s0903,眉毛很淡、膚色很淺：用淺金棕補，不用黑或深灰,"Very light brows and very light skin: fill in with light golden brown, not black or dark gray",py 字串,app/brow_card.py:87 app/brow_card.py:87
 s0904,眉毛很淡：用淺灰褐略深一點加立體，不用黑或深灰,"Very light brows: use a light taupe slightly deeper than your brows for dimension, not black or dark gray",py 字串,app/brow_card.py:87 app/brow_card.py:87
 s0905,眉毛顏色淡：用棕色系補到看得見,Light brow color: fill in with brown tones until the brows are visible,py 字串,app/brow_card.py:92 app/brow_card.py:92
-s0906,同深淺、同色系,"Same depth · same color family",py 字串,app/brow_card.py:111 app/brow_card.py:111
-s0907,深淺差一級、同色系,"One level off in depth · same color family",py 字串,app/brow_card.py:113 app/brow_card.py:113
-s0908,同深淺、色系相近,"Same depth · similar color family",py 字串,app/brow_card.py:115 app/brow_card.py:115
-s0909,深淺差一級、色系相近,"One level off in depth · similar color family",py 字串,app/brow_card.py:117 app/brow_card.py:117
+s0906,同深淺、同色系,Same depth · same color family,py 字串,app/brow_card.py:111 app/brow_card.py:111
+s0907,深淺差一級、同色系,One level off in depth · same color family,py 字串,app/brow_card.py:113 app/brow_card.py:113
+s0908,同深淺、色系相近,Same depth · similar color family,py 字串,app/brow_card.py:115 app/brow_card.py:115
+s0909,深淺差一級、色系相近,One level off in depth · similar color family,py 字串,app/brow_card.py:117 app/brow_card.py:117
 s0910,第 {lv} 級{level_name(lv)}・{fam},Level {lv} {level_name(lv)}・{fam},py f-string,app/brow_card.py:64
 s0911,溫和清潔,Gentle cleansing,py 字串,app/care_rules_vitiligo.py:25 app/care_rules_vitiligo.py:25
 s0912,溫和清潔，保濕要做足再上妝；不搓不刷,Cleanse gently and moisturize well before makeup; no rubbing or scrubbing,py 字串,app/care_rules_vitiligo.py:26 app/care_rules_vitiligo.py:26
@@ -886,8 +886,8 @@ s0928,虛構品牌,fictional brands,js 字串,web/app.js:1995
 s0929,柔和・極簡,Soft & minimal,$.albinism_M.title,demo/final/recipes.json
 s0930,輕壓上妝衛教（待查證）,Dab-on makeup guidance (to be verified),$.steps[3].source,app/full_looks.json
 s0931,粉底對淺色區塊周圍的膚色選色：面中最多、往外推薄，T 字平刷、眼周最薄；用海綿**點壓**，不要來回搓：摩擦可能在該處長出新的淺色區塊。（化妝師分區上法）,"Choose a foundation to match the skin tone around the lighter patches: most on the center of the face, thinning out toward the edges, flat strokes on the T-zone, thinnest around the eyes; **dab** with a sponge and do not rub back and forth: friction may cause new lighter patches to appear there. (makeup artist zoning technique)",py 字串,app/color_engine.py:373 app/color_engine.py:373
-s0932,黑色素較少時，紫外線防護比較弱。,"Sun protection matters more for very light skin.",py 字串,app/color_engine.py:429 app/color_engine.py:429
-s0933,黑色素較少時，強光下很快就可能曬傷,"Very light skin can burn quickly in strong light",py 字串,app/color_engine.py:517 app/color_engine.py:517
+s0932,黑色素較少時，紫外線防護比較弱。,Sun protection matters more for very light skin.,py 字串,app/color_engine.py:429 app/color_engine.py:429
+s0933,黑色素較少時，強光下很快就可能曬傷,Very light skin can burn quickly in strong light,py 字串,app/color_engine.py:517 app/color_engine.py:517
 s0935,淺色區塊的黑色素較少，特別容易曬傷,Lighter patches have less melanin and sunburn especially easily,py 字串,app/color_engine.py:526 app/color_engine.py:526
 s0943,依據：一般衛教與美妝資料的整理，不是醫療建議；皮膚有新的變化請找皮膚科醫師。,Based on general skincare and makeup guidance compiled by us; not medical advice. See a dermatologist about any new or changing spot.,html text,web/index.html:58
 s0945,防曬與隔離先上；淺色區塊處對紫外線特別敏感。,Apply sunscreen and primer first; lighter patches are especially sensitive to UV.,py 字串,app/color_engine.py:371 app/color_engine.py:371
@@ -932,7 +932,7 @@ s0984,模擬：展示模式未呼叫 YouCam（你的照片原樣加上標示）,
 s0985,YouCam 重播,Replayed YouCam,js 字串,web/app.js web/index.html
 s0986,YouCam 即時,Live YouCam,js 字串,web/app.js
 s0987,YouCam＋本機模擬,YouCam + local simulation,js 字串,web/app.js
-s0988,示範照上的妝刻意很淡：底妝對到膚色、磨皮 0、不做「改善前後」；點圖片在「你的照片／你選的樣子」之間切換，才看得出差別。,"The look on the demo photo is subtle by design: the foundation matches the skin tone, smoothing is 0 and nothing is shown as a before/after improvement; tap the picture to switch between your photo and the look to see the difference.",js 字串,web/app.js
+s0988,示範模式下，這兩張示範照的各個妝容與原圖平均每個像素只差約 3–8（滿分 255），因為畫面是錄好的真實呼叫結果，示範模式不能重新試妝；點圖片在「你的照片／你選的樣子」之間切換比較。,"In demo mode the looks on these sample photos differ from the original by about 3 to 8 of 255 per pixel on average, because the pictures are saved results of real calls and demo mode cannot run a new try-on; tap the picture to switch between your photo and the look.",js 字串,web/app.js
 s0989,複製給櫃姐,Copy for the beauty advisor,html text,web/index.html
 s0990,已複製,Copied,js 字串,web/app.js
 s0991,無法自動複製，請長按下方文字選取,Could not copy automatically; press and hold the text below to select it,js 字串,web/app.js

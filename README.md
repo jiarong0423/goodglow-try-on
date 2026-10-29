@@ -1,6 +1,6 @@
 # Good Glow Try-On
 
-**Try it:** hosted demo at <https://goodglow-new.jace0423.com> (demo mode, no sign-in, no credits; add `?lang=en` for English). **Demo video (2:55):** <https://youtu.be/BsHrLIcwiOw>.
+**Try it:** hosted demo at <https://goodglow-new.jace0423.com> (demo mode, no sign-in, no credits; add `?lang=en` for English). **Demo video (2:55):** <https://youtu.be/BsHrLIcwiOw>. To see the *Copy for the beauty advisor* summary in demo mode: tap a demo entry, then *Try a demo photo first*, click through to step 8 (*My color card*) and tap *Copy for the beauty advisor* (it copies, or shows the text to select if the browser blocks copying).
 
 Independent hackathon entry, not affiliated with Perfect Corp.; general information only, not medical advice (see [NOTICE.md](NOTICE.md)).
 
@@ -10,7 +10,7 @@ for two groups who rarely see themselves in beauty tech (people with albinism an
 - people with **very light skin, brows and lashes** (albinism; many are also light-sensitive), and
 - people whose skin has **lighter patches and uneven tone** (vitiligo).
 
-The project has **not yet been tested with the people it is for**. Thank you to the people and photographers who make photos of themselves publicly available under open licences. Clear photos of people with albinism or vitiligo are scarce, and frontal ones scarcer. For one example the only suitable photo was a side view, so we used an AI-generated frontal illustration made from it, to demonstrate the method. It is not the person's original photo and is labelled Simulated on screen. The people in these photos did not take part in this project and do not endorse it. Demo photos are public stock photos of models; they are not users and do not endorse it. All images are simulated; sources and limits are in [`demo/SOURCES.md`](demo/SOURCES.md) and [`evidence/README.md`](evidence/README.md).
+The project has **not yet been tested with the people it is for**. Thank you to the people and photographers who make photos of themselves publicly available under open licences. Clear photos of people with albinism or vitiligo are scarce, and frontal ones scarcer. For one example the only suitable photo was a side view, so we used an AI-generated frontal illustration made from it, to demonstrate the method. It is not the person's original photo and is labelled Simulated on screen. The people in these photos did not take part in this project and do not endorse it. Demo photos are public stock photos of models; they are not users and do not endorse it. What each picture is labelled is explained under *Labels on pictures* below; sources and limits are in [`demo/SOURCES.md`](demo/SOURCES.md) and [`evidence/README.md`](evidence/README.md).
 
 ## At a glance: what is real and what is replayed
 
@@ -61,7 +61,7 @@ The same site and the same code serve both. The server decides for each request,
 | Who it is for | Anyone, no sign-in | Judges and the owner, with the username and password given in the testing instructions |
 | How to get there | Just open the site | Tap **Judge sign-in** in the banner at the top, enter the username and password; the same banner link signs you out (the page `/judge` does the same) |
 | Banner says | "Demo mode: replaying saved results from real YouCam calls · no credits used" | "Live mode: n/m try-ons used this time" |
-| YouCam calls | None. It shows pictures saved from **80 real YouCam Makeup VTO calls**, exact for the choices that were recorded and the closest otherwise, labelled simulated | Real calls: Makeup VTO (1 credit), optional Face Attribute (10 credits) |
+| YouCam calls | None. It shows pictures saved from **80 real YouCam Makeup VTO calls**, exact for the choices that were recorded and the closest otherwise, labelled Replayed YouCam | Real calls: Makeup VTO (1 credit), optional Face Attribute (10 credits) |
 | Your own photo | Comes back unchanged with a demo note; the local steps (skin tone card, shade ranking, lighter-patch mask) still work | Sent to YouCam for the try-on; you see the real result |
 | Limits | None needed, it costs nothing | On the hosted site: 100 live calls per server start and 200 credits in total (the container image defaults are 5 and 30; the platform settings override them); at the limit the server refuses live calls, and signing out returns to the demo page |
 | Why two | A public site must not be able to spend credits | Judges can verify that the real API calls work |
@@ -108,7 +108,7 @@ success; `--max-calls` limits the number of billed YouCam calls in one run (Make
 
 [`evidence/`](evidence/README.md) shows how a look is built, layer by layer, and what the online app can and cannot do: four examples, each as a cumulative
 slider (11, 4, 17 local layers and stage images only, plus the YouCam try-on steps), a heat map of what each layer changed, the technique used per layer, the
-technology list, and the cross-checks. It lives in the repository only; the app does not link to it and the container image does not include it. Every image is labelled Simulated. Data: `evidence/process.json`, regenerated from local run folders by
+technology list, and the cross-checks. It lives in the repository only; the app does not link to it and the container image does not include it. Every image on that page is labelled Simulated (local layers) or Replayed YouCam (saved real calls). Data: `evidence/process.json`, regenerated from local run folders by
 `tools/export_process_demo.py` (the run folders are not in the repository).
 
 ## Shade data
@@ -139,14 +139,29 @@ The YouCam REST client is `tools/noise_test.py` (class `YouCamClient`: bearer ke
 | Makeup VTO (try-on) | `POST /s2s/v2.0/file` then `POST /s2s/v2.0/task/makeup-vto`, poll `GET /s2s/v2.0/task/makeup-vto/{id}` | `app/server.py` (`_render_live`), request bodies from `app/looks.py` | 1 per call |
 | Face Attribute (optional tips, only when the user taps) | `POST /s2s/v2.0/task/face-attr-analysis`, poll `GET …/{id}` | `app/server.py`, rules in `app/face_rules.py` | 10 per call |
 | Camera Kit (capture, auto-capture) | browser SDK loaded from the YouCam CDN | `web/app.js` | none |
-| Skin Analysis HD (12 units), Skin Tone Analysis (20 units) | used offline during development only | `tools/noise_test.py` (Skin Analysis HD), `tools/youcam_probe.py` (both) | 12 / 20 |
+| Skin Analysis HD (12 units), Skin Tone Analysis (20 units) | not in the user flow; run offline on the demo photos as cross-checks during development (`evidence/process.js`) | `tools/noise_test.py` (Skin Analysis HD), `tools/youcam_probe.py` (both) | 12 / 20 |
+
+Why Skin Tone Analysis is not in the flow: it is billed at 20 credits per call (`app/budget.py`), against 1 credit for a Makeup VTO try-on, and the app already picks the tone from the photo on the phone and maps it to the skin tone card without a billed call. We did not publish a comparison of the two, so we make no claim that either is more accurate.
 
 In `--mock` mode none of these are called: pictures saved from real calls in `demo/replay/` are shown: the one recorded for your exact choices when it exists, otherwise the closest.
+
+## Labels on pictures
+
+Every try-on picture carries a badge and a source line, set by the server's `source` field for that picture:
+
+| Label | What it is |
+|---|---|
+| **Replayed YouCam** | a saved result of a real YouCam Makeup VTO call (demo mode); the source line adds the recording date when the options match a saved call exactly, or says "closest recorded combination" |
+| **Live YouCam** | a real call made for this request (live mode) |
+| **YouCam + local simulation** | a YouCam result with local patch concealing or brows drawn on the phone |
+| **Simulated** | not a YouCam result: the AI-generated expected look, the local fallback when YouCam cannot process a step, or your own photo in demo mode (returned unchanged with a label) |
+
+The reason for the split is that a reader has to be able to tell which pixels came from YouCam and which from our code. On the demo photos the replayed looks differ from the original by about 3 to 8 of 255 per pixel on average (mean absolute difference over the whole image, measured on all 80 saved results), because a saved result cannot be re-run in demo mode.
 
 ## Privacy
 
 Photos are processed in memory (orientation fix, resize, re-encode without EXIF) and dropped after the try-on; results go straight back to the
-browser. Face landmarks run in the browser (the MediaPipe models and scripts are fetched from public CDNs at run time, and the YouCam Camera Kit script from the YouCam CDN, so a visit loads third-party code from those hosts); the lighter-patch mask is computed on the app server, in memory. In live mode the photo is sent to YouCam for the try-on; in demo mode it is not. Tone, shade matching and the care card are computed locally. Only light fingerprints (brightness and
+browser. Face landmarks run in the browser (the MediaPipe models and scripts are fetched from public CDNs at run time, and the YouCam Camera Kit script from the YouCam CDN, so a visit loads third-party code from those hosts; the hosted demo is also served behind Cloudflare, whose proxy can add its own analytics script (Cloudflare Web Analytics) to pages; that script is not in this repository's code and is set at the hosting layer); the lighter-patch mask is computed on the app server, in memory. In live mode the photo is sent to YouCam for the try-on; in demo mode it is not. Tone, shade matching and the care card are computed locally. Only light fingerprints (brightness and
 colour-temperature numbers) and preferences are kept in the browser.
 
 ## Licence

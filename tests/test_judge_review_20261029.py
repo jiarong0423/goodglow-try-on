@@ -159,5 +159,48 @@ class PageWiringTests(unittest.TestCase):
         self.assertIn("https://youtu.be/BsHrLIcwiOw", head)
 
 
+class ReadmeConsistencyTests(unittest.TestCase):
+    """README labels match the badges the page really uses, and the stated pixel difference is what the saved results measure."""
+
+    def setUp(self):
+        self.readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    def test_no_blanket_simulated_claims_left(self):
+        self.assertNotIn("All images are simulated", self.readme)
+        self.assertNotIn("Every image is labelled Simulated. Data", self.readme)
+        self.assertNotIn("closest otherwise, labelled simulated", self.readme)
+        for label in ("Replayed YouCam", "Live YouCam", "YouCam + local simulation", "Simulated"):
+            self.assertIn(f"| **{label}** |", self.readme)
+
+    def test_stated_pixel_difference_matches_the_saved_results(self):
+        from PIL import Image, ImageChops, ImageStat
+        means = []
+        for cond in ("albinism", "vitiligo"):
+            idx = json.loads((ROOT / "demo" / "replay" / cond / "exact" / "index.json").read_text(encoding="utf-8"))
+            for key, row in idx.items():
+                o = Image.open(ROOT / row["photo"]).convert("RGB")
+                r = Image.open(ROOT / "demo" / "replay" / cond / "exact" / f"{key}.jpg").convert("RGB").resize(o.size)
+                means.append(sum(ImageStat.Stat(ImageChops.difference(o, r)).mean) / 3)
+        self.assertEqual(len(means), 80)
+        self.assertAlmostEqual(min(means), 3, delta=0.5)
+        self.assertAlmostEqual(max(means), 8, delta=0.5)
+        self.assertIn("about 3 to 8 of 255 per pixel", self.readme)
+
+    def test_cloudflare_beacon_is_not_in_the_repository_and_is_disclosed(self):
+        for f in list((ROOT / "web").glob("*.html")) + list((ROOT / "web").glob("app.js")) + list((ROOT / "app").glob("*.py")):
+            self.assertNotIn("cloudflareinsights", f.read_text(encoding="utf-8").lower(), f.name)
+        self.assertIn("Cloudflare Web Analytics", self.readme)
+
+    def test_skin_tone_analysis_answer_uses_repo_facts(self):
+        import budget
+        self.assertEqual(budget.PRICES["skin-tone-analysis"], 20)
+        self.assertEqual(budget.PRICES["makeup-vto"], 1)
+        self.assertIn("billed at 20 credits per call", self.readme)
+        self.assertIn("we make no claim that either is more accurate", self.readme)
+
+    def test_try_it_explains_the_copy_summary(self):
+        self.assertIn("Copy for the beauty advisor", self.readme[:1500])
+
+
 if __name__ == "__main__":
     unittest.main()

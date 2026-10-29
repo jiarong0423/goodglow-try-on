@@ -1,6 +1,6 @@
 'use strict';
 // 由 tools/build_i18n.py 產生，勿手改。來源 docs/i18n/zh_en_map.csv（英文欄雜湊見下）＋ docs/i18n/position_overrides.csv
-// CSV 英文欄 sha256=95a929fbf0cbdd26985ccbe2b178801451be0235ef8f50406dae620aa4489bc5
+// CSV 英文欄 sha256=d7d9bdd7bd5c450e4c881b4e852859263a9386bad3107071359d31ae5bbd8630
 window.I18N_EN = {
  "s0001": "Good Glow Try-On",
  "s0002": "Light-sensitive mode",
@@ -855,7 +855,7 @@ window.I18N_EN = {
  "s0985": "Replayed YouCam",
  "s0986": "Live YouCam",
  "s0987": "YouCam + local simulation",
- "s0988": "The look on the demo photo is subtle by design: the foundation matches the skin tone, smoothing is 0 and nothing is shown as a before/after improvement; tap the picture to switch between your photo and the look to see the difference.",
+ "s0988": "In demo mode the looks on these sample photos differ from the original by about 3 to 8 of 255 per pixel on average, because the pictures are saved results of real calls and demo mode cannot run a new try-on; tap the picture to switch between your photo and the look.",
  "s0989": "Copy for the beauty advisor",
  "s0990": "Copied",
  "s0991": "Could not copy automatically; press and hold the text below to select it",

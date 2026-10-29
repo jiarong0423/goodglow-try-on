@@ -587,7 +587,7 @@
   "示範取色點": "Demo sample point",
   "示範型錄": "Demo catalog",
   "示範型錄色號可對照": "demo-catalog shades you can match against",
-  "示範照上的妝刻意很淡：底妝對到膚色、磨皮 0、不做「改善前後」；點圖片在「你的照片／你選的樣子」之間切換，才看得出差別。": "The look on the demo photo is subtle by design: the foundation matches the skin tone, smoothing is 0 and nothing is shown as a before/after improvement; tap the picture to switch between your photo and the look to see the difference.",
+  "示範模式下，這兩張示範照的各個妝容與原圖平均每個像素只差約 3–8（滿分 255），因為畫面是錄好的真實呼叫結果，示範模式不能重新試妝；點圖片在「你的照片／你選的樣子」之間切換比較。": "In demo mode the looks on these sample photos differ from the original by about 3 to 8 of 255 per pixel on average, because the pictures are saved results of real calls and demo mode cannot run a new try-on; tap the picture to switch between your photo and the look.",
   "窗邊柔和自然光": "Soft natural light by a window",
   "第二層：只補還看得出來的地方": "Second layer: fill in only what still shows",
   "等一下讓第一層服貼，再薄薄補在還看得出差異的地方；已經融合的地方不要再疊，才不會厚重。": "Wait a moment for the first layer to settle, then add a thin layer where a difference still shows; don't layer over areas that already blend in, so it doesn't look heavy.",
