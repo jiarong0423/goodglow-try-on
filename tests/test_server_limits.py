@@ -154,6 +154,7 @@ class HardeningTests(_Base):
             self.assertEqual(h.get("Referrer-Policy"), "no-referrer", path)
             self.assertIn("frame-ancestors 'none'", h.get("Content-Security-Policy") or "", path)
             self.assertIn("camera=(self)", h.get("Permissions-Policy") or "", path)
+            self.assertEqual(h.get("Strict-Transport-Security"), "max-age=31536000", path)
         import base64, hashlib, re
         html = (server.WEB_DIR / "env_check.html").read_text(encoding="utf-8")
         for body in re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", html, re.S):

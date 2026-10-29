@@ -824,6 +824,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Referrer-Policy", "no-referrer")
         self.send_header("Content-Security-Policy", CSP)
         self.send_header("Permissions-Policy", "camera=(self), microphone=(), geolocation=(), payment=(), usb=()")
+        self.send_header("Strict-Transport-Security", "max-age=31536000")  # applied by browsers only over HTTPS (the hosted site)
 
     def end_headers(self):
         """Every response carries the security headers, including the 404 and 4xx pages from send_error."""
