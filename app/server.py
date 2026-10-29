@@ -178,6 +178,23 @@ def replay_image(condition: str, key: str, style: str = "natural") -> bytes | No
     return None
 
 
+
+# Browser content policy. Sources are the ones the pages really use: MediaPipe code and models (jsdelivr, Google storage),
+# the YouCam Camera Kit SDK and the assets it loads (makeupar / perfectcorp / its CloudFront and S3 hosts), the vendored
+# onnxruntime WebAssembly. The Camera Kit modules call eval, so 'unsafe-eval' is allowed; inline script is not. Anything a hosting layer injects from elsewhere is not allowed. The one inline script (web/env_check.html)
+# is allowed by its hash; tests/test_server_limits.py fails if it changes without the hash.
+CSP = ("default-src 'self'; "
+       "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: 'sha256-SHr0Q60Pb8J3bQTG+IXpDBKN9n/uriM7JIzxJcz2mns=' https://cdn.jsdelivr.net "
+       "https://plugins-media.makeupar.com https://plugins-media.perfectcorp.com https://d161aii70lzc9u.cloudfront.net; "
+       "worker-src 'self' blob:; "
+       "connect-src 'self' blob: data: https://cdn.jsdelivr.net https://storage.googleapis.com https://plugins-media.makeupar.com "
+       "https://plugins-media.perfectcorp.com https://*.perfectcorp.com https://d161aii70lzc9u.cloudfront.net https://*.amazonaws.com; "
+       "img-src 'self' data: blob: https:; media-src 'self' blob: mediastream:; "
+       "style-src 'self' 'unsafe-inline' https://plugins-media.makeupar.com https://plugins-media.perfectcorp.com; "
+       "font-src 'self' data: https:; "
+       "frame-src https://plugins-media.makeupar.com https://plugins-media.perfectcorp.com https://www.perfectcorp.com; "
+       "frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'self'")
+
 class RequestError(Exception):
     def __init__(self, status: int, code: str, hint: str):
         super().__init__(hint)
@@ -805,6 +822,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("Content-Security-Policy", CSP)
+        self.send_header("Permissions-Policy", "camera=(self), microphone=(), geolocation=(), payment=(), usb=()")
 
     def end_headers(self):
         """Every response carries the security headers, including the 404 and 4xx pages from send_error."""

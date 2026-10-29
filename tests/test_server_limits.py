@@ -152,6 +152,13 @@ class HardeningTests(_Base):
             self.assertEqual(h.get("X-Content-Type-Options"), "nosniff", path)
             self.assertEqual(h.get("X-Frame-Options"), "DENY", path)
             self.assertEqual(h.get("Referrer-Policy"), "no-referrer", path)
+            self.assertIn("frame-ancestors 'none'", h.get("Content-Security-Policy") or "", path)
+            self.assertIn("camera=(self)", h.get("Permissions-Policy") or "", path)
+        import base64, hashlib, re
+        html = (server.WEB_DIR / "env_check.html").read_text(encoding="utf-8")
+        for body in re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", html, re.S):
+            digest = base64.b64encode(hashlib.sha256(body.encode()).digest()).decode()
+            self.assertIn("'sha256-" + digest + "'", server.CSP, "an inline script is not allowed by the CSP hash")
 
     def test_path_traversal_never_leaves_web_dir(self):
         s = socket.create_connection(("127.0.0.1", int(self.base.rsplit(":", 1)[1])), timeout=10)
