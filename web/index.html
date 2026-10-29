@@ -58,7 +58,7 @@
         <p class="credit" data-i18n="s0014">封面照片：Pexels（示意，照片中人與本作品無關）</p>
       </div>
       <ol class="how">
-        <li><b>1</b><span data-i18n="s0015">拍照</span></li><li><b>2</b><span data-i18n="s0016">取膚色</span></li><li><b>3</b><span data-i18n="s0017">對色號</span></li><li><b>4</b><span data-i18n="s0018">保養建議</span></li><li><b>5</b><span data-i18n="s0019">試妝</span></li>
+        <li><b>1</b><span data-i18n="s0015">拍照</span></li><li><b>2</b><span data-i18n="s0173">膚色</span></li><li><b>3</b><span data-i18n="s0174">預期</span></li><li><b>4</b><span data-i18n="s0175">色號</span></li><li><b>5</b><span data-i18n="s0176">三題</span></li><li><b>6</b><span data-i18n="s0177">建議</span></li><li><b>7</b><span data-i18n="s0019">試妝</span></li><li><b>8</b><span data-i18n="s0178">配色卡</span></li>
       </ol>
     </div>
   </main>
@@ -303,7 +303,7 @@
         <div class="final-stage"><p class="stage-h" data-i18n="s0124">① 本地逐層底妝</p>
           <figure class="final-fig"><span class="sim-tag" data-i18n="s0060">模擬</span><img id="final-base" alt="本地逐層底妝（模擬）" data-i18n-attr="alt:s0125"></figure></div>
         <div class="final-stage"><p class="stage-h" data-i18n="s0126">② 官方這一步（YouCam 試妝）</p>
-          <figure class="final-fig" id="final-off-fig"><span class="sim-tag" data-i18n="s0060">模擬</span><img id="final-off" alt="官方這一步（模擬）" data-i18n-attr="alt:s0127"></figure>
+          <figure class="final-fig" id="final-off-fig"><span class="sim-tag" data-i18n="s0985">YouCam 重播</span><img id="final-off" alt="官方這一步（YouCam 試妝錄好的結果）" data-i18n-attr="alt:s0998"></figure>
           <p id="final-off-note" class="muted small"></p></div>
       </div>
       <p class="stage-h" data-i18n="s0128">③ 成品與配方卡</p>
@@ -327,7 +327,7 @@
         <img id="base-original" class="on" alt="你的照片" data-i18n-attr="alt:s0134">
         <img id="base-current" alt="目前的樣子" data-i18n-attr="alt:s0135">
         <span class="fc-hint" id="base-hint" aria-hidden="true"></span>
-        <span class="sim-tag fc-tag" id="base-tag" data-i18n="s0060" hidden>模擬</span>
+        <span class="sim-tag fc-tag" id="base-tag" hidden></span>
       </div>
       <p class="fc-cap" aria-live="polite"><span id="base-cap-orig" data-i18n="s0134">你的照片</span><span id="base-caption" data-i18n="s0136" hidden>完整妝容</span><span class="fc-source" id="base-prov"></span></p>
       <div class="chips center-row"><button class="chip" id="btn-base-flip" type="button" aria-pressed="false" data-i18n="s0957">看你選的樣子</button></div>
@@ -372,7 +372,7 @@
         <img id="adj-original" class="on" alt="你的照片" data-i18n-attr="alt:s0134">
         <img id="adj-current" alt="目前的妝" data-i18n-attr="alt:s0147">
         <span class="fc-hint" id="adj-hint-flip" aria-hidden="true"></span>
-        <span class="sim-tag fc-tag" id="adj-tag" data-i18n="s0060" hidden>模擬</span>
+        <span class="sim-tag fc-tag" id="adj-tag" hidden></span>
       </div>
       <p class="fc-cap" aria-live="polite"><span id="adj-cap-orig" data-i18n="s0134">你的照片</span><span id="adj-caption" data-i18n="s0147" hidden>目前的妝</span><span class="fc-source" id="adj-prov"></span></p>
       <div class="chips center-row"><button class="chip" id="btn-adj-flip" type="button" aria-pressed="false" data-i18n="s0957">看你選的樣子</button></div>
@@ -415,6 +415,7 @@
     <p class="muted small" id="catalog-note"></p>
     <div class="row wrap">
       <button class="btn ghost" id="btn-show-staff" data-i18n="s0154">給櫃姐看</button>
+      <button class="btn ghost" id="btn-copy-card" data-i18n="s0989">複製給櫃姐</button>
       <button class="btn ghost" id="btn-save-card" data-i18n="s0155">存成圖片</button>
       <button class="btn primary" id="btn-restart" data-i18n="s0156">重新開始</button>
     </div>
@@ -422,6 +423,9 @@
 
   <div id="staff-view" class="staff" hidden role="dialog" aria-label="給櫃姐看" data-i18n-attr="aria-label:s0154">
     <div id="staff-content"></div>
+    <!-- Plain-text summary (skin tone level, undertone, shade list with brand, product, code and product page when known) for the advisor's own notes -->
+    <div class="row wrap"><button class="btn ghost" id="btn-copy-staff" data-i18n="s0989">複製給櫃姐</button><span class="small" id="copy-status" aria-live="polite" hidden></span></div>
+    <textarea id="staff-text" class="staff-text" rows="8" readonly aria-label="給櫃姐的摘要" data-i18n-attr="aria-label:s0993" hidden></textarea>
     <button class="btn primary big" id="btn-close-staff" data-i18n="s0157">關閉</button>
   </div>
 

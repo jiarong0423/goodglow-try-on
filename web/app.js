@@ -1464,14 +1464,34 @@ function paintFace(p, face) {
   const b = $(`btn-${p}-flip`);
   b.setAttribute('aria-pressed', String(face === 'look'));
   b.textContent = face === 'photo' ? __t('s0957', '看你選的樣子') : __t('s0061', '看你的照片');
-  $(`${p}-tag`).hidden = face !== 'look';                       // every generated picture says it is simulated
-  $(`${p}-prov`).textContent = face === 'look'                // and says where it came from: a saved real result in demo mode, a real call in live mode
-    ? (state.mode === 'mock' ? __t('s0980', '展示模式：錄好的 YouCam 結果（模擬）') : __t('s0981', '即時 YouCam 結果（真實呼叫）')) : '';
+  // Every generated picture carries a badge and a provenance line that say what it is: a replayed real YouCam call (with its recording date), a live call,
+  // YouCam plus local simulation, or a pure simulation (demo mode with your own photo, or the local fallback when YouCam cannot process a step)
+  const src = SOURCE[p] || {};
+  $(`${p}-tag`).hidden = face !== 'look' || src.kind === 'photo';           // 'Keep as is' shows the photo itself: no badge, no provenance
+  $(`${p}-tag`).textContent = provBadge(src);
+  $(`${p}-prov`).textContent = face === 'look' && src.kind !== 'photo' ? provLine(src) : '';
   const hint = $(HINT_ID[p]);
   hint.hidden = HINT_DONE[p];
   hint.textContent = face === 'photo' ? __t('s0958', '點一下看你選的樣子') : __t('s0959', '點一下回到你的照片');      // The hint can be tapped (static, no flashing); it sits on the top edge of the photo and is hidden after the first tap
 }
 function flipFace(p, face) { if (FACE[p] !== face) { HINT_DONE[p] = true; paintFace(p, face); } }
+// Where the picture on each flip card came from: kind = replay_exact | replay_closest | live | demo_label | local (from /api/makeup "source"), plus the local parts added on the phone
+const SOURCE = { base: { kind: 'photo', local: [] }, adj: { kind: 'photo', local: [] } };
+function setSource(p, source, localParts) { SOURCE[p] = { ...(source || {}), local: localParts || [] }; }
+function provBadge(src) {
+  if (src.kind === 'live') return src.local.length ? __t('s0987', 'YouCam＋本機模擬') : __t('s0986', 'YouCam 即時');
+  if (src.kind === 'replay_exact' || src.kind === 'replay_closest') return src.local.length ? __t('s0987', 'YouCam＋本機模擬') : __t('s0985', 'YouCam 重播');
+  return __t('s0060', '模擬');
+}
+function provLine(src) {
+  let main;
+  if (src.kind === 'live') main = __t('s0981', '即時 YouCam 結果（真實呼叫）');
+  else if (src.kind === 'replay_exact' && src.recorded_at) main = __T('s0982', () => `重播真實 YouCam 呼叫結果（錄於 ${src.recorded_at}）`, () => `Replayed real YouCam call (recorded ${src.recorded_at})`);
+  else if (src.kind === 'replay_exact' || src.kind === 'replay_closest') main = __t('s0983', '重播真實 YouCam 呼叫結果（最接近的已錄組合）');
+  else if (src.kind === 'local') main = __t('s0967', '本機模擬（YouCam 暫時處理不了）');
+  else main = __t('s0984', '模擬：展示模式未呼叫 YouCam（你的照片原樣加上標示）');
+  return [main].concat(src.local || []).join(' + ');
+}
 for (const p of ['base', 'adj']) {
   const toggle = () => flipFace(p, FACE[p] === 'photo' ? 'look' : 'photo');
   $(`btn-${p}-flip`).onclick = toggle;
@@ -1531,6 +1551,8 @@ async function applyBase(which) {
     $('base-current').src = state.photo;
     $('base-caption').textContent = BASE_TITLE.keep;
     $('base-desc').textContent = __t('s0382', '不加任何妝。');
+    setSource('base', { kind: 'photo' }, []);
+    paintFace('base', FACE.base);
     speak(__t('s0138', '保留原樣'));
     return;
   }
@@ -1565,6 +1587,9 @@ async function applyBase(which) {
     $('base-caption').textContent = baseTitle(which) + (extra && /^[＋+]/.test(extra) ? __sp() + __t('s0390', '＋局部遮瑕') : '');
     $('base-desc').textContent = describe(sel) + (extra ? __t('s0391', '。') + extra : '') + (sameAsBefore ? __T('s0392', () => `。${MOCK_SAME}`, () => `. ${MOCK_SAME}`) : '');
     $('base-source').textContent = sourceLine([__t('s0963', 'YouCam 試妝'), usedCam ? __t('s0964', '本機局部遮瑕（模擬）') : null, local ? __t('s0965', '本機畫眉（模擬）') : null].filter(Boolean));
+    setSource('base', res.source, [usedCam ? __t('s0964', '本機局部遮瑕（模擬）') : null, local ? __t('s0965', '本機畫眉（模擬）') : null].filter(Boolean));
+    if (state.mode === 'mock' && state.demo) $('base-desc').textContent += __sp() + __t('s0988', '示範照上的妝刻意很淡：底妝對到膚色、磨皮 0、不做「改善前後」；點圖片在「你的照片／你選的樣子」之間切換，才看得出差別。');
+    paintFace('base', FACE.base);
     busy(false);
     speak(__T('s0393', () => `${baseTitle(which)}。${describe(sel)}`, () => `${baseTitle(which)}. ${describe(sel)}`));
   } catch (e) {
@@ -1576,6 +1601,8 @@ async function applyBase(which) {
     $('base-caption').textContent = baseTitle(which);
     $('base-desc').textContent = __t('s0966', '這一步 YouCam 暫時處理不了，改用手機上的本機模擬：只有底妝與局部遮瑕，其他項目維持原樣。') + __sp() + `(${e.message})`;
     $('base-source').textContent = sourceLine([__t('s0967', '本機模擬（YouCam 暫時處理不了）')]);
+    setSource('base', { kind: 'local' }, []);
+    paintFace('base', FACE.base);
     busy(false);
     speak($('base-desc').textContent);
   }
@@ -1721,7 +1748,9 @@ async function changeOption(item, id) {
     state.currentImage = image;
     $('adj-current').src = image;
     $('adj-caption').textContent = __t('s0147', '目前的妝');
+    setSource('adj', res.source, local ? [__t('s0965', '本機畫眉（模擬）')] : []);
     flipFace('adj', 'look');                        // After options change, flip to show the effect
+    paintFace('adj', 'look');
     const hint = [sameAsBefore ? MOCK_SAME : '', res.hint || ''].filter(Boolean).join(' ');
     $('adj-hint').hidden = !hint;
     $('adj-hint').textContent = hint;
@@ -1736,7 +1765,9 @@ async function changeOption(item, id) {
     state.currentImage = fb;
     $('adj-current').src = fb;
     $('adj-caption').textContent = __t('s0967', '本機模擬（YouCam 暫時處理不了）');
+    setSource('adj', { kind: 'local' }, []);
     flipFace('adj', 'look');
+    paintFace('adj', 'look');
     $('adj-hint').hidden = false;
     $('adj-hint').textContent = __t('s0966', '這一步 YouCam 暫時處理不了，改用手機上的本機模擬：只有底妝與局部遮瑕，其他項目維持原樣。') + __sp() + `(${e.message})`;
     busy(false);
@@ -1827,6 +1858,38 @@ function matchesFor(key) {
   const it = state.card && state.card.items.find((x) => x.item === key);
   return it ? it.matches : [];
 }
+// Link to the brand's own product page, only when the catalog row carries one (official shade data has source_url; the demo catalog and alias mode have none)
+function productLink(m) {
+  const label = __t('s0992', '看商品頁');
+  return typeof m.url === 'string' && /^https:\/\//.test(m.url) ? ` <a class="shop" href="${esc(m.url)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>` : '';
+}
+// Plain-text summary for the beauty advisor: skin tone level and undertone, then every item with its matched shades (brand, product, code, and the product page when known)
+function advisorText() {
+  const rows = cardRowsWithMatches();
+  const cell = (rows.find((r) => r.card) || {}).card;
+  const rec = state.recommendation || {};
+  const tone = state.presets.undertones[state.tone].label;
+  const head = cell ? __T('s0994', () => `膚色色卡：第 ${cell.level} 級（${cell.level_name}）・${cell.tone_label}`, () => `Skin tone card: level ${cell.level} (${cell.level_name})・${cell.tone_label}`)
+    : __T('s0997', () => `膚色色卡：第 ${rec.skin_level || '–'} 級・${tone}`, () => `Skin tone card: level ${rec.skin_level || '–'}・${tone}`);
+  const lines = [__t('s0993', '給櫃姐的摘要'), head, __t('s0995', '色號清單（品牌 產品 色號）：')];
+  for (const r of rows) {
+    if (!r.matches || !r.matches.length) continue;
+    lines.push(__T('s0999', () => `${r.k}：${r.v}`, () => `${r.k}: ${r.v}`));
+    for (const m of r.matches) lines.push(`  - ${m.brand} ${m.product} ${m.code}${m.url ? ' ' + m.url : ''}`);
+  }
+  lines.push(__t('s0996', '以專櫃自然光試色為準。'));
+  return lines.join('\n');
+}
+async function copyForAdvisor() {
+  const text = advisorText();
+  $('staff-text').value = text;
+  let ok = false;
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(text); ok = true; } } catch (e) { ok = false; }
+  $('staff-text').hidden = ok;
+  $('copy-status').textContent = ok ? __t('s0990', '已複製') : __t('s0991', '無法自動複製，請長按下方文字選取');
+  $('copy-status').hidden = false;
+  if (!ok) { $('staff-text').focus(); $('staff-text').select(); }
+}
 function matchLine(m) {
   // Skin-tone items (via the skin-tone swatch) show 'same depth, same warm/cool'; others (brow, lip, blush) show the color difference
   return m.fit ? __T('s0429', () => `${m.brand} ${m.product}：${m.code}（${m.fit}）`, () => `${m.brand} ${m.product}: ${m.code} (${m.fit})`) : __T('s0430', () => `${m.brand} ${m.product}：${m.code}（${m.verdict}，色差 ${m.delta_e}）`, () => `${m.brand} ${m.product}: ${m.code} (${m.verdict}, color difference ${m.delta_e})`);
@@ -1873,7 +1936,7 @@ function stripesHtml(st) {
 }
 function rowHtml(r) {
   const ms = (r.matches || []).map((m) => `<div class="match"><span class="sw" style="background:${esc(m.hex)}"></span>`
-    + `${esc(matchLine(m))}<span class="tag">${esc(SOURCE_LABEL[m.source] || m.source)}</span>`
+    + `${esc(matchLine(m))}<span class="tag">${esc(SOURCE_LABEL[m.source] || m.source)}</span>${productLink(m)}`
     + __T('s0756', () => `${m.mix ? `<div class="mix">也可以：${esc(m.mix.lighter)} 和 ${esc(m.mix.deeper)} 各取一半混合</div>` : ''}</div>`, () => `${m.mix ? `<div class="mix">You can also mix half ${esc(m.mix.lighter)} with half ${esc(m.mix.deeper)}</div>` : ''}</div>`)).join('');
   const gap = r.key === 'foundation' && r.matches.length && !r.matches[0].fit && ['gap', 'no_match'].includes(r.matches[0].verdict_code)
     ? __t('s0438', '<div class="match">型錄裡沒有很接近的色號；也可能是照片偏暗或偏色，建議在窗邊自然光重拍，或點選較亮的臉頰。</div>') : '';
@@ -2000,7 +2063,9 @@ $('btn-back-quick').onclick = () => show(state.baseLooks ? 'view-base' : 'view-q
 $('btn-to-card').onclick = goCard;
 $('btn-face').onclick = runFace;
 $('btn-layers').onclick = runLayers;
-$('btn-show-staff').onclick = () => { $('staff-content').innerHTML = __t('s0451', '<h2>我想找這些顏色</h2>') + cardRowsWithMatches().map(rowHtml).join(''); $('staff-view').hidden = false; };
+$('btn-show-staff').onclick = () => { $('staff-content').innerHTML = __t('s0451', '<h2>我想找這些顏色</h2>') + cardRowsWithMatches().map(rowHtml).join(''); $('copy-status').hidden = true; $('staff-text').hidden = true; $('staff-view').hidden = false; };
+$('btn-copy-staff').onclick = copyForAdvisor;
+$('btn-copy-card').onclick = () => { $('staff-content').innerHTML = __t('s0451', '<h2>我想找這些顏色</h2>') + cardRowsWithMatches().map(rowHtml).join(''); $('staff-view').hidden = false; copyForAdvisor(); };
 $('btn-close-staff').onclick = () => { $('staff-view').hidden = true; };
 $('btn-save-card').onclick = saveCard;
 $('btn-restart').onclick = () => { state.recommendation = null; state.sens = null; renderStart(); show('view-start'); };

@@ -1,6 +1,6 @@
 'use strict';
 // 由 tools/build_i18n.py 產生，勿手改。來源 docs/i18n/zh_en_map.csv（英文欄雜湊見下）＋ docs/i18n/position_overrides.csv
-// CSV 英文欄 sha256=b1567f82a9031c8566aacfd341ba406edac029c5225bb407f86fbe09037f5aa9
+// CSV 英文欄 sha256=95a929fbf0cbdd26985ccbe2b178801451be0235ef8f50406dae620aa4489bc5
 window.I18N_EN = {
  "s0001": "Good Glow Try-On",
  "s0002": "Light-sensitive mode",
@@ -849,7 +849,21 @@ window.I18N_EN = {
  "s0978": "The camera is not responding. Close other apps or tabs that use the camera, or choose a photo from your album.",
  "s0979": "ERROR --api-base must be a YouCam https host (*.makeupar.com) or a local test server",
  "s0980": "Saved YouCam result · simulated",
- "s0981": "Live YouCam result · real call"
+ "s0981": "Live YouCam result · real call",
+ "s0983": "Replayed real YouCam call (closest recorded combination)",
+ "s0984": "Simulated: YouCam not called in demo mode (your own photo with a label)",
+ "s0985": "Replayed YouCam",
+ "s0986": "Live YouCam",
+ "s0987": "YouCam + local simulation",
+ "s0988": "The look on the demo photo is subtle by design: the foundation matches the skin tone, smoothing is 0 and nothing is shown as a before/after improvement; tap the picture to switch between your photo and the look to see the difference.",
+ "s0989": "Copy for the beauty advisor",
+ "s0990": "Copied",
+ "s0991": "Could not copy automatically; press and hold the text below to select it",
+ "s0992": "Product page",
+ "s0993": "Summary for the beauty advisor",
+ "s0995": "Shade list (brand, product, code):",
+ "s0996": "Confirm by swatching at the counter in natural light.",
+ "s0998": "The official step (saved result of a real YouCam try-on)"
 };
 window.I18N_EN_TPL = {
  "s0179": "<button class=\"done\" data-step=\"${i}\" aria-label=\"Back to step ${i + 1}: ${s}\"><b>${i + 1}</b><em>${s}</em></button>",
@@ -926,5 +940,9 @@ window.I18N_EN_TPL = {
  "s0753": "Found ${ps.length - nr} lighter patches${nr ? `, plus ${rounds} extra rounds to fill the uncovered gaps (${nr} patches)` : ''}, currently covering ${on} patch(es).",
  "s0754": "${r ? `<p class=\"de\">${st === steps[0] ? 'Original' : 'After this step'} color difference ${r.deltaE.toFixed(1)} (smaller blends in better)</p>` : ''}</div></li>",
  "s0755": "See this look layer by layer (${n} layers${state.mode === 'mock' ? ', no credits deducted in Demo mode' : `, ${n} extra credits`})",
- "s0756": "${m.mix ? `<div class=\"mix\">You can also mix half ${esc(m.mix.lighter)} with half ${esc(m.mix.deeper)}</div>` : ''}</div>"
+ "s0756": "${m.mix ? `<div class=\"mix\">You can also mix half ${esc(m.mix.lighter)} with half ${esc(m.mix.deeper)}</div>` : ''}</div>",
+ "s0982": "Replayed real YouCam call (recorded ${src.recorded_at})",
+ "s0994": "Skin tone card: level ${cell.level} (${cell.level_name})・${cell.tone_label}",
+ "s0997": "Skin tone card: level ${rec.skin_level || '–'}・${tone}",
+ "s0999": "${r.k}: ${r.v}"
 };   // 含 ${…} 的樣板字串：第 2 階段改成函式

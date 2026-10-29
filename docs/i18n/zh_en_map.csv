@@ -926,3 +926,21 @@ s0978,相機沒有回應：請關掉其他正在用相機的分頁或程式，�
 s0979,ERROR --api-base 只能是 YouCam 的 https 主機（*.makeupar.com）或本機測試伺服器,ERROR --api-base must be a YouCam https host (*.makeupar.com) or a local test server,py 字串,app/server.py:836 app/server.py:836
 s0980,展示模式：錄好的 YouCam 結果（模擬）,Saved YouCam result · simulated,js 字串,web/app.js:1450
 s0981,即時 YouCam 結果（真實呼叫）,Live YouCam result · real call,js 字串,web/app.js:1451
+s0982,重播真實 YouCam 呼叫結果（錄於 ${src.recorded_at}）,Replayed real YouCam call (recorded ${src.recorded_at}),js 字串,web/app.js
+s0983,重播真實 YouCam 呼叫結果（最接近的已錄組合）,Replayed real YouCam call (closest recorded combination),js 字串,web/app.js
+s0984,模擬：展示模式未呼叫 YouCam（你的照片原樣加上標示）,Simulated: YouCam not called in demo mode (your own photo with a label),js 字串,web/app.js
+s0985,YouCam 重播,Replayed YouCam,js 字串,web/app.js web/index.html
+s0986,YouCam 即時,Live YouCam,js 字串,web/app.js
+s0987,YouCam＋本機模擬,YouCam + local simulation,js 字串,web/app.js
+s0988,示範照上的妝刻意很淡：底妝對到膚色、磨皮 0、不做「改善前後」；點圖片在「你的照片／你選的樣子」之間切換，才看得出差別。,"The look on the demo photo is subtle by design: the foundation matches the skin tone, smoothing is 0 and nothing is shown as a before/after improvement; tap the picture to switch between your photo and the look to see the difference.",js 字串,web/app.js
+s0989,複製給櫃姐,Copy for the beauty advisor,html text,web/index.html
+s0990,已複製,Copied,js 字串,web/app.js
+s0991,無法自動複製，請長按下方文字選取,Could not copy automatically; press and hold the text below to select it,js 字串,web/app.js
+s0992,看商品頁,Product page,js 字串,web/app.js
+s0993,給櫃姐的摘要,Summary for the beauty advisor,js 字串,web/app.js web/index.html
+s0994,膚色色卡：第 ${cell.level} 級（${cell.level_name}）・${cell.tone_label},Skin tone card: level ${cell.level} (${cell.level_name})・${cell.tone_label},js 字串,web/app.js
+s0995,色號清單（品牌 產品 色號）：,"Shade list (brand, product, code):",js 字串,web/app.js
+s0996,以專櫃自然光試色為準。,Confirm by swatching at the counter in natural light.,js 字串,web/app.js
+s0997,膚色色卡：第 ${rec.skin_level || '–'} 級・${tone},Skin tone card: level ${rec.skin_level || '–'}・${tone},js 字串,web/app.js
+s0998,官方這一步（YouCam 試妝錄好的結果）,The official step (saved result of a real YouCam try-on),<img alt>,web/index.html
+s0999,${r.k}：${r.v},${r.k}: ${r.v},js 字串,web/app.js

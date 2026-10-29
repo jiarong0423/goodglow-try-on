@@ -167,6 +167,35 @@ def load_catalogs(source: str = "all") -> list[dict]:
     return out
 
 
+def product_urls() -> dict[tuple[str, str], str]:
+    """(brand, product name) -> the brand's own product page, taken from the catalog field source_url (official data only; the demo catalog has none).
+    Nothing is guessed: a product without source_url has no link."""
+    out = {}
+    for p in load_catalogs("all"):
+        url = p.get("source_url")
+        if isinstance(url, str) and url.startswith("https://"):
+            out[(p["brand"], p["name"])] = url
+    return out
+
+
+def attach_urls(obj, urls: dict | None = None):
+    """Walk a response and add "url" to every shade row ({"brand", "product", "code"}) whose product has a source_url. Rows without one are left as they are."""
+    if urls is None:
+        urls = product_urls()
+    if not urls:
+        return obj
+    if isinstance(obj, list):
+        return [attach_urls(x, urls) for x in obj]
+    if isinstance(obj, dict):
+        out = {k: attach_urls(v, urls) for k, v in obj.items()}
+        if "url" not in out and isinstance(out.get("brand"), str) and isinstance(out.get("product"), str) and "code" in out:
+            url = urls.get((out["brand"], out["product"]))
+            if url:
+                out["url"] = url
+        return out
+    return obj
+
+
 def match_lab(lab, category: str, undertone: str | None = None, source: str = "all", top: int = 3) -> list[dict]:
     results = []
     for p in load_catalogs(source):

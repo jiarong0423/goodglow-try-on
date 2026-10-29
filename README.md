@@ -1,5 +1,7 @@
 # Good Glow Try-On
 
+**Try it:** hosted demo at <https://goodglow-new.jace0423.com> (demo mode, no sign-in, no credits; add `?lang=en` for English). **Demo video (2:55):** <https://youtu.be/BsHrLIcwiOw>.
+
 Independent hackathon entry, not affiliated with Perfect Corp.; general information only, not medical advice (see [NOTICE.md](NOTICE.md)).
 
 A try-on web app (PWA) built for the **YouCam API Skin AI & eCommerce VTO hackathon, eCommerce VTO track**. It is designed
@@ -45,9 +47,9 @@ One app, two entry points. Take a mirror-like selfie, and the app:
 1. picks your skin tone on your phone; for the second entry point, the lighter-patch mask is computed by the app server from your photo, held in memory only and not stored (the browser has a fallback when the server is unreachable);
 2. **matches the tone to a 10-level × cool/neutral/warm skin tone card first, then ranks shades** of a catalog by card level and undertone, then by color difference;
 3. tries on the whole face through **YouCam Makeup VTO** (base, brows, lashes, blush, lips, contour; YouCam smoothing is fixed at 0; keeping your look as it is is always the first option). Makeup VTO has no region parameter, so concealing only on a patch is done by our local code and labelled *simulated*;
-4. gives a care card (moisturize, protect, then makeup) with the shades, which you can show to a beauty advisor or save as an image.
+4. gives a care card (moisturize, protect, then makeup) with the shades, which you can show to a beauty advisor, copy as a plain-text summary (skin tone level, undertone, and the shade list with brand, product and code) or save as an image. When the loaded shade data carries the brand's product page (`source_url` in the official shade file), each matched shade links to it; the fictional demo catalog has no links, and in alias mode links are dropped with the brand names.
 
-It only adds makeup and does not smooth the skin through YouCam (smoothing 0); one demo final (very-light-skin Example B) also has a local soft-focus pass that is labelled on the page. Looks are labelled *simulated*, and the app never shows a before/after
+It only adds makeup and does not smooth the skin through YouCam (smoothing 0); one demo final (very-light-skin Example B) also has a local soft-focus pass that is labelled on the page. Every try-on picture carries a badge and a provenance line that say what it is: *Replayed YouCam* (a saved real call, with its recording date when the options match exactly), *Live YouCam*, *YouCam + local simulation* (patch concealing or brows added on the phone), or *Simulated* (your own photo in demo mode, or the local fallback when YouCam cannot process a step). The app never shows a before/after
 "improvement". Large type and a dark theme are built in; if the light is too bright, the screen can be switched to dark. Auto-capture uses the YouCam Camera Kit and the live camera preview needs HTTPS; it was tested on one Android phone, while on a plain-HTTP local server only the album option is available. Photos under 640 px on the short side are rejected (the Camera Kit returns about 680 x 1080 on a phone).
 
 ## Two ways to try it: the demo page and the judge test version

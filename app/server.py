@@ -141,6 +141,21 @@ def exact_replay(condition: str, style: str, selection: dict) -> bytes | None:
     return f.read_bytes() if f.is_file() else None
 
 
+_EXACT_INDEX: dict[str, dict] = {}
+
+
+def exact_recorded_at(condition: str, key: str) -> str | None:
+    """Recording date (ISO, date part) of an exact replay, read from demo/replay/<entry>/exact/index.json; None if the index does not list it."""
+    if condition not in _EXACT_INDEX:
+        f = DEMOS[condition]["replay"] / "exact" / "index.json"
+        try:
+            _EXACT_INDEX[condition] = json.loads(f.read_text(encoding="utf-8")) if f.is_file() else {}
+        except (OSError, ValueError):
+            _EXACT_INDEX[condition] = {}
+    at = (_EXACT_INDEX[condition].get(key) or {}).get("recorded_at")
+    return str(at)[:10] if at else None
+
+
 def replay_image(condition: str, key: str, style: str = "natural") -> bytes | None:
     """Demo mode: find a recorded result by look style and variant (e.g. grooming_clear.jpg); if not found, fall back to another style of the same variant."""
     folder = DEMOS[condition]["replay"]
@@ -362,6 +377,15 @@ class State:
     def render(self, jpeg: bytes, selection: dict, demo: str | None, which: str | None = None,
                style: str = "natural", layer: str | None = None) -> str:
         """demo: the entry of a demo photo (albinism / vitiligo), None for the person's own photo. layer: which layer of the layer view (used for demo-mode replay)."""
+        return self.render_meta(jpeg, selection, demo, which, style, layer)[0]
+
+    def render_meta(self, jpeg: bytes, selection: dict, demo: str | None, which: str | None = None,
+                    style: str = "natural", layer: str | None = None) -> tuple[str, dict]:
+        """Like render, but also says where the picture came from, so the page can label it truthfully:
+        {"kind": "live"}                              a real YouCam call made for this request
+        {"kind": "replay_exact", "recorded_at": ...}  the saved result of a real YouCam call with exactly these options (date from demo/replay/*/exact/index.json)
+        {"kind": "replay_closest"}                    the saved result of a real YouCam call with the closest recorded options (or recorded layer)
+        {"kind": "demo_label"}                        demo mode with the person's own photo: no YouCam call, the photo comes back with a label"""
         if self.mock:
             self._estimate("makeup-vto")
             if demo:
@@ -369,25 +393,28 @@ class State:
                     f = DEMOS[demo]["replay"] / f"{style}_{layer}.jpg"
                     data = f.read_bytes() if f.is_file() else None
                     if data:
-                        return to_data_url(data)
+                        return to_data_url(data), {"kind": "replay_closest"}
                     if layer.startswith("final"):
                         layer = None                     # the last layer = the full look, fall back to the recording of the full look
                 if not layer:
-                    data = exact_replay(demo, style, selection) or replay_image(demo, replay_key(selection, which), style)
+                    data = exact_replay(demo, style, selection)
+                    if data:
+                        return to_data_url(data), {"kind": "replay_exact", "recorded_at": exact_recorded_at(demo, exact_key(demo, style, selection))}
+                    data = replay_image(demo, replay_key(selection, which), style)
                     if not data and selection.get("foundation", "keep") != "keep":
                         # a version including foundation is not recorded yet: use the recording of the same variant without foundation (the screen already says it is a similar result)
                         data = replay_image(demo, replay_key(dict(selection, foundation="keep"), which), style)
                     if data:
-                        return to_data_url(data)
+                        return to_data_url(data), {"kind": "replay_closest"}
                     data = nearest_replay(demo, style)
                     if data:
-                        return to_data_url(data)
-            return to_data_url(mock_label(jpeg))
+                        return to_data_url(data), {"kind": "replay_closest"}
+            return to_data_url(mock_label(jpeg)), {"kind": "demo_label"}
         if not self.key:
             raise RequestError(500, "no_key", "伺服器找不到 API key")
         cost = self._reserve_call("makeup-vto")
         try:
-            return self._render_live(jpeg, selection, data_holder := {})
+            return self._render_live(jpeg, selection, data_holder := {}), {"kind": "live"}
         finally:
             self.budget.settle("makeup-vto", cost, data_holder.get("ok", False))
 
@@ -464,7 +491,8 @@ class State:
                 looks.check_style_selection(style, sel, self.presets)
             except looks.PresetError as exc:
                 raise RequestError(400, "bad_selection", str(exc)) from None
-            out[which] = {"selection": sel, "image": self.render(jpeg, sel, demo, which, style)}
+            image, source = self.render_meta(jpeg, sel, demo, which, style)
+            out[which] = {"selection": sel, "image": image, "source": source}
         return {"ok": True, "mode": self.status()["mode"], "looks": out}
 
     def makeup(self, payload: dict) -> dict:
@@ -480,8 +508,9 @@ class State:
         except looks.PresetError as exc:
             raise RequestError(400, "bad_selection", str(exc)) from None
         jpeg, demo = self.photo_from(payload)
-        return {"ok": True, "mode": self.status()["mode"], "selection": sel,
-                "image": self.render(jpeg, sel, demo, None, style), "hint": looks.balance_hint(sel, self.presets)}
+        image, source = self.render_meta(jpeg, sel, demo, None, style)
+        return {"ok": True, "mode": self.status()["mode"], "selection": sel, "image": image, "source": source,
+                "hint": looks.balance_hint(sel, self.presets)}
 
     # ---- layer view: foundation -> + blush -> + lip -> + brow -> + lash (1 Makeup VTO call per layer)
     def layers(self, payload: dict) -> dict:
@@ -793,7 +822,8 @@ class Handler(BaseHTTPRequestHandler):
         return "en" if (self.headers.get("X-App-Lang") or q).strip().lower() == "en" else "zh"
 
     def _json(self, code: int, obj: dict):
-        if self.state.alias is not None:                      # surface alias: first replace brand / product names, then do the language conversion
+        obj = ce.attach_urls(obj)                               # every matched shade gets its brand's product page (source_url of the catalog), when the catalog has one
+        if self.state.alias is not None:                      # surface alias: first replace brand / product names, then do the language conversion; product links are dropped (a brand domain is a brand mark)
             obj = self.state.alias.scrub(obj, self._lang())
         if self._lang() == "en":
             obj = i18n_srv.localize(obj)

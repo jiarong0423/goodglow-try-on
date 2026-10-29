@@ -109,6 +109,8 @@ class BrandAlias:
             ctx = prod if isinstance(prod, str) and prod in self.shade_map else _prod
             out = {}
             for k, v in obj.items():
+                if k == "url" and isinstance(v, str):
+                    continue                                   # a product link names the brand's domain: dropped on the surface, like the brand name
                 if k in SHADE_KEYS and isinstance(v, str) and ctx and v in self.shade_map[ctx]:
                     out[k] = self.shade_map[ctx][v]
                 else:
@@ -150,7 +152,9 @@ class BrandAlias:
                 p = o.get("product")
                 ctx = p if isinstance(p, str) and p in self.shade_map else prod
                 for k, v in o.items():
-                    if k in SHADE_KEYS and isinstance(v, str) and ctx and v in self.shade_map[ctx]:
+                    if k == "url" and isinstance(v, str) and v:
+                        found.add(f"url:{v}")
+                    elif k in SHADE_KEYS and isinstance(v, str) and ctx and v in self.shade_map[ctx]:
                         if self.shade_map[ctx][v] != v:
                             found.add(v)
                     else:

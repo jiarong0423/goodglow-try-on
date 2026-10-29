@@ -61,9 +61,12 @@ h3 { font-size: 19px; margin: 0 0 10px; }
 .cover-card:active { transform: scale(.98); }
 .cover-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .credit { font-size: 12px; color: var(--muted); margin: 8px 2px 0; }
-.how { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; position: relative; }
-.how::before { content: ""; position: absolute; top: 16px; left: 10%; right: 10%; height: 2px; background: var(--line); }
+.how { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 4px; position: relative; }   /* the 8 steps of the flow: two rows of four on a phone, one row at 768px and up */
 .how li { position: relative; text-align: center; font-size: 13px; color: var(--muted); }
+@media (min-width: 768px) {
+  .how { grid-template-columns: repeat(8, 1fr); }
+  .how::before { content: ""; position: absolute; top: 16px; left: 6%; right: 6%; height: 2px; background: var(--line); }
+}
 .how b { display: grid; place-items: center; width: 32px; height: 32px; margin: 0 auto 4px; border-radius: 50%; background: var(--card); border: 2px solid var(--accent-2); color: var(--accent); font-size: 15px; }
 
 /* ---------- Intro reminder dialog */
@@ -165,6 +168,8 @@ h3 { font-size: 19px; margin: 0 0 10px; }
 .color-row .hex { font-family: ui-monospace, Menlo, monospace; color: var(--muted); font-size: 14px; }
 .match { margin-top: 6px; font-size: 15px; }
 .match .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--soft); margin-left: 6px; font-size: 12px; color: var(--accent); }
+.match .shop { display: inline-block; margin-left: 6px; font-size: 13px; color: var(--accent); text-decoration: underline; }
+.staff-text { width: 100%; min-height: 180px; resize: vertical; box-sizing: border-box; font: 15px/1.5 ui-monospace, Menlo, monospace; border: 1px solid #ccc; border-radius: 12px; padding: 10px; color: #111; background: #fff; white-space: pre; overflow: auto; }
 .match .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; border: 1px solid rgba(0,0,0,.2); }
 .strip { margin: 8px 0 4px; }
 .strip-label { font-size: 14px; font-weight: 700; }
