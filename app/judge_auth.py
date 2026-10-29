@@ -150,7 +150,7 @@ a{color:var(--acc)}
 <h1>Judge sign-in</h1>
 <p>The app works without signing in (demo mode replays results recorded from real YouCam calls).
 Signing in switches on live mode: your own photo is sent to the YouCam API. Live calls are capped.</p>
-<form id="f" __HIDE_FORM__>
+<form id="f" method="post" __HIDE_FORM__>
 <label for="u">Username</label><input id="u" name="username" autocomplete="username" required>
 <label for="p">Password</label><input id="p" name="password" type="password" autocomplete="current-password" required>
 <button type="submit">Sign in</button>
@@ -170,6 +170,15 @@ document.getElementById('go').addEventListener('click',()=>{location.href='/?lan
 document.getElementById('bye').addEventListener('click',async()=>{await post('/api/judge-logout');location.reload();});
 </script></body></html>
 """
+
+
+def inline_script_hashes() -> list[str]:
+    """Base64 SHA-256 of every inline script in the sign-in page, for the CSP script-src hash list."""
+    import base64
+    import hashlib
+    import re
+    return [base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode()
+            for body in re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", LOGIN_PAGE, re.S)]
 
 
 def login_page(signed_in: bool) -> bytes:

@@ -160,6 +160,15 @@ class HardeningTests(_Base):
         for body in re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", html, re.S):
             digest = base64.b64encode(hashlib.sha256(body.encode()).digest()).decode()
             self.assertIn("'sha256-" + digest + "'", server.CSP, "an inline script is not allowed by the CSP hash")
+        # the /judge sign-in page has an inline script too: without its hash the browser blocks it and the form would fall back to a native submit
+        for page in (server.judge_auth.login_page(False), server.judge_auth.login_page(True)):
+            text = page.decode("utf-8")
+            scripts = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", text, re.S)
+            self.assertTrue(scripts)
+            for body in scripts:
+                digest = base64.b64encode(hashlib.sha256(body.encode()).digest()).decode()
+                self.assertIn("'sha256-" + digest + "'", server.CSP, "the /judge inline script is not allowed by the CSP hash")
+            self.assertIn('<form id="f" method="post"', text, "the sign-in form must never fall back to GET (password in the URL)")
 
     def test_path_traversal_never_leaves_web_dir(self):
         s = socket.create_connection(("127.0.0.1", int(self.base.rsplit(":", 1)[1])), timeout=10)

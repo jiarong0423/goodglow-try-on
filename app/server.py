@@ -181,10 +181,11 @@ def replay_image(condition: str, key: str, style: str = "natural") -> bytes | No
 
 # Browser content policy. Sources are the ones the pages really use: MediaPipe code and models (jsdelivr, Google storage),
 # the YouCam Camera Kit SDK and the assets it loads (makeupar / perfectcorp / its CloudFront and S3 hosts), the vendored
-# onnxruntime WebAssembly. The Camera Kit modules call eval, so 'unsafe-eval' is allowed; inline script is not. Anything a hosting layer injects from elsewhere is not allowed. The one inline script (web/env_check.html)
+# onnxruntime WebAssembly. The Camera Kit modules call eval, so 'unsafe-eval' is allowed; inline script is not. Anything a hosting layer injects from elsewhere is not allowed. The inline scripts (web/env_check.html and the /judge sign-in page)
 # is allowed by its hash; tests/test_server_limits.py fails if it changes without the hash.
+_JUDGE_SCRIPT_HASHES = " ".join("'sha256-" + h + "'" for h in judge_auth.inline_script_hashes())
 CSP = ("default-src 'self'; "
-       "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: 'sha256-SHr0Q60Pb8J3bQTG+IXpDBKN9n/uriM7JIzxJcz2mns=' https://cdn.jsdelivr.net "
+       "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: 'sha256-SHr0Q60Pb8J3bQTG+IXpDBKN9n/uriM7JIzxJcz2mns=' " + _JUDGE_SCRIPT_HASHES + " https://cdn.jsdelivr.net "
        "https://plugins-media.makeupar.com https://plugins-media.perfectcorp.com https://d161aii70lzc9u.cloudfront.net; "
        "worker-src 'self' blob:; "
        "connect-src 'self' blob: data: https://cdn.jsdelivr.net https://storage.googleapis.com https://plugins-media.makeupar.com "
