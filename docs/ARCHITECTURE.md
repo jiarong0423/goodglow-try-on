@@ -153,7 +153,7 @@ flowchart TB
   E --> F{"User confirms or taps another cell"}
   F --> G["Catalog shades ranked by card level and undertone, then by CIEDE2000"]
   G --> H["One lighter, closest, one deeper test stripes"]
-  G --> I["Care card with shades"]
+  G --> I["Color card with shades"]
   E -. "no shade matches the depth" .-> J["Suggest mixing one lighter and one deeper"]
 ```
 
@@ -231,7 +231,7 @@ flowchart LR
   CAT["catalog.json: shade to reference color, depth, undertone"] --> R
   BR["brow_card.py: pencil shade to depth (6) x family (5) tags"] --> R2["Brow match"]
   FA["face_rules.py: Face Attribute result to blush placement and brow strength"] --> TIPS["Tips"]
-  CARE["care_rules_*.py: care and sun-protection steps"] --> CARD["Care card"]
+  CARE["care_rules_*.py: care and sun-protection steps"] --> CARD["Color card"]
   P --> BODY["looks.build_effects: Makeup VTO request body"]
   F --> BODY
   R --> CARD
