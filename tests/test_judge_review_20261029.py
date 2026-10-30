@@ -161,7 +161,7 @@ class PageWiringTests(unittest.TestCase):
     def test_readme_first_screen_has_the_hosted_demo_and_the_video(self):
         head = self.readme[:600]
         self.assertIn("https://goodglow-new.jace0423.com", head)
-        self.assertIn("https://youtu.be/BsHrLIcwiOw", head)
+        self.assertIn("https://youtu.be/o5WwDbf6dvU", head)
 
 
 class ReadmeConsistencyTests(unittest.TestCase):

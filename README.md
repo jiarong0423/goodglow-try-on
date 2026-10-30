@@ -1,6 +1,6 @@
 # Good Glow Try-On
 
-**Try it:** hosted demo at <https://goodglow-new.jace0423.com> (demo mode, no sign-in, no credits; add `?lang=en` for English). **Demo video (2:55):** <https://youtu.be/BsHrLIcwiOw>. To see the *Copy for the beauty advisor* summary in demo mode: tap a demo entry, then *Try a demo photo first*, click through to step 8 (*My color card*) and tap *Copy for the beauty advisor* (it copies, or shows the text to select if the browser blocks copying).
+**Try it:** hosted demo at <https://goodglow-new.jace0423.com> (demo mode, no sign-in, no credits; add `?lang=en` for English). **Demo video (2:34):** <https://youtu.be/o5WwDbf6dvU>. To see the *Copy for the beauty advisor* summary in demo mode: tap a demo entry, then *Try a demo photo first*, click through to step 8 (*My color card*) and tap *Copy for the beauty advisor* (it copies, or shows the text to select if the browser blocks copying).
 
 Independent hackathon entry, not affiliated with Perfect Corp.; general information only, not medical advice (see [NOTICE.md](NOTICE.md)).
 
