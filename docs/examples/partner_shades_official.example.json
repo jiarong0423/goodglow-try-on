@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "note": "EXAMPLE ONLY. Fictional brand and shade codes in the format app/color_engine.py reads. Copy to app/partner_shades_official.json (not tracked) and replace with a retailer's own shade file; the app prefers it over the demo catalogue when it exists.",
+  "products": [
+    {
+      "brand": "Example Brand",
+      "name": "Example Everyday Foundation",
+      "category": "foundation",
+      "source_url": "https://example.com/products/everyday-foundation",
+      "shades": [
+        {"code": "N10 Example Light", "hex": "#F1D9C9", "undertone": "neutral"},
+        {"code": "C10 Example Rose", "hex": "#EFD3CB", "undertone": "cool"},
+        {"code": "W10 Example Sand", "hex": "#EBD0B4", "undertone": "warm"}
+      ]
+    }
+  ]
+}

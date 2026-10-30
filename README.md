@@ -118,7 +118,7 @@ On one demo photo, by our own lightness metric, YouCam's whole-face foundation c
 This repository ships a **fictional demo catalog** (`app/catalog.json`: brands, shades and colors are all made up). The home page numbers
 and the shade page notes come from the catalog that is actually loaded (`/api/status`), so a fresh clone shows the demo catalog.
 The code can load a brand shade file you supply (`app/partner_shades_official.json`) and prefers it when present; such data is not
-part of this repository. Shades are ranked by the skin tone card's depth and cool/warm plus the color difference to the skin, and a first-place shade within the keep threshold stays pinned at the top. Recordings and screenshots for the public (video, Devpost) always use `--catalog demo`, the fictional catalog, so no third-party brand name or brand shade code
+part of this repository. The file format, a worked example and what has and has not been tested are in [`docs/SHADE_FILE.md`](docs/SHADE_FILE.md); it has been tried only with a placeholder file, not with a retailer-scale one. Shades are ranked by the skin tone card's depth and cool/warm plus the color difference to the skin, and a first-place shade within the keep threshold stays pinned at the top. Recordings and screenshots for the public (video, Devpost) always use `--catalog demo`, the fictional catalog, so no third-party brand name or brand shade code
 appears. `--brand-alias` (letter aliases such as Brand M, product names turned into categories, shade names dropped, codes kept) is for local
 checks only and is not used for public material.
 
