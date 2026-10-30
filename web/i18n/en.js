@@ -1,6 +1,6 @@
 'use strict';
 // 由 tools/build_i18n.py 產生，勿手改。來源 docs/i18n/zh_en_map.csv（英文欄雜湊見下）＋ docs/i18n/position_overrides.csv
-// CSV 英文欄 sha256=aae16fe17a2e1b896626753c010380c750c6356bfd4cb5cf11c2998a5638e23a
+// CSV 英文欄 sha256=ed48d27044e22d7c84d4257c68a99888c1bf5b17e389dd1d3a206a92edce444b
 window.I18N_EN = {
  "s0001": "Good Glow Try-On",
  "s0002": "Light-sensitive mode",
@@ -109,7 +109,7 @@ window.I18N_EN = {
  "s0108": "Often",
  "s0109": "Sometimes",
  "s0110": "Never",
- "s0111": "Are you currently using any prescribed or active products on your face?",
+ "s0111": "Is your skin uncomfortable lately",
  "s0112": "Yes",
  "s0113": "No",
  "s0114": "Have you ever had an allergic reaction to fragrance or certain ingredients?",
@@ -482,7 +482,7 @@ window.I18N_EN = {
  "s0575": "Lighter patches burn easily; if the surrounding skin does not tan, the color difference is also smaller.",
  "s0576": "Avoid ingredients that may trigger lighter patches",
  "s0577": "Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes, whitening products; if lighter patches appear where you use one, stop using it and see a doctor.",
- "s0578": "Do not apply creams, cosmetics, or perfume for 2 hours before a skin treatment; regular moisturizer is fine.",
+ "s0578": "Whether to wear makeup, and what to apply, is up to your doctor or treatment provider; without other instructions, regular moisturizer is fine.",
  "s0579": "Spot color correcting: dab peach/orange only on the lighter patches (no green)",
  "s0580": "Lighter patches lack pigment, so do color correcting first so the foundation does not turn gray; do not apply it over the whole face.",
  "s0581": "Foundation: choose a shade to match the skin tone around the lighter patches, most on the center of the face and thinned outward; flat strokes on the T-zone, thinnest around the eyes; dab with a sponge",

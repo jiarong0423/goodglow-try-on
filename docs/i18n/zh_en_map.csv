@@ -105,7 +105,7 @@ s0107,擦保養品或化妝品後，會刺痛或發紅嗎？,"After using skinca
 s0108,常常,Often,html text,web/index.html:251
 s0109,偶爾,Sometimes,html text,web/index.html:251
 s0110,不會,Never,html text,web/index.html:251
-s0111,最近在做照光治療，或臉上有擦藥嗎？,Are you currently using any prescribed or active products on your face?,html text,web/index.html:252
+s0111,最近皮膚不舒服，或正在使用醫師開的藥膏或治療嗎？,Is your skin uncomfortable lately, or are you using an ointment or treatment from your doctor?,html text,web/index.html:252
 s0112,有,Yes,html text,web/index.html:253 web/index.html:255
 s0113,沒有,No,html text,web/index.html:253 web/index.html:255
 s0114,對香料或某些成分過敏過嗎？,Have you ever had an allergic reaction to fragrance or certain ingredients?,html text,web/index.html:254
@@ -547,7 +547,7 @@ s0574,防曬 SPF50+，大範圍擦,"Sunscreen SPF50+, applied over a wide area",
 s0575,淺色區塊處容易曬傷；周圍皮膚不曬黑，色差也比較小。,"Lighter patches burn easily; if the surrounding skin does not tan, the color difference is also smaller.",py 字串,app/color_engine.py:444 app/color_engine.py:444
 s0576,避開可能誘發淺色區塊的成分,Avoid ingredients that may trigger lighter patches,py 字串,app/color_engine.py:446 app/color_engine.py:446
 s0577,染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白產品；在哪裡用、哪裡出現淺色區塊就停用並看醫師。,"Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes, whitening products; if lighter patches appear where you use one, stop using it and see a doctor.",py 字串,app/color_engine.py:446 app/color_engine.py:446
-s0578,照光前 2 小時不擦乳霜、化妝品、香水；一般保濕可以。,"Do not apply creams, cosmetics, or perfume for 2 hours before a skin treatment; regular moisturizer is fine.",py 字串,app/color_engine.py:447 app/color_engine.py:447
+s0578,是否上妝、塗什麼，請依醫師或治療單位的指示；沒有特別指示時，一般保濕可以。,"Whether to wear makeup, and what to apply, is up to your doctor or treatment provider; without other instructions, regular moisturizer is fine.",py 字串,app/color_engine.py:447 app/color_engine.py:447
 s0579,局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色）,Spot color correcting: dab peach/orange only on the lighter patches (no green),py 字串,app/color_engine.py:448 app/color_engine.py:448
 s0580,淺色區塊缺色素，先校色粉底才不會泛灰；不要整臉上。,"Lighter patches lack pigment, so do color correcting first so the foundation does not turn gray; do not apply it over the whole face.",py 字串,app/color_engine.py:448 app/color_engine.py:448
 s0581,底妝：對淺色區塊周圍的膚色選色，面中最多、往外推薄；T 字平刷、眼周最薄；海綿點壓,"Foundation: choose a shade to match the skin tone around the lighter patches, most on the center of the face and thinned outward; flat strokes on the T-zone, thinnest around the eyes; dab with a sponge",py 字串,app/color_engine.py:449 app/color_engine.py:449
