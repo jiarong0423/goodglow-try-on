@@ -163,7 +163,7 @@ function renderStart() {
 }
 const CARE_TIP = {                        // Skincare reminder (the adjacent suggestion is placed after the skin-tone step, before the try-on and at the top of the palette card)
   albinism: __t('s0066', '☀︎ 淺色肌膚的光防護是第一步：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。'),
-  vitiligo: __t('s0184', '☀︎ 淺色區塊要做好防曬：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。'),
+  vitiligo: __t('s0184', '☀︎ 妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。'),
 };
 function chooseCondition(c) {
   const prefs = load(PREFS_KEY) || {};
@@ -1313,7 +1313,7 @@ async function camoGuide() {
     // Makeup-layer mode: each step is drawing up to that layer (the same 8 layers), and the text follows the makeup tutorial
     const cols = camoColors(prods), strength = Number($('mk-strength').value) / 100;
     const msteps = [
-      { t: __t('s0337', '保濕＋防曬'), d: __t('s0338', '先擦保濕，再擦防曬，等吸收再上妝；色素少的皮膚較容易曬傷，請做好防曬。照光治療日是否上妝，請依醫師指示。') },
+      { t: __t('s0337', '保濕＋防曬'), d: __t('s0338', '先擦保濕，再擦防曬，等吸收再上妝；廣範圍塗抹防曬，保護整片肌膚。照光治療日是否上妝，請依醫師指示。') },
       { t: __t('s0339', '校色：只點在淺色區塊上'), d: __t('s0340', '綠色虛線就是範圍。用指尖或小刷在淺色區塊中央薄薄點上蜜桃／橘色，不要沾到旁邊的正常皮膚。'), up: 'corrector', outline: true, m: prods.corrector },
       { t: __t('s0341', '遮瑕：從中央往外推'), d: __t('s0342', '用最接近淺色區塊「周圍」膚色的遮瑕，先點在區塊中央，再用海綿拍按、往外推進周圍皮膚，邊緣才不會有一圈。拍按不要搓。'), up: 'conceal', m: prods.concealer },
       { t: __t('s0343', '第二層：只補還看得出來的地方'), d: __t('s0344', '等第一層服貼，再薄薄補在還看得出差異的地方。兩到三層薄的，比一層厚的自然。'), up: 'conceal2', m: prods.concealer },
@@ -1337,7 +1337,7 @@ async function camoGuide() {
   }
   const cov = 0.6;
   const steps = [
-    { t: __t('s0337', '保濕＋防曬'), d: __t('s0355', '先擦保濕，再擦無色防曬；淺色區塊對紫外線特別敏感。照光治療日是否上妝，請依醫師指示。'), r: { coverage: 0, concealer: false, corrector: false } },
+    { t: __t('s0337', '保濕＋防曬'), d: __t('s0355', '先擦保濕，再擦無色防曬。照光治療日是否上妝，請依醫師指示。'), r: { coverage: 0, concealer: false, corrector: false } },
     { t: __t('s0255', '局部校色（只點在淺色區塊上）'), d: __t('s0356', '用指尖在綠色虛線範圍內薄點蜜桃／橘色校色，分小區塊，不要整臉上；不用綠色（疊上膚色粉底會發灰）。'), r: { coverage: 0, concealer: false, corrector: true }, outline: true, m: (base.corrector || [])[0] },
     { t: __t('s0357', '遮瑕第一層：海綿點壓'), d: __t('s0358', '用接近淺色區塊「周圍」膚色的遮瑕，只點在淺色區塊上，用海綿點壓、不要來回搓（用力摩擦會刺激皮膚）。'), r: { coverage: cov, passes: 1 }, m: (base.concealer || [])[0] },
     { t: __t('s0343', '第二層：只補還看得出來的地方'), d: __t('s0359', '等一下讓第一層服貼，再薄薄補在還看得出差異的地方；已經融合的地方不要再疊，才不會厚重。'), r: { coverage: cov, passes: 2 }, m: (base.concealer || [])[0] },

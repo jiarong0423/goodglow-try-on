@@ -247,9 +247,9 @@ class SensitiveNotesTests(unittest.TestCase):
         self.assertIn("敏感", alb["title"]); self.assertIn("敏感", vit["title"])
         a = " ".join(x["text"] + x["why"] for x in alb["items"])
         v = " ".join(x["text"] + x["why"] for x in vit["items"])
-        for word in ("曬傷", "小範圍", "皮膚科"):
+        for word in ("防曬", "小範圍", "皮膚科"):
             self.assertIn(word, a)
-        for word in ("曬傷", "不要搓", "PPD", "小範圍", "照光"):
+        for word in ("防曬", "不要搓", "PPD", "小範圍", "照光"):
             self.assertIn(word, v)
         for banned in ("缺陷", "蒼白", "改造", "危險"):                       # soft wording
             self.assertNotIn(banned, a + v + alb["title"] + vit["title"])

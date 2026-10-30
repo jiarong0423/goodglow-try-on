@@ -390,7 +390,7 @@ def vitiligo_plan(normal_hex: str, patch_hex: str, undertone: str | None = None,
         n_hue = math.degrees(math.atan2(n_lab[2], n_lab[1]))
         p_hue = math.degrees(math.atan2(p_lab[2], p_lab[1]))
         csrc = category_source("corrector", source)
-        # patches lack pigment: always dab only a peach / orange corrector on the patch; the deeper the skin, the deeper the orange-red (picked by the natural skin depth).
+        # the patches are lighter than the surrounding skin: always dab only a peach / orange corrector on the patch; the deeper the skin, the deeper the orange-red (picked by the natural skin depth).
         # Pinkish patches (p_hue < n_hue) also do not get green: green brightens the patch and removes red, and a brown foundation on top turns grey (sample review, 10-16;
         # the earlier rule "pinkish -> Mint green" has been removed; green only suits light skin with redness)
         warm = [r for r in match_lab(n_lab, "corrector", None, csrc, 40)
@@ -403,7 +403,7 @@ def vitiligo_plan(normal_hex: str, patch_hex: str, undertone: str | None = None,
         if n_lab[0] < 60:
             plan["deep_skin_note"] = "原膚色較深：校色選偏紅的深橘，粉底對周圍膚色。"
     plan["steps"] = [
-        "防曬與隔離先上；淺色區塊處對紫外線特別敏感。",
+        "防曬與隔離先上。",
         "局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色），分小區塊，不要整臉上。",
         "粉底對淺色區塊周圍的膚色選色：面中最多、往外推薄，T 字平刷、眼周最薄；用海綿**點壓**，不要來回搓：用力摩擦會刺激皮膚。（化妝師分區上法）",
         "面中打亮：額頭中央、鼻樑、下巴、眼下三角，霧面或微光；T 字少量蜜粉按壓控油。",
@@ -461,12 +461,12 @@ def card_matches(items: list[dict], source: str = "all") -> list[dict]:
 # Skincare and protection steps (from the internal design notes' makeup routine and two planning tables)
 _CARE_COMMON = [
     ("溫和清潔、保濕", "皮膚薄、容易紅；動作輕，不搓不擦，乾燥的地方上妝會浮粉。"),
-    ("防曬 SPF50+，出門前 10–15 分鐘", "黑色素較少時，紫外線防護比較弱。"),
+    ("防曬 SPF50+，出門前 10–15 分鐘", "防曬是上妝前的第一步。"),
     ("隔離（溫和、無香料的妝前乳）", "在皮膚和彩妝之間多一層保護，也讓後面的妝服貼。"),
 ]
 _CARE = {
     "albinism": _CARE_COMMON[:2] + [
-        ("眼睛也要防曬：寬簷帽、包覆式抗 UV 墨鏡", "眼睛怕光，防曬不只擦臉。"),
+        ("眼睛也要防曬：寬簷帽、包覆式抗 UV 墨鏡", "眼睛也要防曬，防曬不只擦臉。"),
         ("隔離：溫和、無香料的妝前乳；要修色只修泛紅（綠色系）", "多一層保護、讓妝服貼；不選美白提亮的紫色系，目標是調和膚色，不是更白。"),
         ("新產品先在耳後或下顎小範圍試用", "選溫和、無香料，降低過敏機會。"),
         ("底妝（想要時）：顏色接近原本膚色，面中最多往外推薄，T 字平刷、眼周最薄", "照配色卡的底妝色號，往外推到脖子一致；T 字少量蜜粉按壓。保留特色的妝可以不上底妝，隔離一樣要上。"),
@@ -476,9 +476,9 @@ _CARE = {
     ],
     "vitiligo": [
         ("溫和清潔、保濕，不搓不刷", "摩擦、抓、用力刷都會刺激皮膚。"),
-        ("防曬 SPF50+，大範圍擦", "色素少的皮膚較容易曬傷，請做好防曬；周圍皮膚不曬黑，色差也比較小。"),
+        ("防曬 SPF50+，大範圍擦", "等吸收後再上妝。"),
         _CARE_COMMON[2],
-        ("避開可能刺激皮膚的成分", "染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白產品都可能刺激皮膚；若出現新的或擴大的淺色區塊，請看皮膚科醫師。"),
+        ("避開可能刺激皮膚的成分", "染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白產品都可能刺激皮膚；若發現新的或有變化的斑點，請看皮膚科醫師。"),
         ("照光治療日是否上妝，請依醫師指示", "是否上妝、塗什麼，請依醫師或治療單位的指示；沒有特別指示時，一般保濕可以。"),
         ("局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色）", "淺色區塊顏色較淺，先校色粉底才不會泛灰；不要整臉上。"),
         ("底妝：對淺色區塊周圍的膚色選色，面中最多、往外推薄；T 字平刷、眼周最薄；海綿點壓", "照配色卡的底妝色號；往外推到脖子一致。T 字少量蜜粉按壓控油。不想上可以跳過。"),
@@ -549,20 +549,20 @@ _SENSITIVE = {
     "albinism": {
         "title": "你的回答顯示皮膚偏敏感，上妝前先看這幾點",
         "items": [
-            ("黑色素較少時，強光下很快就可能曬傷", "防曬、遮陽、長袖、抗 UV 墨鏡一起用。"),
-            ("皮膚薄、容易紅，手指一壓就可能留紅印", "上妝用輕拍，不要來回推。"),
+            ("強光下請做好防曬", "防曬、遮陽、長袖、抗 UV 墨鏡一起用。"),
+            ("動作放輕，手指用力一壓可能留紅印", "上妝用輕拍，不要來回推。"),
             ("新產品先在耳後或下顎小範圍試，選溫和、無香料", "不要一開始就買大罐。"),
-            ("定期給皮膚科檢查", "長期日曬會讓皮膚慢慢出現變化；新長的斑點、顏色不均或形狀改變，請給皮膚科醫師檢查。"),
+            ("定期給皮膚科檢查", "新長的斑點、顏色不均或形狀改變，請給皮膚科醫師檢查。"),
         ],
     },
     "vitiligo": {
         "title": "你的回答顯示皮膚偏敏感，上妝前先看這幾點",
         "items": [
-            ("色素少的皮膚較容易曬傷，請做好防曬", "大範圍擦防曬；周圍皮膚不曬黑，色差也比較小。"),
+            ("出門前先擦好防曬", "大範圍擦；等吸收後再上妝，妝會更服貼。"),
             ("不要搓、抓、用力刷", "用力摩擦會刺激皮膚。上妝、卸妝都用點壓。"),
-            ("留意可能刺激皮膚的成分", "染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白成分都可能刺激皮膚；若出現新的或擴大的淺色區塊，請看皮膚科醫師。"),
+            ("留意可能刺激皮膚的成分", "染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白成分都可能刺激皮膚；若發現新的或有變化的斑點，請看皮膚科醫師。"),
             ("新產品先小範圍試，不要急著買大罐", "出現刺激、過敏就停用。"),
-            ("照光治療日是否上妝，請依醫師指示；不確定是什麼、或淺色區塊範圍變大，請皮膚科確認", "以醫師或衛教人員的說明為準。"),
+            ("照光治療日是否上妝，請依醫師指示；不確定是什麼、或發現新的或有變化的斑點，請皮膚科確認", "以醫師或衛教人員的說明為準。"),
         ],
     },
 }
