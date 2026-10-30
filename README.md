@@ -6,6 +6,8 @@ Independent hackathon entry, not affiliated with Perfect Corp.; general informat
 
 A makeup try-on and shade-matching web app (PWA) for the **YouCam API Skin AI & eCommerce VTO hackathon, eCommerce VTO track**. It starts from **lighter patches and uneven skin tone**, where a whole-face try-on cannot help on its own (Makeup VTO has no region parameter): the app measures the colour gap between the patch and the skin around it, previews a locally computed concealer fill, tries on a whole-face look with YouCam Makeup VTO, and ends on one colour card (shade, sun protection, skincare steps) that a beauty advisor can read at a counter. The same flow also serves **very light skin, brows and lashes**. The app screens describe what you need, not a condition.
 
+**The loop in one line:** your own skin tone picks the shade, the shade drives a YouCam Makeup VTO look, and the same tone sets the sunscreen and skincare steps on one colour card that a beauty advisor can read at a counter. It has not been tested with advisors or with the people it is for; a two-week, advisors-only pilot (shades tried per customer, wrong-shade returns, measured before and after) is the next step.
+
 The project has **not yet been tested with the people it is for**. Thank you to the people and photographers who make photos of themselves publicly available under open licences. Clear frontal photos with these skin features under open licences are hard to find. For one example the only suitable photo was a side view, so we used an AI-generated frontal illustration made from it, to demonstrate the method. It is not the person's original photo and is labelled Simulated on screen. The people in these photos did not take part in this project and do not endorse it. Demo photos are public stock photos of models; they are not users and do not endorse it. What each picture is labelled is explained under *Labels on pictures* below; sources and limits are in [`demo/SOURCES.md`](demo/SOURCES.md) and [`evidence/README.md`](evidence/README.md).
 
 ## At a glance: what is real and what is replayed
@@ -106,6 +108,10 @@ success; `--max-calls` limits the number of billed YouCam calls in one run (Make
 slider (11, 4, 17 local layers and stage images only, plus the YouCam try-on steps), a heat map of what each layer changed, the technique used per layer, the
 technology list, and the cross-checks. It lives in the repository only; the app does not link to it and the container image does not include it. Every image on that page is labelled Simulated (local layers) or Replayed YouCam (saved real calls). Data: `evidence/process.json`, regenerated from local run folders by
 `tools/export_process_demo.py` (the run folders are not in the repository).
+
+## What the measurement does and does not show
+
+On one demo photo, by our own lightness metric, YouCam's whole-face foundation closes the gap between a lighter patch and the skin around it by about 5-6%, and our layered local fill by about 42% (`tools/repro_region_gap.py` re-measures the saved outputs). Makeup VTO styles the whole face by design and has no region parameter, so this is a demonstration of the method with a fill built for that case, not proof of accuracy and not a comparison of which is better. The offline layered engine is not in this repository.
 
 ## Shade data
 
