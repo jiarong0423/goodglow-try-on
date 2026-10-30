@@ -55,7 +55,7 @@ ALB_STEPS = [  # (report step prefix, zh position, en position, zh method, en me
 ALB_M_TEXT = {  # the male set uses only these layers
     "1 薄底妝": 0, "2b 痘印": 1, "2a 眼下": 2, "6 唇": 10,
 }
-VIT_M_STEPS = [  # vitiligo male: 17 local layer steps (report order); zh, en
+VIT_M_STEPS = [  # lighter-patch male: 17 local layer steps (report order); zh, en
     ("校色：淺色區塊核心先用校色色號", "A corrector first, only on the core of the lighter area"),
     ("遮瑕：淺色區塊用較深色號（只上比目標淺處）", "Concealer on the lighter area, only where it is lighter than the target"),
     ("遮瑕第二層：還看得出來的淺色處再點一次", "A second concealer pass where the lighter area still shows"),
@@ -158,7 +158,7 @@ def main() -> int:
     alb = runs / "albinism_20261018"
     plan = alb / "official_plan_FM_20261020"
 
-    # ---- albinism F: 11 local layers (cumulative) → YouCam try-on (base + blush) → final look
+    # ---- very-light-skin F: 11 local layers (cumulative) → YouCam try-on (base + blush) → final look
     rep = json.loads((alb / "approx_r14f/F_warm_apricot/report.json").read_text(encoding="utf-8"))
     frames = [dict(src=alb / "approx_r14f/F_warm_apricot/frames/00.png", **step(START, "你的照片（起點）", "Your photo (the starting point)"))]
     for k, (prefix, zh, en, tz, te) in enumerate(ALB_STEPS, 1):
@@ -172,7 +172,7 @@ def main() -> int:
                                                                       "官方腮紅層放大 1.8 倍疊回", "The official blush layer, scaled up 1.8×, laid back on")))
     b.add("light_a", {"title_zh": "膚色很淺 · 示範 A", "title_en": "Very light skin · Example A", "credit": "Pexels", "local_layers": 11, "youcam_steps": 1}, frames)
 
-    # ---- albinism M: 4 local layers → YouCam lips → final look
+    # ---- very-light-skin M: 4 local layers → YouCam lips → final look
     repm = json.loads((alb / "approx_r14f/M_v11_minimal/report.json").read_text(encoding="utf-8"))
     frames = [dict(src=alb / "approx_r14f/M_v11_minimal/frames/00.png", **step(START, "你的照片（起點）", "Your photo (the starting point)"))]
     for k, name in enumerate(("1 薄底妝", "2b 痘印", "2a 眼下", "6 唇"), 1):
@@ -185,7 +185,7 @@ def main() -> int:
                                                                       "官方唇層 ×2，柔焦只在兩頰（鬍子區不碰）", "The official lip layer ×2, soft focus on the cheeks only (beard area untouched)")))
     b.add("light_b", {"title_zh": "膚色很淺 · 示範 B", "title_en": "Very light skin · Example B", "credit": "Pexels", "local_layers": 4, "youcam_steps": 1, "extra_zh": "另有一道兩頰柔焦", "extra_en": "plus a soft-focus pass on the cheeks"}, frames)
 
-    # ---- vitiligo M: 17 local steps → merge → YouCam try-on
+    # ---- lighter-patch M: 17 local steps → merge → YouCam try-on
     lr = runs / "layer_rule_20261018"
     repv = json.loads((lr / "demo20551205_ai/report.json").read_text(encoding="utf-8"))
     photo = ROOT / "demo/photos/vitiligo_20551205.jpg"
@@ -202,7 +202,7 @@ def main() -> int:
     b.add("uneven_a", {"title_zh": "膚色深淺不一 · 示範 A", "title_en": "Uneven skin tone · Example A", "credit": "Pexels", "local_layers": 17, "youcam_steps": 1,
                                  "note_zh": "這組的本機逐層是對一張 AI 生成的目標圖擬合出來的，不是照著真人上妝照片。", "note_en": "The local layers of this example were fitted to an AI-generated target image, not copied from a photo of real makeup.", "extra_zh": "另有一輪補拍，整臉粉底與修容合併", "extra_en": "plus one touch-up round, with whole-face foundation and contour merged"}, frames)
 
-    # ---- vitiligo F: local layers (four areas) → YouCam blush → YouCam eyeshadow (the per-area intermediate images were not kept; only stage images are shown)
+    # ---- lighter-patch F: local layers (four areas) → YouCam blush → YouCam eyeshadow (the per-area intermediate images were not kept; only stage images are shown)
     ff = lr / "frontal_F_20261020"
     frames = [dict(src=ff / "F0_original_AI_frontal.png", **step(START, "起點（AI 生成的正面示意圖，非本人原照）", "Starting point (an AI-generated frontal illustration, not an original photo)")),
               dict(src=lr / "F_compose/F_C4.png", **step(LOCAL, "本機逐層做完：眼周 → 嘴與下巴 → 耳 → 額，只在看得出的淺色區塊小範圍點蓋、拍開",

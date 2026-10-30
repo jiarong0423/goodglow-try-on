@@ -1,9 +1,9 @@
 'use strict';
-// Makeup layer mode (design decision,: follow the logic of makeup tutorials rather than algorithms; canvas is essentially layered rendering, just like makeup;
+// Makeup layer mode (design note: follow the logic of makeup tutorials rather than algorithms; canvas is essentially layered rendering, just like makeup;
 // the SVG is really the face's makeup region; OpenCV is for visual localization -> approved 8-layer design).
 // Division of labor: OpenCV / MediaPipe localization (light-patch outlines, face mesh and segmentation from camo_editor.js) -> makeup region (SVG path) of each product
 // -> Canvas paints layer by layer in makeup order (product color = the actual recommended shade). No facial features are altered and no pixels are generated.
-// Layers and numbers: makeup tutorials (vitiligo concealing: color-correct only on the light patches, conceal from the center outward, add a second layer only where it is still visible, pat rather than rub, set with pressed powder;
+// Layers and numbers: makeup tutorials (lighter-patch concealing: color-correct only on the light patches, conceal from the center outward, add a second layer only where it is still visible, pat rather than rub, set with pressed powder;
 // highlight: upper cheekbone edge, nose bridge stopping before the nose tip; contour: lower cheekbone edge, jaw, sides of the nose) plus the opacities and mesh points suggested by an external advisor (10-17).
 // iPhone Safari does not support ctx.filter: feathering is always done by computing the opacity with box blurs, then compositing the color with globalCompositeOperation.
 (function () {
@@ -17,7 +17,7 @@
     // Touch-up: after the base makeup, look again;
     // wherever light skin is still visible (brighter and less saturated than its surroundings), dab the same concealer only there and pat the edges out; small amounts, several times, re-detecting each time.
     // Basis: makeup artists' pinpoint concealing (dab only on the blemish, pat, push the edge until invisible); makeup tutorial 'if one layer cannot cover it, add a second layer in small amounts, several times';
-    // vitiligo concealing guide (the border has the most obvious contrast, so the edge needs special handling)
+    // lighter-patch concealing guide (the border has the most obvious contrast, so the edge needs special handling)
     { id: 'touch1', name: __t('s0742', '補妝1'), product: __t('s0736', '遮瑕') },
     { id: 'touch2', name: __t('s0743', '補妝2'), product: __t('s0736', '遮瑕') },
     { id: 'touch3', name: __t('s0744', '補妝3'), product: __t('s0736', '遮瑕') },
@@ -26,14 +26,14 @@
     { id: 'contour_fine', name: __t('s0745', '細修容'), product: __t('s0160', '修容') },          // Small-scale light and shade: sides of the nose, eye sockets, under the lower lip (fine details lit by the 3D mesh)
     { id: 'highlight_fine', name: __t('s0746', '細打亮'), product: __t('s0092', '打亮') },
   ];
-  // Opacity of each layer (then multiplied by the 'intensity' slider, default 60%). 10-17 approved A+D (design decision): fitted to the target makeup with tools/fit_layers_to_target.py
+  // Opacity of each layer (then multiplied by the 'intensity' slider, default 60%). 10-17 approved A+D (design note): fitted to the target makeup with tools/fit_layers_to_target.py
   // (concealer reduced, contour increased, fine contour added; color correction and edge blending fitted to 0), converted to a slider at 60%, then tuned with real browser measurements using tools/measure_layer_render.py:
-  // median low-frequency color difference of the vitiligo demo photo against the target image 6.23 (old values) -> 5.56 (whole face), 7.99 -> 6.76 (light patches). Fine highlight measured worse, so it is set to 0 for now.
+  // median low-frequency color difference of the lighter-patch demo photo against the target image 6.23 (old values) -> 5.56 (whole face), 7.99 -> 6.76 (light patches). Fine highlight measured worse, so it is set to 0 for now.
   // Old values (before 10-17): color correction 0.5, concealer 0.72, second layer 0.35, edge blending 0.38, foundation 0.28, powder 0.15, contour 0.2, highlight 0.2
   const FINE_GAIN = 0.1;                                             // How much lighting variation counts as 'full' (diffuse 0-1; demo photo p10 / p90 about +-0.08)
   const OPACITY = { corrector: 0, conceal: 0.33, conceal2: 0.67, edge: 0, foundation: 0.5, powder: 0.15,
     contour: 0.75, highlight: 0.5, contour_fine: 0.3, highlight_fine: 0,
-    // Touch-up browser measurement 10-17 (vitiligo demo photo, fitted shades): light-patch 'visibility' (color difference from the surrounding normal skin) median 7.81 -> 4.74, p90 15.96 -> 11.13;
+    // Touch-up browser measurement 10-17 (lighter-patch demo photo, fitted shades): light-patch 'visibility' (color difference from the surrounding normal skin) median 7.81 -> 4.74, p90 15.96 -> 11.13;
     // patch L* 52.7 -> 49.6 (target 50.8). 0.3 / 0.5 are paler (5.69 / 5.27)
     touch1: 0.8, touch2: 0.8, touch3: 0.8 };
   // Contour and highlight regions: MediaPipe mesh points (suggested by an external advisor, 10-17; take the convex hull of these points, use a line for the nose bridge)
@@ -206,7 +206,7 @@
     const M = CE.membrane(unk, opt.lift ?? 3), light = new Float32Array(n);   // lift: brighten toward the lit side (so that it does not look dull after concealing; 10-17 brightened 2 -> 3)
     for (let i = 0; i < n; i++) light[i] = (M && M[3][i] && unk[i]) ? M[0][i] : S.lowL[i];
     // Add the face's light and shade back inside the light patches: the lighting extended from the surroundings is smooth,
-    // so when the nose lies entirely inside a patch, the bright nose bridge and the shadowed nose sides get flattened -> use the 3D face mesh's lighting (determined by face shape, unaffected by the vitiligo's own brightness),
+    // so when the nose lies entirely inside a patch, the bright nose bridge and the shadowed nose sides get flattened -> use the 3D face mesh's lighting (determined by face shape, unaffected by the lighter-patch's own brightness),
     // subtract the broad average to keep only the 'shape' variation, and add it back converted to L*
     if (spec && spec.diffuse) {
       const dw = boxBlur(spec.diffuse, W, H, fw * 0.08), gainL = opt.shape ?? 32;
@@ -244,7 +244,7 @@
         cB[i] = lB[i] + a * (pB - lB[i]) * (mode === 'glow' ? 0.4 : 1) + db * keep;
       }
     }
-    // Touch-up: find the light skin that is still 'noticeable' - where the current base color is brighter and less saturated than the surrounding skin (looks pigment-deficient); region = face + neck.
+    // Touch-up: find the light skin that is still 'noticeable' - where the current base color is brighter and less saturated than the surrounding skin (looks color-deficient); region = face + neck.
     // Surrounding skin = broad average after excluding the candidates (two passes); the brightness of what is added follows the 'skin already made up' around it, not the light patch itself.
     const region = regionOf(S, Z);
     DBG.region = region; DBG.touch = [];

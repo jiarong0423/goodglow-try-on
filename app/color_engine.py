@@ -318,7 +318,7 @@ def face_shades(skin_hex: str, zones: dict | None = None, undertone: str | None 
                 items: tuple = ("concealer", "highlight", "contour")) -> list[dict]:
     """Face shades: concealer (matched to skin), highlight (one level lighter concealer), contour (two levels deeper, cooler foundation).
 
-    Owner's question (10-16): had the face shades been thought through, given the many videos just reviewed. Videos of people with the condition: concealer uses the lightest shade and is dabbed only on redness and dark circles;
+    Question (10-16): had the face shades been thought through, given the many videos just reviewed. Videos of people with the condition: concealer uses the lightest shade and is dabbed only on redness and dark circles;
     the catalog has no highlight or contour products -> substitute concealer / foundation one level lighter and two levels deeper.
     zones: zone colors of the expected makeup look (used if present, otherwise derived from the skin color)."""
     got = zones if zones and zones.get("highlight") and zones.get("contour") else None
@@ -354,7 +354,7 @@ def face_shades(skin_hex: str, zones: dict | None = None, undertone: str | None 
 
 
 def skin_balance(normal_hex: str, patch_hex: str, patch_ratio: float | None = None) -> dict:
-    """Skin-color balance point for vitiligo (reference only; since  decided to return to whole-face foundation matched to the surrounding skin, so this is no longer used to pick foundation):
+    """Skin-color balance point for lighter-patch (reference only; since  decided to return to whole-face foundation matched to the surrounding skin, so this is no longer used to pick foundation):
     the natural skin color and the patch color mixed by their area share on the face (Lab weighted average).
     patch_ratio: approximate share of face sampling points on the patch (computed by clustering on auto-sampling); 0.5 if absent."""
     known = patch_ratio is not None
@@ -370,7 +370,7 @@ def vitiligo_plan(normal_hex: str, patch_hex: str, undertone: str | None = None,
     de = delta_e2000(n_lab, p_lab)
     prof = skin_profile(normal_hex)
     tone = undertone or prof["undertone"]
-    # whole-face foundation is matched to the pigmented skin around the patches;
+    # whole-face foundation is matched to the surrounding skin around the patches;
     # the patches themselves are handled with local corrector + concealer + edge blending
     n_card, n_found = card_shades(normal_hex, "foundation", undertone, source, 3)
     plan = {"normal": normal_hex, "patch": patch_hex, "delta_e": round(de, 2), "profile": prof,
@@ -504,7 +504,7 @@ def care_plan(condition: str = "albinism", skin: dict | None = None) -> list[dic
 
 # Brow color: choose by the natural brow color taken from the photo (KB: stay close to the natural brow or slightly deeper, fill sparse areas only; a very dark brow looks harsh on very pale skin;
 # a skincare brand: gold for light skin, brown for deeper skin). "Slightly deeper" adds definition.
-BROW_VISIBLE_DL = 15.0     # skin-vs-brow lightness difference >= 15: the brow is already visible (most people with vitiligo, and the general population)
+BROW_VISIBLE_DL = 15.0     # skin-vs-brow lightness difference >= 15: the brow is already visible (most people with lighter patches, and the general population)
 BROW_MAX_DL_PALE = 38.0    # for light skin (L >= 72) the brow is at most 38 deeper than the skin, to avoid looking harsh
 
 
@@ -528,7 +528,7 @@ def brow_from_photo(brow_hex: str, skin_hex: str, level: str = "defined") -> dic
         lab, intensity = (L, ba, bb), (35 if level == "soft" else 50)
         why = "照你原本的眉色補稀疏處" if level == "soft" else "照你原本的眉色深一階，加強立體感"
     else:
-        # very faint brow (common with albinism): keep the hue of the natural brow and deepen until visible; light skin has a depth cap
+        # very faint brow (common with very light skin): keep the hue of the natural brow and deepen until visible; light skin has a depth cap
         chroma = math.hypot(ba, bb)
         hue = math.atan2(bb, ba) if chroma >= 3 else math.radians(55)   # nearly achromatic: use a grey-brown hue
         c = min(14.0, max(7.0, chroma * 1.5))

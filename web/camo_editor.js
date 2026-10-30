@@ -1,6 +1,6 @@
 'use strict';
 // Local concealer for light patches: AI finds boundaries -> SVG vector paths (editable) -> layered Canvas rendering (computed on the phone, no upload, no points deducted).
-// Owner's request (10-16): supplied an architecture and PoC of "AI image analysis + SVG vector paths + pixel-level Canvas rendering" and asked for it to be implemented.
+// Request (10-16): supplied an architecture and PoC of "AI image analysis + SVG vector paths + pixel-level Canvas rendering" and asked for it to be implemented.
 // 1. Boundary finding: reuses the light-patch detection in camouflage.js (chroma/lightness clustering); OpenCV.js findContours + approxPolyDP extract each patch's outline.
 // 2. SVG paths: outline points are smoothed into a path string with quadratic Beziers (using midpoints of adjacent points); each patch can be toggled and its nodes dragged to adjust the boundary.
 // 3. Layered Canvas (Lab): color-correction layer (warm-orange neutralization, so the result does not look gray) -> concealer layer (normal skin color sampled around each patch) -> texture layer (high-frequency detail from the original image).
@@ -46,7 +46,7 @@
   }
   const hexToLab = (hex) => { const n = parseInt(hex.slice(1), 16); return srgbToLab(n >> 16, (n >> 8) & 255, n & 255); };
   // Blur inside and outside the patch separately: inside a light patch average only with the patch interior, outside only with the exterior,
-  // so the border (the pigment edge) falls into the low frequency and the makeup layer can cover it; if everything is blurred together, the border stays in the texture and the outline remains visible no matter how it is layered.
+  // so the border (the patch edge) falls into the low frequency and the makeup layer can cover it; if everything is blurred together, the border stays in the texture and the outline remains visible no matter how it is layered.
   // Measured with tools/fit_layers_to_target.py: with the border in the low frequency, the fitting error drops 1.62 -> 1.59 (when color is fitted too).
   // Returns blur(src): the mask blur is computed only once, then each channel needs one more blur.
   function makeSplitBlur(inside, w, h, r) {
@@ -124,7 +124,7 @@
 
   // 3D highlight: the 468 MediaPipe mesh points have depth z,
   // triangulate -> vertex normals (average of adjacent triangle faces) -> per-pixel interpolation into a normal map -> Blinn-Phong specular highlight (light source in front and above).
-  // Forehead, nose bridge and cheekbones light up following the bone shape, and the faint highlight on the face sides moves with them. Normals are not derived from a grayscale gradient: vitiligo edges would be treated as bumps and light up.
+  // Forehead, nose bridge and cheekbones light up following the bone shape, and the faint highlight on the face sides moves with them. Normals are not derived from a grayscale gradient: lighter-patch edges would be treated as bumps and light up.
   // Returns core (concentrated highlight, alpha=24) and wide (diffuse, alpha=8, with a bit of warm color mixed at the edge to simulate translucency)
   function meshSpecular(det, W, H, skin, protect) {
     const N = 468, P3 = det.face.slice(0, N).map((p) => [p.x * W, p.y * H, p.z * W]);
@@ -276,7 +276,7 @@
   }
 
   // Zone detection: the forehead is often oily and brighter than the cheeks, the chin is often in shadow with stubble -- a single lightness threshold for the whole face would miss or misdetect.
-  // Each zone computes its own "pigmented skin" lightness as reference (cancelling lighting differences), then judges by chroma/lightness (light patches have low chroma); the result is merged into the light-patch core.
+  // Each zone computes its own "surrounding skin" lightness as reference (cancelling lighting differences), then judges by chroma/lightness (light patches have low chroma); the result is merged into the light-patch core.
   function zoneDetect(name, zone, sm) {
     const { W, H, skin, protect, fw, det } = S;
     const sL = sm.L, sA = sm.A, sB = sm.B;
@@ -290,7 +290,7 @@
     const refL = pig.length >= Math.max(200, idx.length * 0.05) ? pig[pig.length >> 1] : nLab[0];
     const step = Math.max(4, 0.3 * (pLab[0] - nLab[0]));
     // Local reference (10-17 residual-dot diagnosis: forehead center lightness was 57.6 and the temples darker; one reference per zone would miss light patches at the temples and the two hairline corners):
-    // each pixel is compared with the "pigmented skin within 6% of the face width nearby"; when there is no pigmented skin nearby, fall back to the whole-zone reference
+    // each pixel is compared with the "surrounding skin within 6% of the face width nearby"; when there is no surrounding skin nearby, fall back to the whole-zone reference
     const pigM = new Float32Array(W * H);
     for (const i of idx) if (qOf(sL[i], sA[i], sB[i]) >= mid) pigM[i] = 1;
     const rad = Math.max(6, Math.round(fw * 0.06));
@@ -386,7 +386,7 @@
     }
     const pct = (v, q) => v.sort((a, b) => a - b)[Math.min(v.length - 1, Math.floor(v.length * q))];
     // Lightness takes the 70th percentile of the "lit" surrounding, color takes the median (: "skin looks dark; see if the highlight can improve it": the median mixes in shadow on the face sides,
-    // the largest patch, sitting in the T-zone at the face center, was filled to 44.3, darker than the pigmented-skin median 47.2; camouflage.js also used the lit half earlier)
+    // the largest patch, sitting in the T-zone at the face center, was filled to 44.3, darker than the surrounding-skin median 47.2; camouflage.js also used the lit half earlier)
     p.ring = Ls.length >= 30 ? [pct(Ls, RING_L_PCT), pct(As, 0.5), pct(Bs, 0.5)] : S.normal.slice();     // if nothing is found around, use the overall original skin color
     p.ringN = Ls.length;
     return p.ring;
@@ -436,7 +436,7 @@
   // Illumination-continuous target color (Poisson / membrane interpolation, the core of OpenCV seamlessClone; this OpenCV.js build does not compile seamlessClone in, so we solve it ourselves):
   // the patch interior is the unknown region, the surrounding normal skin is the boundary; solve the Laplace equation -> color extends smoothly from all sides (bright side bright, dark side dark, gradient in between),
   // instead of one target color for the whole patch. Hair, brows/eyes and background are not boundaries (natural boundary). Solved with SOR at 1/4 resolution, then bilinearly upscaled.
-  // Owner posted "Poisson blending ... factor in the lighting continuity and gradient of the surrounding normal skin" -> "should be doable" (10-17).
+  // Review posted "Poisson blending ... factor in the lighting continuity and gradient of the surrounding normal skin" -> "should be doable" (10-17).
   function membraneTargets(unk, lift) {
     const { W, H, L, A, B, skin, protect } = S, f = 4, cw = Math.ceil(W / f), ch = Math.ceil(H / f), n = cw * ch;
     const sum = [new Float32Array(n), new Float32Array(n), new Float32Array(n)], kn = new Float32Array(n), un = new Float32Array(n), tot = new Float32Array(n);

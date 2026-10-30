@@ -1,13 +1,13 @@
 'use strict';
-// Local concealer simulation for vitiligo patches (computed on the phone; the photo is not uploaded and no points are deducted).
-// Why we build this ourselves: the YouCam try-on foundation can only be applied evenly over the whole face and its concealer only to fixed areas, so a vitiligo patch cannot be targeted;
-// the actual technique (from reference videos and a vitiligo-covering guide) is to dab a foundation close to the surrounding skin color "onto the patch" first, then blend it over the whole face.
+// Local concealer simulation for lighter-patch patches (computed on the phone; the photo is not uploaded and no points are deducted).
+// Why we build this ourselves: the YouCam try-on foundation can only be applied evenly over the whole face and its concealer only to fixed areas, so a lighter-patch patch cannot be targeted;
+// the actual technique (from reference videos and a patch-covering guide) is to dab a foundation close to the surrounding skin color "onto the patch" first, then blend it over the whole face.
 // Method:
 // 1. Face landmarks (MediaPipe) outline the face; eyes and mouth are cut out.
 // 2. Each pixel on the face is compared with two sampled colors (original skin, patch): a pixel that looks more like the patch and is brighter than the original skin counts as patch.
 // 3. The patch area is despeckled and its edges feathered.
 // 4. On the try-on result, the patch area's "low-frequency base color" is replaced with "the lit surrounding skin after try-on plus a little warm color", keeping high-frequency texture and light/shade:
-//    patches vary in depth (fully or partly depigmented); shifting by one block average would leave bright patches uncovered and pull dark ones too far;
+//    patches vary in depth (fully or partly lighter); shifting by one block average would leave bright patches uncovered and pull dark ones too far;
 //    instead, each place's local base color of the patch is computed and brought to the target color (frequency separation). The warm compensation acts like a peach/orange color corrector, so the result does not look gray .
 // The UI always labels this as "local concealer simulated on the phone".
 
@@ -108,7 +108,7 @@
       if (!skin[i]) continue;
       faceN++;
       const [L, a, b] = srgbToLab(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]);
-      // Patch (including partly depigmented areas and borders): brighter than the original skin by at least "30% of the lightness difference between the two colors", or its color already resembles the patch more
+      // Patch (including partly lighter areas and borders): brighter than the original skin by at least "30% of the lightness difference between the two colors", or its color already resembles the patch more
       //
       const dn = (L - nLab[0]) ** 2 + 2 * ((a - nLab[1]) ** 2 + (b - nLab[2]) ** 2);
       const dp = (L - pLab[0]) ** 2 + 2 * ((a - pLab[1]) ** 2 + (b - pLab[2]) ** 2);
@@ -131,7 +131,7 @@
 
   /**
    * Local concealer on the try-on result: fill the patch area's local base color toward the surrounding skin color (+ warm color), keeping texture. Returns a dataURL.
-   * Default = V8: V7 parameters + the center brightening changed to a T-shaped progressive form (centerMode 'tband', +9). Owner,: "the bright T-zone blends into the detected/filled vitiligo patches"
+   * Default = V8: V7 parameters + the center brightening changed to a T-shaped progressive form (centerMode 'tband', +9). Review "the bright T-zone blends into the detected/filled lighter-patch patches"
    *   and "the goal is natural"; measured locally: patch color difference 8.2 -> 4.3, nose bridge brighter than the outer cheek by 13 -> 21 .
    *   V7 can be reproduced with { centerMode: 'gauss' }; V6 with { centerMode: 'ellipse', center: 8, warm: [0, 0], extend: 0, darkSpot: 0 } and strength 0.85.
    * strength: 0-1 (default 0.88: bring the color difference down to about 5.5-6.5 and no further; do not force it to 0)
@@ -142,10 +142,10 @@
    * opts.warm = [delta a*, delta b*] warm compensation (default [1.8, 1.2], more red than yellow; V5's [3, 4] looked orange and dirty, V6's [0, 0] looked cold gray)
    * opts.sigma = Gaussian range of the center (x face width, default 0.20); opts.extend = outward expansion of the patch boundary (original-image pixels, default 10); opts.darkSpot = brightening of dark spots on the cheeks (L*, default 4)
    * opts.blend = multiplier of the edge transition band width (default 1); opts.neckFade = how far the concealer weight fades from the mouth corners down to the chin (default 1 = no fade)
-   * opts.fill = 'local' (nearest-color sampling: the patch is filled with the low-frequency color of nearby pigmented skin, so the bright T-zone blends naturally into the patch and gets progressively darker toward the outer cheek;
+   * opts.fill = 'local' (nearest-color sampling: the patch is filled with the low-frequency color of nearby surrounding skin, so the bright T-zone blends naturally into the patch and gets progressively darker toward the outer cheek;
    *   only large patches with no surrounding skin nearby fall back to the overall target color + center brightening) or 'global' (V7: overall target color + center brightening).
-   *   Owner,: "the bright T-zone blends into the detected/filled vitiligo patches". Measured on this photo, the skin next to the patch is rather dark, so nearest-color sampling darkens the whole patch; not adopted.
-   *   'tzone': take the measured lightness of pigmented skin in the T-zone (forehead center to nose tip, chin) as the bright end and the lit outer-cheek skin as the dark end,
+   *   Review "the bright T-zone blends into the detected/filled lighter-patch patches". Measured on this photo, the skin next to the patch is rather dark, so nearest-color sampling darkens the whole patch; not adopted.
+   *   'tzone': take the measured lightness of surrounding skin in the T-zone (forehead center to nose tip, chin) as the bright end and the lit outer-cheek skin as the dark end,
    *   and fill the patch progressively between the two ends according to its distance from the T-zone (opts.tzoneSigma = range, x face width, default 0.18). Measured: the nose bridge is naturally bright and
    *   was counted as patch, so the measured bright end was too dark; not adopted either.
    *   opts.centerMode = 'tband': the center brightening weight uses a T shape (forehead center to nose tip + chin) decreasing progressively outward; brightening amount = opts.center
@@ -158,7 +158,7 @@
    *   rim pixels inward from the patch edge, then drops to centerL over falloff pixels with a cosine gradient -- the center is bright but its color is already warm skin, so it looks lit rather than unconcealed.
    *   The fade applies only at the face center (under the eyes, nose bridge, inner cheeks, chin); patch centers at the temple hairline and jaw angles are still concealed to edgeL.
    *   seam = how many pixels inside and outside the patch boundary get cross-boundary smoothing (low frequency sigma ~ seamSigma, pores preserved), removing the thin light line along the boundary.
-   *   Owner,: "a transition rather than pressing it into a dark color". opts.centerWarm = warm color at the patch center [delta a*, delta b*] (default same as warm; gradient from edge to center).
+   *   Review "a transition rather than pressing it into a dark color". opts.centerWarm = warm color at the patch center [delta a*, delta b*] (default same as warm; gradient from edge to center).
    *   V10 : split.lumaExtend = lightness concealment only reaches the original patch boundary (set 0; normal skin outside darker than the target
    *   keeps its lightness, only pixels brighter than the target are darkened), while color still expands with opts.extend; split.hfBand / hfKeep = within hfBand pixels inside the original boundary,
    *   the bright edge from "pixel minus low frequency" is kept only hfKeep times (at the boundary the low frequency mixes in the dark outer skin, and the difference printed back as texture becomes a bright edge).

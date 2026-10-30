@@ -1,6 +1,6 @@
 """Skin-tone match -> full recommendation: skincare/protection routine + foundation shades + two quick makeup looks with shades. All computed locally, no points spent.
 
-Flow: sample colors (one point for albinism, two for vitiligo) -> judge undertone and depth -> match the shade card -> two looks by style (healthy glow / defined) -> nearest shade for each item ->
+Flow: sample colors (one point for very-light-skin, two for lighter-patch) -> judge undertone and depth -> match the shade card -> two looks by style (healthy glow / defined) -> nearest shade for each item ->
 append the condition-specific skincare/protection steps. Undertone is only an estimate, and the screen should let the person confirm or change it.
 """
 from __future__ import annotations

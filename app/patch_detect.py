@@ -1,6 +1,6 @@
 """Multi-scale light-patch detection (server side, computed locally, no YouCam calls, no points spent).
 
-Owner's request (10-17): could color detail be detected by scaling frames and covering pixel points; computing on the computer is equivalent to a cloud service;
+Request (10-17): could color detail be detected by scaling frames and covering pixel points; computing on the computer is equivalent to a cloud service;
 the page connects to the computer for the computation. -> The page sends the photo (or the simulated made-up image) and the makeup region to /api/patch-mask, and the mask is computed here and returned.
 
 Approach (a faster version of the isolation prototype local run notes (not shipped)):
@@ -80,7 +80,7 @@ def _scale_detect(lab: np.ndarray, known0: np.ndarray, s: float, R: float, th: f
 
 
 def shine_map(lab: np.ndarray, known: np.ndarray, k: float) -> np.ndarray:
-    """Skin shine (small oily bright spots): at the fine scale, 10 or more brighter than nearby and chroma under 60% of nearby, expanded slightly. Shine is light, not missing pigment."""
+    """Skin shine (small oily bright spots): at the fine scale, 10 or more brighter than nearby and chroma under 60% of nearby, expanded slightly. Shine is light, not missing color."""
     s = max(0.6, 1.5 * k)
     L = gaussian_filter(lab[..., 0], s)
     C = np.hypot(gaussian_filter(lab[..., 1], s), gaussian_filter(lab[..., 2], s))

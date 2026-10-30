@@ -1,6 +1,6 @@
 """Suggestions from facial features (YouCam Face Attribute categories -> plain-language advice + option suggestions).
 
-Only "suggests", never changes anything automatically: the person decides after reading whether to apply it. The rule dimensions follow section I of the internal knowledge base (albinism makeup research notes)
+Only "suggests", never changes anything automatically: the person decides after reading whether to apply it. The rule dimensions follow section I of the internal knowledge base (very-light-skin makeup research notes)
 (face shape -> blush shape and position, brow thickness -> brow fill strength, eye shape -> lashes, lip shape -> lip texture; gender is not a rule input); the content is general makeup principles.
 Field names follow the 10-15 measured response ; note that the API spells the overall cheekbone field "overrall".
 """

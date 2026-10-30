@@ -45,7 +45,7 @@ def build_effects(selection: dict, presets: dict | None = None) -> list[dict]:
                 "color": foundation_color(selection), "colorIntensity": c["colorIntensity"],
                 "colorUnderEyeIntensity": c["colorUnderEyeIntensity"], "coverageLevel": c["coverageLevel"]}]})
 
-    # contour (albinism facial definition): after foundation, before highlight; cool grey-brown matte, color computed from the foundation shade (contour_color)
+    # contour (very-light-skin facial definition): after foundation, before highlight; cool grey-brown matte, color computed from the foundation shade (contour_color)
     contour = _pick(p["contour"], selection.get("contour", "keep"), "contour")
     if contour["id"] != "keep":
         effects.append({"category": "contour", "pattern": {"name": contour["pattern"]},
@@ -174,7 +174,7 @@ def contour_color(contour: dict, selection: dict, tone: dict, presets: dict | No
 
 
 def render_foundation(selection: dict, presets: dict | None = None) -> str:
-    """Foundation color for the try-on. Default = the color code of the shade the card matched; when the option has toward_skin (vitiligo "thin sheer glow"),
+    """Foundation color for the try-on. Default = the color code of the shade the card matched; when the option has toward_skin (lighter-patch "thin sheer glow"),
     it moves toward the person's surrounding skin color (skin_hex) in Lab by that ratio, simulating the actual color after thin application; the shade recommendation is unchanged."""
     hex_ = foundation_color(selection)
     p = presets or load_presets()
@@ -265,15 +265,15 @@ def quick_selection(style: str, which: str, undertone: str, presets: dict | None
     if foundation_hex:
         sel["foundation_hex"] = foundation_hex
         if condition == "vitiligo" and sel.get("foundation", "keep") != "keep":
-            # vitiligo: patches are covered by local concealing on the phone; whole-face foundation only needs to be "natural" so the skin tone is even
+            # lighter-patch: patches are covered by local concealing on the phone; whole-face foundation only needs to be "natural" so the skin tone is even
             sel["foundation"] = "medium"
         if sel.get("highlight", "keep") != "keep":
-            # two directions from: albinism contour + highlight above the contour (facial definition); vitiligo T-zone highlight
+            # two directions from: very-light-skin contour + highlight above the contour (facial definition); lighter-patch T-zone highlight
             sel.update(p.get("condition_quick", {}).get(condition, {}).get(style, {}))
     elif sel.get("foundation", "keep") != "keep":
         sel["foundation"] = "keep"
     if skin_hex:
-        sel["skin_hex"] = skin_hex                   # needed for the vitiligo "thin sheer glow" foundation to move toward the surrounding skin
+        sel["skin_hex"] = skin_hex                   # needed for the lighter-patch "thin sheer glow" foundation to move toward the surrounding skin
     if brow_hex and skin_hex:
         sel["brow_hex"] = brow_hex
         if sel.get("brow", "keep") != "keep":

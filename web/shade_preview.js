@@ -1,6 +1,6 @@
 'use strict';
 // Local foundation preview (computed on the phone; the photo is not uploaded and no credits are spent).
-// (Owner's request,: an eyedropper-style pick, covering it with the face mask, and looking up the shade chart; foundation has to cover pores.)
+// (Request: an eyedropper-style pick, covering it with the face mask, and looking up the shade chart; foundation has to cover pores.)
 // Why build it ourselves: YouCam try-on costs credits and has to be re-run for every shade change; compare shades live on the phone first, then hand the chosen one to YouCam for the real try-on.
 // Approach (Lab):
 // 1. Face localization (MediaPipe, the same model already loaded by face_auto.js) draws the face mask: inside the face outline, with the eyes, eyebrows and lips cut out, edges feathered.
@@ -149,7 +149,7 @@
   }
 
   // ---------------------------------------------------------------- Makeup regions (SVG paths)
-  // (Owner's request,: use the SVG + canvas template given that day.) Regions are SVG paths built from face landmarks:
+  // (Request: use the SVG + canvas template given that day.) Regions are SVG paths built from face landmarks:
   // the canvas paints them as colored masks via Path2D; the same paths can also be stacked as SVG outlines, so people can see where each makeup item is applied.
   const EYE_UP = { r: [33, 246, 161, 160, 159, 158, 157, 173, 133], l: [263, 466, 388, 387, 386, 385, 384, 398, 362] };
   const BROW_LOW = { r: [46, 53, 52, 65, 55], l: [276, 283, 282, 295, 285] };   // Lower brow edge (outer -> inner), resampled when used to the same number of points as the upper eyelid

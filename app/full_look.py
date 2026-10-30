@@ -75,7 +75,7 @@ def full_look(condition: str, style: str, level: int, tone_id: str, sensitivity:
     if vit and 4 <= level <= 7 and tone_id == "warm_ivory" and on("blush"):
         setv("blush", "apricot", "暖調膚色：腮紅用暖杏")
 
-    # ---- high sensitivity: reduce friction, powder and pigment irritation (applied last, safety first)
+    # ---- high sensitivity: reduce friction, powder and ingredient irritation (applied last, safety first)
     high = is_high_sensitivity(sensitivity)
     if high:
         if sel["foundation"] in ("max", "full"):

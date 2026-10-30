@@ -95,7 +95,7 @@ function medianHex(hexes) {
 /**
  * Returns { skin, patch, brow, points } or null (no face found / loading failed).
  * sample(img, point, dark, radius) is provided by app.js (the same color picking).
- * condition: 'albinism' picks the lit-side cheek; 'vitiligo' splits the face skin points into original skin and patch by "chroma / lightness".
+ * condition: 'very-light-skin' picks the lit-side cheek; 'lighter-patch' splits the face skin points into original skin and patch by "chroma / lightness".
  */
 async function autoColors(img, condition, sample) {
   const lm = await loadLandmarker();

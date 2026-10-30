@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local server: serves the PWA and proxies YouCam Makeup VTO (healthy-glow try-on for albinism).
+"""Local server: serves the PWA and proxies YouCam Makeup VTO (healthy-glow try-on for very-light-skin).
 
 - The API key is read only on the server side (environment variable or the project .env), never sent to the browser, never printed.
 - Photos are processed in memory only and never written to disk; result images are turned into data URLs for the browser, and the server keeps nothing.
@@ -76,7 +76,7 @@ ERROR_HINTS = {
 DEMO_DIR = ROOT / "demo"
 #: switched to the bright photos of the four-person standard set (the old 19276432 was dark and landed on card level 5; old photos and replay images are archived in runs/)
 DEMO_PHOTO = DEMO_DIR / "photos" / "standard4" / "albinism_F_5273693.jpg"
-# points: sampling points (demo photos only). Albinism: face landmark 50 (the lit-side cheek) and the middle of the left brow; vitiligo: confirmed manually on a 10% grid image
+# points: sampling points (demo photos only). Very-light-skin: face landmark 50 (the lit-side cheek) and the middle of the left brow; lighter-patch: confirmed manually on a 10% grid image
 DEMOS = {
     "albinism": {"photo": DEMO_PHOTO, "credit": "Pexels（可修改授權）https://www.pexels.com/photo/5273693/",
                  "replay": DEMO_DIR / "replay" / "albinism",
@@ -395,7 +395,7 @@ class State:
     # ---- one Makeup VTO
     def render(self, jpeg: bytes, selection: dict, demo: str | None, which: str | None = None,
                style: str = "natural", layer: str | None = None) -> str:
-        """demo: the entry of a demo photo (albinism / vitiligo), None for the person's own photo. layer: which layer of the layer view (used for demo-mode replay)."""
+        """demo: the entry of a demo photo (very-light-skin / lighter-patch), None for the person's own photo. layer: which layer of the layer view (used for demo-mode replay)."""
         return self.render_meta(jpeg, selection, demo, which, style, layer)[0]
 
     def render_meta(self, jpeg: bytes, selection: dict, demo: str | None, which: str | None = None,
@@ -629,7 +629,7 @@ class State:
             items = rec.shades_for(sel, tone_id, self.presets, self.src(payload))
         except looks.PresetError as exc:
             raise RequestError(400, "bad_selection", str(exc)) from None
-        if payload.get("skin_hex") and payload.get("condition") != "vitiligo":   # the base / edge-blending color for vitiligo is given by /api/recommend
+        if payload.get("skin_hex") and payload.get("condition") != "vitiligo":   # the base / edge-blending color for lighter-patch is given by /api/recommend
             # skin color -> skin-tone card cell -> counter shade in the same cell (not compared directly by color difference: photos and product swatches live in different color spaces)
             tone = None if payload.get("undertone_unsure") else {"pink_cool": "cool", "warm_ivory": "warm"}.get(tone_id, "neutral")
             try:
@@ -640,7 +640,7 @@ class State:
                              "card": cell, "matches": shades})
         condition = "vitiligo" if payload.get("condition") == "vitiligo" else "albinism"
         if payload.get("skin_hex"):
-            # face shades: albinism adds concealer; if highlight / contour are applied, give the matching shades (vitiligo concealer, edge blending and corrector come from /api/recommend)
+            # face shades: very-light-skin adds concealer; if highlight / contour are applied, give the matching shades (lighter-patch concealer, edge blending and corrector come from /api/recommend)
             want = (["concealer"] if condition == "albinism" else []) + \
                    [k for k in ("highlight", "contour") if sel.get(k, "keep") != "keep"]
             zones = payload.get("zones") if isinstance(payload.get("zones"), dict) else None

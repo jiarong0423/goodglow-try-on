@@ -160,7 +160,7 @@ def main() -> int:
     rows += from_json("app/catalog.json", {"brand", "name", "code"})            # demo catalog (fictional brands); added by the stage 3 extra scan
     rows += from_json("demo/final/recipes.json", {"title", "credit", "item", "where"})   # finalized makeup recipe cards; added by the stage 3 extra scan
     rows += from_json("app/full_looks.json", {"why", "title", "tip", "source"})
-    rows += from_json("demo/expected/vitiligo_20551205.json", {"how", "code"})      # expected makeup description and layer shade names for the vitiligo demo photo (returned by /api/demo-photo)
+    rows += from_json("demo/expected/vitiligo_20551205.json", {"how", "code"})      # expected makeup description and layer shade names for the lighter-patch demo photo (returned by /api/demo-photo)
     for f in PY_FILES:
         rows += from_py(f)
         rows += from_py_ast(f)

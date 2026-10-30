@@ -27,7 +27,7 @@ CREDIT = {
 # Sources and blind-review basis: see logs/decisions/log_20261016_foundation_layers.md (, 10-20)
 # base = local layer-by-layer base (before the official step); official = official makeup-vto returned image (None if there is none); final = the finished result
 FINALS = {
-    # 10-21 design decision: wire the new female final look (official base + cheekbone-band boost) and the male smoothed version into albinism/final-looks; retitle the female look with a soft-pink healthy-glow wording
+    # 10-21 design note: wire the new female final look (official base + cheekbone-band boost) and the male smoothed version into albinism/final-looks; retitle the female look with a soft-pink healthy-glow wording
     # All three stages use the same standard face frame (official-image coordinates): base = local layered base (the layer before blush, cropped to the standard frame shifted 3px left);
     # official = official makeup-vto (Oblique43 #DF9299, intensity 100, smoothing 0; the input already includes the 5B official eye makeup); final = official base + cheekbone-band official blush layer ×1.796
     "albinism_F": {"title": "粉嫩好氣色", "credit": CREDIT["5273693"],
@@ -36,21 +36,21 @@ FINALS = {
                    "final": ("albinism_20261018/official_plan_FM_20261020/results/F_final_crop.jpg", "fe1026c44555cbedfabcc51fa7b2c6862ba5978e901d9ff8a7fbd71e0bc6d220"),
                    "report": "albinism_20261018/approx_r14f/F_warm_apricot/report.json",
                    "hex_override": {"腮紅": "#DF9299"}},
-    #: male base = step 1 local fine-tune (standard frame); official = official lip try-on; final = official lip layer ×2 + strong smoothing + spot fading (design decision,: use strong smoothing plus spot fading, and do the male look)
+    #: male base = step 1 local fine-tune (standard frame); official = official lip try-on; final = official lip layer ×2 + strong smoothing + spot fading (design note: use strong smoothing plus spot fading, and do the male look)
     "albinism_M": {"title": "柔和・極簡", "credit": CREDIT["5273693"],
                    "base": ("albinism_20261018/official_plan_FM_20261020/M_C4_send.jpg", "ac181cd661fd31a490969568c722b206fd0d4af3c4b4b15373b8d730e0b2fa8c"),
                    "official": ("albinism_20261018/official_plan_FM_20261020/results/M_vtoA_raw.png", "d5966ab066e1b178341c360699241a10edeb615d510c9de22d5bccfe147a80f7"),
                    "final": ("albinism_20261018/official_plan_FM_20261020/results/M_final_crop.jpg", "c2ce9994c8ca516e68f6ef7535d1bfddb6b728cc0ed7c6a5626fd83ee8392eed"),
                    "report": "albinism_20261018/approx_r14f/M_v11_minimal/report.json",
                    "extra_steps": [{"item": "妝前柔焦", "where": "兩頰毛孔與痘疤處薄拍，鬍子區不碰", "hex": None}]},
-    # Vitiligo line, 10-19 reply: male demo photo (design decision: last time's male look is fine, keep the demo photo as is); official step = the official try-on returned image
+    # Lighter-patch line, 10-19 reply: male demo photo (design note: last time's male look is fine, keep the demo photo as is); official step = the official try-on returned image
     "vitiligo_M": {"title": "膚色均勻・自然", "credit": CREDIT["20551205"],
                    "base": ("layer_rule_20261018/demo20551205_ai/layer_rule_full.png", "c9064386c8e71565102d7724a9001517ae507d33ac10c977f3570d261fc91072"),
                    "official": ("layer_rule_20261018/vto_male_natural/vto_male_natural_v2_raw.png", "a819ecd2164fbc10bb44b6ac1d9681aae496778d252886528425cc8afccf717c"),
                    "final": ("layer_rule_20261018/vto_male_natural/vto_male_natural_v2_raw.png", "a819ecd2164fbc10bb44b6ac1d9681aae496778d252886528425cc8afccf717c"),
                    "report": None},
-    # 10-21 design decision: for the vitiligo entry's female demo, drop the side-view photo and use the final look of the frontal version (frontal_F_20261020) → option A:
-    # base = local layered C4; official = the returned image of C4 → official blush → official eyeshadow 2colors2 (smoothing 0), which is also the final (same as the vitiligo male)
+    # 10-21 design note: for the lighter-patch entry's female demo, drop the side-view photo and use the final look of the frontal version (frontal_F_20261020) → option A:
+    # base = local layered C4; official = the returned image of C4 → official blush → official eyeshadow 2colors2 (smoothing 0), which is also the final (same as the lighter-patch male)
     #  "simulated": the AI turned-view image may be reused, always labelled as simulated on screen, with the note that it is an AI-generated turned-view illustration, not the person's original photo
     "vitiligo_F": {"title": "局部輕遮瑕", "credit": CREDIT["uCt9uA9r1Rw_frontal"],
                    "source_note": "原照 Unsplash uCt9uA9r1Rw（側臉）→ AI 影像工具（AI）轉成正面示意圖（非本人原照，輪廓未驗證）→ 本地逐層 F_C4 → 官方腮紅＋眼影（磨皮 0）；畫面標「模擬」",

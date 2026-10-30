@@ -8,7 +8,7 @@ const PREFS_KEY = 'goodglow.prefs.v1';
 const FP_KEY = 'goodglow.fingerprint.v1';   // Store only the lighting fingerprint numbers, not the photo
 const ITEMS = [
   { key: 'foundation', label: __t('s0159', '底妝') },   // Apply the foundation first (the shade closest to the skin tone), then layer the rest on top
-  { key: 'contour', label: __t('s0160', '修容') },       // Albinism facial-feature definition: cool grey-brown, below the cheekbones
+  { key: 'contour', label: __t('s0160', '修容') },       // Very-light-skin facial-feature definition: cool grey-brown, below the cheekbones
   { key: 'highlight', label: __t('s0092', '打亮') },     // Mid-face / upper contour / T-zone
   { key: 'brow', label: __t('s0161', '眉毛') },
   { key: 'lash', label: __t('s0162', '睫毛') },
@@ -23,7 +23,7 @@ const TONES = [
 ];
 
 const CONDITIONS = [
-  // The screens do not label any condition name (design decision,: they want to be treated like anyone else); use a neutral description of needs
+  // The screens do not label any condition name (design note: they want to be treated like anyone else); use a neutral description of needs
   { id: 'albinism', label: __t('s0169', '膚色很淺'), desc: __t('s0170', '淺膚色、眉睫顏色淡'), img: 'img/cover_albinism.jpg' },
   { id: 'vitiligo', label: __t('s0171', '膚色深淺不一'), desc: __t('s0172', '臉上有顏色較淺的區塊'), img: 'img/cover_vitiligo.jpg' },
 ];
@@ -131,7 +131,7 @@ function baseSkinHex() {
   return state.useExpected && state.expected ? state.expected.zones.base.hex : state.skinHex;
 }
 function colorPayload() {
-  const out = state.skinHex ? { skin_hex: baseSkinHex() } : {};   // Vitiligo: sheer foundation leans toward the surrounding skin tone
+  const out = state.skinHex ? { skin_hex: baseSkinHex() } : {};   // Lighter-patch: sheer foundation leans toward the surrounding skin tone
   if (state.browHex && state.skinHex) out.brow_hex = state.browHex;
   const f = foundationShade();
   if (f) out.foundation_hex = f.hex;            // Foundation color = the shade closest to the skin tone
@@ -458,7 +458,7 @@ async function goCheck(dataUrl, demo = false, points = {}) {
   state.lowRes = lowRes;
   setSampleMode('skin', true);
   $('sample-dot').hidden = true;
-  // Demo photos use manually confirmed points; the user's own photo first uses face localization to pick the color automatically (only on failure fall back: for albinism take the lit-side cheek, for vitiligo ask the user to tap)
+  // Demo photos use manually confirmed points; the user's own photo first uses face localization to pick the color automatically (only on failure fall back: for very-light-skin take the lit-side cheek, for lighter-patch ask the user to tap)
   state.skinHex = null;
   clearAutoDots();
   if (state.guideBlock) setSkin(null);                              // A photo rejected by the assistant yields no trustworthy color, so no fake result is shown
@@ -607,7 +607,7 @@ function browLight() {
   return !!(state.browHex && state.skinHex) && luma(state.skinHex) - luma(state.browHex) < 25;
 }
 function updateBrowTip() { $('browpts-tip').hidden = !browLight(); }
-function browPale() {                       // Very faint eyebrows (white brows): the try-on does not draw brows and the adjust page does not offer brows (design decision,: do not draw white brows)
+function browPale() {                       // Very faint eyebrows (white brows): the try-on does not draw brows and the adjust page does not offer brows (design note: do not draw white brows)
   const fl = state.recommendation && state.recommendation.full_look;
   return fl && typeof fl.brow_pale === 'boolean' ? fl.brow_pale : browLight();
 }
@@ -727,7 +727,7 @@ async function runAutoColors(img, dataUrl) {
   speak($('auto-status').textContent);
 }
 
-// ---------------------------------------------------------------- Vitiligo: skin-tone analysis (local, no credits spent)
+// ---------------------------------------------------------------- Lighter-patch: skin-tone analysis (local, no credits spent)
 function recommendPayload() {
   const vit = state.condition === 'vitiligo';
   return { condition: state.condition, style: state.style, brow_hex: state.browHex,
@@ -793,7 +793,7 @@ function renderPick(rec) {
   if (!state.skinCard) return;
   if (!state.suggested || !state.cardPick) state.suggested = { level: rec.skin_level, tone: TONE_OF_ID[rec.undertone_id] || 'neutral' };
   const sug = state.suggested, cur = state.cardPick || sug;
-  // 10-21 (design decision): the rewritten version A (user's point of view) replaces 'the program suggests...'. Basis: the official skin-tone reading runs dark and yellow for very light skin (measured dE00 9.8-12.5,
+  // 10-21 (design note): the rewritten version A (user's point of view) replaces 'the program suggests...'. Basis: the official skin-tone reading runs dark and yellow for very light skin (measured dE00 9.8-12.5,
   // local run notes (not shipped)). This sentence applies only to the entrance for very light skin; the other entrance cannot say 'fair', and only the word 'program' is removed
   const hint = state.condition === 'albinism'
     ? __t('s0264', '為了不讓白皙的你被配到太深、偏黃的粉底，我們直接用你照片上的膚色來幫你對色。若覺得不像，隨時都能點選別格調整喔！')
@@ -1500,7 +1500,7 @@ for (const p of ['base', 'adj']) {
 }
 
 // ---- Helper layer: the parts YouCam cannot do alone (no region parameter, cannot handle extreme angles or very faint eyebrows...) are filled in by local coloring on the phone
-// Local coloring = foundation preview (ShadePreview) + local concealing for the vitiligo entrance (Camouflage); both are rule-based computation, do not call YouCam, spend no credits, and are all labeled 'simulated'.
+// Local coloring = foundation preview (ShadePreview) + local concealing for the lighter-patch entrance (Camouflage); both are rule-based computation, do not call YouCam, spend no credits, and are all labeled 'simulated'.
 async function localAssistImage() {
   if (!window.ShadePreview || !state.photo) return null;
   try {
@@ -1528,7 +1528,7 @@ async function goBase() {
   const rec = state.recommendation;
   if (!rec.foundation_shade) { goQuick(); return; }            // With no shade, fall back to the original three choices
   state.baseLooks = {
-    // Step one = foundation + highlight (albinism also gets contour): albinism 'makes features more dimensional', vitiligo 'highlights the T-zone' (design decision, 10-16)
+    // Step one = foundation + highlight (very-light-skin also gets contour): very-light-skin 'makes features more dimensional', lighter-patch 'highlights the T-zone' (design note 10-16)
     foundation: { foundation: rec.looks.glow.selection.foundation, highlight: rec.looks.glow.selection.highlight || 'center',
       contour: rec.looks.glow.selection.contour || 'keep' },
     glow: rec.looks.glow.selection,
@@ -1575,7 +1575,7 @@ async function applyBase(which) {
     state.baseRaw = res.image;                       // YouCam's original result (before local concealing), for comparison
     state.baseWhich = which;
     if (state.condition === 'vitiligo' && window.Camouflage && state.skinHex && state.patchHex) {
-      // Vitiligo: the try-on cannot target a region -> identify the vitiligo area on the phone, simulate 'dabbing the foundation in the surrounding skin tone onto the patches', then blend it across the whole face
+      // Lighter-patch: the try-on cannot target a region -> identify the lighter-patch area on the phone, simulate 'dabbing the foundation in the surrounding skin tone onto the patches', then blend it across the whole face
       busy(true, __t('s0386', '找出淺色區塊範圍、局部遮瑕中…'));
       const cam = await window.Camouflage.apply(res.image, state.photo, state.skinHex, state.patchHex).catch(() => null);
       if (cam) {

@@ -1,4 +1,4 @@
-/* Good Glow try-on: light pink palette (modeled on beauty-camera apps: full-bleed photo, bottom toolbar, large buttons); albinism defaults to dark mode (light-sensitive) */
+/* Good Glow try-on: light pink palette (modeled on beauty-camera apps: full-bleed photo, bottom toolbar, large buttons); very-light-skin defaults to dark mode (light-sensitive) */
 :root {
   --bg: #fbf3f1; --card: #ffffff; --ink: #2a1f22; --muted: #7a6a6e; --line: #f1dfdc;
   --accent: #d9577a; --accent-2: #f39bb0; --accent-ink: #fff; --soft: #fde9ee; --warn: #b8455f; --ok: #3f7a5c;
