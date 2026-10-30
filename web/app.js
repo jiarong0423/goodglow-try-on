@@ -1657,15 +1657,17 @@ async function goQuick() {
   busy(false);
   const cards = [
     { id: 'keep', title: __t('s0138', '保留原樣'), desc: __t('s0397', '不加任何妝'), image: state.photo, selection: {} },
-    { id: 'glow', title: __t('s0140', '好氣色'), desc: describe(state.quick.glow.selection), image: state.quick.glow.image, selection: state.quick.glow.selection },
-    { id: 'clear', title: __t('s0141', '清晰'), desc: describe(state.quick.clear.selection), image: state.quick.clear.image, selection: state.quick.clear.selection },
+    { id: 'glow', title: __t('s0140', '好氣色'), desc: describe(state.quick.glow.selection), image: state.quick.glow.image, selection: state.quick.glow.selection, source: state.quick.glow.source },
+    { id: 'clear', title: __t('s0141', '清晰'), desc: describe(state.quick.clear.selection), image: state.quick.clear.image, selection: state.quick.clear.selection, source: state.quick.clear.source },
   ];
   const box = $('quick-cards');
   box.innerHTML = '';
   for (const c of cards) {
     const b = document.createElement('button');
     b.className = 'quick-card';
-    b.innerHTML = `<img alt="${c.title}" src="${c.image}"><strong>${c.title}</strong><span>${c.desc}</span>`;
+    // A generated picture says what it is on the card too: replayed or live YouCam, or a simulation (the keep-as-is card is the photo itself)
+    const tag = c.source && c.source.kind && c.source.kind !== 'photo' ? `<span class="sim-tag fc-tag">${provBadge({ ...c.source, local: [] })}</span>` : '';
+    b.innerHTML = `${tag}<img alt="${c.title}" src="${c.image}"><strong>${c.title}</strong><span>${c.desc}</span>`;
     b.onclick = () => goAdjust(c);
     box.appendChild(b);
   }
@@ -1687,6 +1689,8 @@ function goAdjust(card) {
   for (const it of ITEMS) state.selection[it.key] = card.selection[it.key] || 'keep';
   $('layer-strip').hidden = true;
   state.currentImage = card.image;
+  // The picture on the adjust page carries its own source label from the first view, not only after an option is changed
+  setSource('adj', card.source || { kind: 'photo' }, (card.source && card.source.local) || []);
   $('adj-original').src = state.photo;
   $('adj-current').src = card.image;
   paintFace('adj', 'photo');
@@ -2028,7 +2032,7 @@ $('btn-sens-next').onclick = goAdvice;
 $('btn-adv-try').onclick = goBase;
 $('btn-adv-card').onclick = goCard;
 for (const b of BASE_KEYS) $(`btn-base-${b}`).onclick = async () => { await applyBase(b); flipFace('base', b === 'keep' ? 'photo' : 'look'); };      // When a makeup is chosen, flip to show it; when 'keep as is' is chosen, flip back to your photo
-$('btn-base-adjust').onclick = () => goAdjust({ selection: state.selection, image: state.currentImage, title: $('base-caption').textContent });
+$('btn-base-adjust').onclick = () => goAdjust({ selection: state.selection, image: state.currentImage, title: $('base-caption').textContent, source: SOURCE.base });
 $('btn-base-card').onclick = goCard;
 $('mode-patch').onclick = () => setSampleMode('patch');
 $('check-photo').onclick = onPhotoTap;

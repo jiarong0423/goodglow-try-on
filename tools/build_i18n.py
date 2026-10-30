@@ -27,6 +27,10 @@ NOT_UI = {"s0889", "s0898", "s0899", "s0900", "s0901"}   # regular expressions u
 
 def load():
     rows = list(csv.DictReader(open(MAP, encoding="utf-8")))
+    broken = [r["id"] for r in rows if None in r or any(v is None for v in r.values())]
+    if broken:
+        print("ERROR: rows with the wrong number of columns (an unquoted comma?): " + ", ".join(broken[:10]), file=sys.stderr)
+        raise SystemExit(1)
     sha = hashlib.sha256("\n".join(f"{r['id']}\t{r['en']}" for r in rows).encode()).hexdigest()
     plain, tpl = {}, {}
     for r in rows:

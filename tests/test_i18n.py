@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CSV_EN_SHA = "ed48d27044e22d7c84d4257c68a99888c1bf5b17e389dd1d3a206a92edce444b"   # per-row sha256 of id<TAB>en (946 rows)
+CSV_EN_SHA = "557054489066979affff33cbcc441e5dc8333e092fca6a7fa52261299e518c6e"   # per-row sha256 of id<TAB>en (946 rows)
 CJK = re.compile(r"[㐀-鿿]")
 
 
@@ -26,6 +26,11 @@ class TestTable(unittest.TestCase):
         self.assertEqual(len(self.rows), 946)
         sha = hashlib.sha256("\n".join(f"{r['id']}\t{r['en']}" for r in self.rows).encode()).hexdigest()
         self.assertEqual(sha, CSV_EN_SHA)
+
+    def test_every_row_has_exactly_five_columns(self):
+        # An English cell with an unquoted comma is split into extra columns and its sentence is cut short on screen.
+        raw = list(csv.reader(open(ROOT / "docs/i18n/zh_en_map.csv", encoding="utf-8")))
+        self.assertEqual({len(r) for r in raw}, {5})
 
     def test_every_row_has_english_except_unit_word(self):
         blank = [r["id"] for r in self.rows if not r["en"].strip()]

@@ -1,6 +1,6 @@
 'use strict';
 // 由 tools/build_i18n.py 產生，勿手改。來源 docs/i18n/zh_en_map.csv（英文欄雜湊見下）＋ docs/i18n/position_overrides.csv
-// CSV 英文欄 sha256=ed48d27044e22d7c84d4257c68a99888c1bf5b17e389dd1d3a206a92edce444b
+// CSV 英文欄 sha256=557054489066979affff33cbcc441e5dc8333e092fca6a7fa52261299e518c6e
 window.I18N_EN = {
  "s0001": "Good Glow Try-On",
  "s0002": "Light-sensitive mode",
@@ -22,7 +22,7 @@ window.I18N_EN = {
  "s0018": "Skincare tips",
  "s0019": "Try-on",
  "s0020": "Before you start",
- "s0021": "On treatment days",
+ "s0021": "On treatment days, follow your doctor's advice on whether to wear makeup",
  "s0022": "Patch test new products on a small area behind the ear first",
  "s0023": "Apply sunscreen before you head out",
  "s0025": "Got it",
@@ -109,7 +109,7 @@ window.I18N_EN = {
  "s0108": "Often",
  "s0109": "Sometimes",
  "s0110": "Never",
- "s0111": "Is your skin uncomfortable lately",
+ "s0111": "Is your skin uncomfortable lately, or are you using an ointment or treatment from your doctor?",
  "s0112": "Yes",
  "s0113": "No",
  "s0114": "Have you ever had an allergic reaction to fragrance or certain ingredients?",
@@ -498,7 +498,7 @@ window.I18N_EN = {
  "s0591": "Brows are very light: use the tone of your natural brow color, slightly deeper, so the brows are visible",
  "s0592": "Brows are very light: use the tone of your natural brow color, deeper, to add dimension; on light skin it will not look too harsh",
  "s0593": "Your skin is on the sensitive side; please look at these points before applying makeup",
- "s0596": "Pat",
+ "s0596": "Pat, don't rub: your skin may show pressure marks easily",
  "s0597": "Apply makeup by patting lightly, not pushing back and forth.",
  "s0598": "Try new products first on a small area behind the ear or on the jawline, and choose gentle, fragrance-free ones",
  "s0599": "Do not buy a large size at first.",
@@ -818,7 +818,7 @@ window.I18N_EN = {
  "s0946": "Spot color correcting: dab peach/orange only on the lighter patches (no green), in small sections, not over the whole face.",
  "s0947": "Layer on concealer where needed; the color difference is most noticeable at the edges of the lighter patches, so dab a slightly lighter concealer on the edges and fade it outward.",
  "s0948": "Set with a little loose powder, pressed on lightly.",
- "s0949": "On treatment days",
+ "s0949": "On treatment days, follow your doctor's advice on whether to wear makeup.",
  "s0950": "Use sunscreen, shade, long sleeves, and UV-blocking sunglasses together.",
  "s0951": "Long-term sun exposure gradually changes the skin; have any new spot, uneven color or change in shape checked by a dermatologist.",
  "s0952": "Apply sunscreen over a wide area; if the surrounding skin does not tan, the color difference is also smaller.",

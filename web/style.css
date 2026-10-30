@@ -258,6 +258,7 @@ details.card summary { font-weight: 700; cursor: pointer; }
 
 .quick-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .quick-card { border: 2px solid var(--line); border-radius: 18px; background: var(--card); padding: 6px; cursor: pointer; font: inherit; color: var(--ink); text-align: center; display: flex; flex-direction: column; }
+.quick-card { position: relative; }
 .quick-card img { width: 100%; border-radius: 12px; display: block; aspect-ratio: 3/4; object-fit: cover; }
 .quick-card strong { display: block; margin-top: 6px; font-size: 17px; }
 .quick-card span { display: block; font-size: 13px; line-height: 1.4; color: var(--muted); }

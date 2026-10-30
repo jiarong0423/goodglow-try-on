@@ -18,7 +18,7 @@ s0017,對色號,Match shade,html text,web/index.html:44
 s0018,保養建議,Skincare tips,html text,web/index.html:44
 s0019,試妝,Try-on,html text,web/index.html:44 web/app.js:31
 s0020,開始前提醒,Before you start,html text,web/index.html:52
-s0021,照光治療日是否上妝，請依醫師指示,On treatment days, follow your doctor's advice on whether to wear makeup,html text,web/index.html:54 app/color_engine.py:447 app/color_engine.py:447
+s0021,照光治療日是否上妝，請依醫師指示,"On treatment days, follow your doctor's advice on whether to wear makeup",html text,web/index.html:54 app/color_engine.py:447 app/color_engine.py:447
 s0022,新產品先在耳後小範圍試,Patch test new products on a small area behind the ear first,html text,web/index.html:55
 s0023,出門前先擦防曬,Apply sunscreen before you head out,html text,web/index.html:56
 s0025,我知道了,Got it,html text,web/index.html:59
@@ -105,7 +105,7 @@ s0107,擦保養品或化妝品後，會刺痛或發紅嗎？,"After using skinca
 s0108,常常,Often,html text,web/index.html:251
 s0109,偶爾,Sometimes,html text,web/index.html:251
 s0110,不會,Never,html text,web/index.html:251
-s0111,最近皮膚不舒服，或正在使用醫師開的藥膏或治療嗎？,Is your skin uncomfortable lately, or are you using an ointment or treatment from your doctor?,html text,web/index.html:252
+s0111,最近皮膚不舒服，或正在使用醫師開的藥膏或治療嗎？,"Is your skin uncomfortable lately, or are you using an ointment or treatment from your doctor?",html text,web/index.html:252
 s0112,有,Yes,html text,web/index.html:253 web/index.html:255
 s0113,沒有,No,html text,web/index.html:253 web/index.html:255
 s0114,對香料或某些成分過敏過嗎？,Have you ever had an allergic reaction to fragrance or certain ingredients?,html text,web/index.html:254
@@ -563,7 +563,7 @@ s0590,照你原本的眉色深一階，加強立體感,"One step deeper than you
 s0591,眉毛很淡：用原眉色的色調加深一點，讓眉毛看得見,"Brows are very light: use the tone of your natural brow color, slightly deeper, so the brows are visible",py 字串,app/color_engine.py:505 app/color_engine.py:505
 s0592,眉毛很淡：用原眉色的色調加深，加強立體感；淺膚色不會深到太兇,"Brows are very light: use the tone of your natural brow color, deeper, to add dimension; on light skin it will not look too harsh",py 字串,app/color_engine.py:506 app/color_engine.py:506
 s0593,你的皮膚比較敏感，上妝前先看這幾點,Your skin is on the sensitive side; please look at these points before applying makeup,py 字串,app/color_engine.py:515 app/color_engine.py:524 app/color_engine.py:515 app/color_engine.py:524
-s0596,皮膚薄、容易紅，手指一壓就可能留紅印,Pat, don't rub: your skin may show pressure marks easily,py 字串,app/color_engine.py:518 app/color_engine.py:518
+s0596,皮膚薄、容易紅，手指一壓就可能留紅印,"Pat, don't rub: your skin may show pressure marks easily",py 字串,app/color_engine.py:518 app/color_engine.py:518
 s0597,上妝用輕拍，不要來回推。,"Apply makeup by patting lightly, not pushing back and forth.",py 字串,app/color_engine.py:518 app/color_engine.py:518
 s0598,新產品先在耳後或下顎小範圍試，選溫和、無香料,"Try new products first on a small area behind the ear or on the jawline, and choose gentle, fragrance-free ones",py 字串,app/color_engine.py:519 app/color_engine.py:519
 s0599,不要一開始就買大罐。,Do not buy a large size at first.,py 字串,app/color_engine.py:519 app/color_engine.py:519
@@ -894,7 +894,7 @@ s0945,防曬與隔離先上；淺色區塊處對紫外線特別敏感。,Apply s
 s0946,局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色），分小區塊，不要整臉上。,"Spot color correcting: dab peach/orange only on the lighter patches (no green), in small sections, not over the whole face.",py 字串,app/color_engine.py:372 app/color_engine.py:372
 s0947,需要的地方再疊一層遮瑕；淺色區塊邊緣色差最明顯，點上淺一點的遮瑕修邊、往外淡化。,"Layer on concealer where needed; the color difference is most noticeable at the edges of the lighter patches, so dab a slightly lighter concealer on the edges and fade it outward.",py 字串,app/color_engine.py:375 app/color_engine.py:375
 s0948,少量蜜粉輕壓定妝。,"Set with a little loose powder, pressed on lightly.",py 字串,app/color_engine.py:376 app/color_engine.py:376
-s0949,照光治療日是否上妝，請依醫師指示。,On treatment days, follow your doctor's advice on whether to wear makeup.,py 字串,app/color_engine.py:377 app/color_engine.py:377
+s0949,照光治療日是否上妝，請依醫師指示。,"On treatment days, follow your doctor's advice on whether to wear makeup.",py 字串,app/color_engine.py:377 app/color_engine.py:377
 s0950,防曬、遮陽、長袖、抗 UV 墨鏡一起用。,"Use sunscreen, shade, long sleeves, and UV-blocking sunglasses together.",py 字串,app/color_engine.py:517 app/color_engine.py:517
 s0951,長期日曬會讓皮膚慢慢出現變化；新長的斑點、顏色不均或形狀改變，請給皮膚科醫師檢查。,"Long-term sun exposure gradually changes the skin; have any new spot, uneven color or change in shape checked by a dermatologist.",py 字串,app/color_engine.py:520 app/color_engine.py:520
 s0952,大範圍擦防曬；周圍皮膚不曬黑，色差也比較小。,"Apply sunscreen over a wide area; if the surrounding skin does not tan, the color difference is also smaller.",py 字串,app/color_engine.py:526 app/color_engine.py:526
