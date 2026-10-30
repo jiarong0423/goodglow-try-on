@@ -1,7 +1,7 @@
 id,zh,en,context,where
 s0001,好氣色試妝,Good Glow Try-On,html text,web/index.html:9 web/index.html:21
-s0002,怕光模式,Light-sensitive mode,<label title>,web/index.html:24
-s0003,怕光模式（暗色畫面）,Light-sensitive mode (dark screen),html text,web/index.html:24
+s0002,暗色模式,Dark mode,<label title>,web/index.html:24
+s0003,暗色畫面,Dark screen,html text,web/index.html:24
 s0005,先找到你的膚色，,"Find your skin tone first,",html text,web/index.html:30
 s0006,再談妝容,then talk makeup,html text,web/index.html:30
 s0007,每一種膚色都有自己的好氣色：拍一張照片，取膚色、對色號，再給保養、防曬和一套完整妝容。只加妝；YouCam 的磨皮固定為 0。,"Every skin tone has its own good glow: take a photo, pick your skin tone, match a shade, then get skincare, sun protection and a full makeup look. We only add makeup; YouCam's smoothing is fixed at 0.",html text,web/index.html:31
@@ -22,7 +22,7 @@ s0021,照光治療日是否上妝，請依醫師指示,"On treatment days, follo
 s0022,新產品先在耳後小範圍試,Patch test new products on a small area behind the ear first,html text,web/index.html:55
 s0023,出門前先擦防曬,Apply sunscreen before you head out,html text,web/index.html:56
 s0025,我知道了,Got it,html text,web/index.html:59
-s0026,怕光？改成暗色畫面,Light-sensitive? Switch to a dark screen,html text,web/index.html:60 web/app.js:190
+s0026,光線太亮？改成暗色畫面,Light too bright? Switch to a dark screen,html text,web/index.html:60 web/app.js:190
 s0027,拍一張，或上傳一張,"Take a photo, or upload one",html text,web/index.html:67
 s0028,正面、整張臉入鏡,"Front-facing, whole face in the frame",html text,web/index.html:69
 s0029,窗邊柔和自然光,Soft natural light by a window,html text,web/index.html:70
@@ -483,7 +483,7 @@ s0498,溫和保濕,Gentle moisturizing,$.steps[0].title,app/full_looks.json
 s0499,輕拍保濕，不要用力搓揉,Pat the moisturizer on lightly; do not rub hard,$.steps[0].tip,app/full_looks.json
 s0500,一般衛教資料整理（尚未逐條查證）,"General skincare guidance, compiled by us (not verified item by item)",$.steps[0].source,app/full_looks.json app/full_looks.json app/full_looks.json
 s0501,廣譜防曬,Broad-spectrum sunscreen,$.steps[1].title,app/full_looks.json
-s0502,均勻厚塗，保護怕光肌膚,"Apply an even, generous layer to protect your skin",$.steps[1].tip,app/full_looks.json
+s0502,均勻厚塗，保護肌膚,"Apply an even, generous layer to protect your skin",$.steps[1].tip,app/full_looks.json
 s0504,局部校色,Spot color correcting,$.steps[2].title,app/full_looks.json app/care_rules_vitiligo.py:32 app/care_rules_vitiligo.py:32
 s0505,淺色區塊處輕點校色，順平周圍膚色,Dab a little color corrector on the lighter patches to blend them into the surrounding skin tone,$.steps[2].tip,app/full_looks.json
 s0507,均勻底妝,Even foundation,$.steps[3].title,app/full_looks.json

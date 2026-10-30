@@ -190,7 +190,7 @@ function syncWarnDark(show) {
   b.hidden = !show;
   const on = $('opt-dark').checked;
   b.setAttribute('aria-pressed', String(on));
-  b.textContent = on ? __t('s0186', '已是暗色畫面（點一下改回白底）') : __t('s0026', '怕光？改成暗色畫面');
+  b.textContent = on ? __t('s0186', '已是暗色畫面（點一下改回白底）') : __t('s0026', '光線太亮？改成暗色畫面');
 }
 
 // ---------------------------------------------------------------- Viewfinder: use YouCam Camera Kit first, fall back to the native camera on failure

@@ -1,10 +1,10 @@
 'use strict';
 // 由 tools/build_i18n.py 產生，勿手改。來源 docs/i18n/zh_en_map.csv（英文欄雜湊見下）＋ docs/i18n/position_overrides.csv
-// CSV 英文欄 sha256=a5f47925ba81129cb5dc64c59a81ad3aee218e84882ae3f1e8a04dac90cc8563
+// CSV 英文欄 sha256=4524ca6967dc770a0ec864b1dedb21335c108f48923367edcdb44e26227a8ff9
 window.I18N_EN = {
  "s0001": "Good Glow Try-On",
- "s0002": "Light-sensitive mode",
- "s0003": "Light-sensitive mode (dark screen)",
+ "s0002": "Dark mode",
+ "s0003": "Dark screen",
  "s0005": "Find your skin tone first,",
  "s0006": "then talk makeup",
  "s0007": "Every skin tone has its own good glow: take a photo, pick your skin tone, match a shade, then get skincare, sun protection and a full makeup look. We only add makeup; YouCam's smoothing is fixed at 0.",
@@ -26,7 +26,7 @@ window.I18N_EN = {
  "s0022": "Patch test new products on a small area behind the ear first",
  "s0023": "Apply sunscreen before you head out",
  "s0025": "Got it",
- "s0026": "Light-sensitive? Switch to a dark screen",
+ "s0026": "Light too bright? Switch to a dark screen",
  "s0027": "Take a photo, or upload one",
  "s0028": "Front-facing, whole face in the frame",
  "s0029": "Soft natural light by a window",

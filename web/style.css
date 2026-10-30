@@ -354,7 +354,7 @@ html, body { overflow-x: clip; }   /* While sliding in, the content temporarily 
   --radius: 14px; --btn-radius: 10px;
   font-family: "PingFang TC", "Noto Sans TC", Roboto, -apple-system, system-ui, sans-serif;
 }
-/* Light-sensitive mode (dark): lower brightness and saturation, no large areas of pure white */
+/* Dark mode: lower brightness and saturation, no large areas of pure white */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #121012; --card: #1b181a; --ink: #e6dfe2; --muted: #a99ca1; --line: #2e282b;
