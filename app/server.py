@@ -738,6 +738,11 @@ class State:
 
 
 class Handler(BaseHTTPRequestHandler):
+    error_content_type = "text/html;charset=utf-8"
+    error_message_format = (
+        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>Good Glow Try-On: %(code)d</title></head>"
+        "<body><p>%(message)s (%(code)d). <a href=\"/\">Back to Good Glow Try-On</a></p></body></html>"
+    )
     state: State
     live_state: State | None = None            # state for real calls, used only after judge login (--judge-live)
     auth: "judge_auth.JudgeAuth | None" = None

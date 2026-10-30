@@ -1,6 +1,6 @@
 'use strict';
 // 由 tools/build_i18n.py 產生，勿手改。來源 docs/i18n/zh_en_map.csv（英文欄雜湊見下）＋ docs/i18n/position_overrides.csv
-// CSV 英文欄 sha256=5241f30fdedd1c57390ece8e1866a175cb99bcc0ddf405582a31ae3eaecb6371
+// CSV 英文欄 sha256=74a809fd9b6ef190b7fff15cc6cf88cfd14f973045ac08dbf82f0e04565ff79f
 window.I18N_EN = {
  "s0001": "Good Glow Try-On",
  "s0002": "Light-sensitive mode",
@@ -497,7 +497,7 @@ window.I18N_EN = {
  "s0590": "One step deeper than your natural brow color, to add dimension",
  "s0591": "Brows are very light: use the tone of your natural brow color, slightly deeper, so the brows are visible",
  "s0592": "Brows are very light: use the tone of your natural brow color, deeper, to add dimension; on light skin it will not look too harsh",
- "s0593": "Your skin is on the sensitive side; please look at these points before applying makeup",
+ "s0593": "Your answers point to sensitive skin; please look at these points before applying makeup",
  "s0596": "Pat, don't rub: your skin may show pressure marks easily",
  "s0597": "Apply makeup by patting lightly, not pushing back and forth.",
  "s0598": "Try new products first on a small area behind the ear or on the jawline, and choose gentle, fragrance-free ones",

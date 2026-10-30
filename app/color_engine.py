@@ -547,7 +547,7 @@ def brow_from_photo(brow_hex: str, skin_hex: str, level: str = "defined") -> dic
 # Source: internal research notes (sensitive skin)
 _SENSITIVE = {
     "albinism": {
-        "title": "你的皮膚比較敏感，上妝前先看這幾點",
+        "title": "你的回答顯示皮膚偏敏感，上妝前先看這幾點",
         "items": [
             ("黑色素較少時，強光下很快就可能曬傷", "防曬、遮陽、長袖、抗 UV 墨鏡一起用。"),
             ("皮膚薄、容易紅，手指一壓就可能留紅印", "上妝用輕拍，不要來回推。"),
@@ -556,7 +556,7 @@ _SENSITIVE = {
         ],
     },
     "vitiligo": {
-        "title": "你的皮膚比較敏感，上妝前先看這幾點",
+        "title": "你的回答顯示皮膚偏敏感，上妝前先看這幾點",
         "items": [
             ("色素少的皮膚較容易曬傷，請做好防曬", "大範圍擦防曬；周圍皮膚不曬黑，色差也比較小。"),
             ("不要搓、抓、用力刷", "摩擦可能讓該處長出新的淺色區塊。上妝、卸妝都用點壓。"),

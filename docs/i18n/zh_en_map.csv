@@ -562,7 +562,7 @@ s0589,照你原本的眉色補稀疏處,Fill in sparse spots using your natural 
 s0590,照你原本的眉色深一階，加強立體感,"One step deeper than your natural brow color, to add dimension",py 字串,app/color_engine.py:494 app/color_engine.py:494
 s0591,眉毛很淡：用原眉色的色調加深一點，讓眉毛看得見,"Brows are very light: use the tone of your natural brow color, slightly deeper, so the brows are visible",py 字串,app/color_engine.py:505 app/color_engine.py:505
 s0592,眉毛很淡：用原眉色的色調加深，加強立體感；淺膚色不會深到太兇,"Brows are very light: use the tone of your natural brow color, deeper, to add dimension; on light skin it will not look too harsh",py 字串,app/color_engine.py:506 app/color_engine.py:506
-s0593,你的皮膚比較敏感，上妝前先看這幾點,Your skin is on the sensitive side; please look at these points before applying makeup,py 字串,app/color_engine.py:515 app/color_engine.py:524 app/color_engine.py:515 app/color_engine.py:524
+s0593,你的回答顯示皮膚偏敏感，上妝前先看這幾點,Your answers point to sensitive skin; please look at these points before applying makeup,py 字串,app/color_engine.py:515 app/color_engine.py:524 app/color_engine.py:515 app/color_engine.py:524
 s0596,皮膚薄、容易紅，手指一壓就可能留紅印,"Pat, don't rub: your skin may show pressure marks easily",py 字串,app/color_engine.py:518 app/color_engine.py:518
 s0597,上妝用輕拍，不要來回推。,"Apply makeup by patting lightly, not pushing back and forth.",py 字串,app/color_engine.py:518 app/color_engine.py:518
 s0598,新產品先在耳後或下顎小範圍試，選溫和、無香料,"Try new products first on a small area behind the ear or on the jawline, and choose gentle, fragrance-free ones",py 字串,app/color_engine.py:519 app/color_engine.py:519

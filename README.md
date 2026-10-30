@@ -4,11 +4,7 @@
 
 Independent hackathon entry, not affiliated with Perfect Corp.; general information only, not medical advice (see [NOTICE.md](NOTICE.md)).
 
-A try-on web app (PWA) built for the **YouCam API Skin AI & eCommerce VTO hackathon, eCommerce VTO track**. It is designed
-for people with very light skin, brows and lashes, and people with lighter patches or uneven tone, who rarely see themselves in beauty tech (the app screens describe what you need, not a condition):
-
-- people with **very light skin, brows and lashes** (albinism; many are also light-sensitive), and
-- people whose skin has **lighter patches and uneven tone** (vitiligo).
+A makeup try-on and shade-matching web app (PWA) for the **YouCam API Skin AI & eCommerce VTO hackathon, eCommerce VTO track**. It starts from **lighter patches and uneven skin tone**, where a whole-face try-on cannot help on its own (Makeup VTO has no region parameter): the app measures the colour gap between the patch and the skin around it, previews a locally computed concealer fill, tries on a whole-face look with YouCam Makeup VTO, and ends on one colour card (shade, sun protection, skincare steps) that a beauty advisor can read at a counter. The same flow also serves **very light skin, brows and lashes**. The app screens describe what you need, not a condition.
 
 The project has **not yet been tested with the people it is for**. Thank you to the people and photographers who make photos of themselves publicly available under open licences. Clear frontal photos with these skin features under open licences are hard to find. For one example the only suitable photo was a side view, so we used an AI-generated frontal illustration made from it, to demonstrate the method. It is not the person's original photo and is labelled Simulated on screen. The people in these photos did not take part in this project and do not endorse it. Demo photos are public stock photos of models; they are not users and do not endorse it. What each picture is labelled is explained under *Labels on pictures* below; sources and limits are in [`demo/SOURCES.md`](demo/SOURCES.md) and [`evidence/README.md`](evidence/README.md).
 
