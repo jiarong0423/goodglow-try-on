@@ -24,7 +24,7 @@ const TONES = [
 
 const CONDITIONS = [
   // The screens do not label any condition name (design decision,: they want to be treated like anyone else); use a neutral description of needs
-  { id: 'albinism', label: __t('s0169', '膚色很淺'), desc: __t('s0170', '容易怕光、眉睫顏色淡'), img: 'img/cover_albinism.jpg' },
+  { id: 'albinism', label: __t('s0169', '膚色很淺'), desc: __t('s0170', '淺膚色、眉睫顏色淡'), img: 'img/cover_albinism.jpg' },
   { id: 'vitiligo', label: __t('s0171', '膚色深淺不一'), desc: __t('s0172', '臉上有顏色較淺的區塊'), img: 'img/cover_vitiligo.jpg' },
 ];
 // Step bar: photo -> skin tone -> shade -> three questions -> suggestion -> try-on -> palette card
@@ -1313,7 +1313,7 @@ async function camoGuide() {
     // Makeup-layer mode: each step is drawing up to that layer (the same 8 layers), and the text follows the makeup tutorial
     const cols = camoColors(prods), strength = Number($('mk-strength').value) / 100;
     const msteps = [
-      { t: __t('s0337', '保濕＋防曬'), d: __t('s0338', '先擦保濕，再擦防曬，等吸收再上妝；淺色區塊沒有黑色素保護，特別怕曬。照光治療日是否上妝，請依醫師指示。') },
+      { t: __t('s0337', '保濕＋防曬'), d: __t('s0338', '先擦保濕，再擦防曬，等吸收再上妝；色素少的皮膚較容易曬傷，請做好防曬。照光治療日是否上妝，請依醫師指示。') },
       { t: __t('s0339', '校色：只點在淺色區塊上'), d: __t('s0340', '綠色虛線就是範圍。用指尖或小刷在淺色區塊中央薄薄點上蜜桃／橘色，不要沾到旁邊的正常皮膚。'), up: 'corrector', outline: true, m: prods.corrector },
       { t: __t('s0341', '遮瑕：從中央往外推'), d: __t('s0342', '用最接近淺色區塊「周圍」膚色的遮瑕，先點在區塊中央，再用海綿拍按、往外推進周圍皮膚，邊緣才不會有一圈。拍按不要搓。'), up: 'conceal', m: prods.concealer },
       { t: __t('s0343', '第二層：只補還看得出來的地方'), d: __t('s0344', '等第一層服貼，再薄薄補在還看得出差異的地方。兩到三層薄的，比一層厚的自然。'), up: 'conceal2', m: prods.concealer },

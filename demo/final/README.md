@@ -12,5 +12,5 @@ The images and recipes used by the app's "final look" card, exported by `tools/e
 
 About vitiligo_F:
 - The frontal picture is AI-generated; whether the face shape and outline are faithful to the original is not verified, so it must not be taken as the person's photo.
-- Public text uses neutral wording and no condition names.
+- Public text on the app screens uses neutral wording; the file names in this folder keep internal labels.
 - The full source chain is also in `source_note` of `vitiligo_F` in `recipes.json`.

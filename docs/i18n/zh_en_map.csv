@@ -163,7 +163,7 @@ s0166,中性,Neutral,js 字串,web/app.js:20 web/app.js:774 app/presets.json app
 s0167,暖調（偏象牙）,Warm (ivory-leaning),js 字串,web/app.js:21
 s0168,不知道,Don't know,js 字串,web/app.js:22
 s0169,膚色很淺,Very light skin,js 字串,web/app.js:27
-s0170,容易怕光、眉睫顏色淡,"Light-sensitive, with very light brows and lashes",js 字串,web/app.js:27
+s0170,淺膚色、眉睫顏色淡,"Very light skin, brows and lashes",js 字串,web/app.js:27
 s0171,膚色深淺不一,Uneven skin tone,js 字串,web/app.js:28
 s0172,臉上有顏色較淺的區塊,Some lighter patches on the face,js 字串,web/app.js:28
 s0173,膚色,Skin tone,js 字串,web/app.js:31 web/app.js:564 web/app.js:1784 app/color_engine.py:293 app/color_engine.py:293
@@ -328,7 +328,7 @@ s0334,"化妝塗層（模擬）：${used}。${ideal ? '目前是理想色號（�
 s0335,淺色區塊和周圍膚色的色差：${r.deltaE.toFixed(1)}（越小越融合）；還看得出的留白約 ${Math.round(r.residPct * 100)}%。${camoCheckNote()},Color difference between the lighter patch and the surrounding skin tone: ${r.deltaE.toFixed(1)} (smaller blends better); uncovered spots still visible: about ${Math.round(r.residPct * 100)}%. ${camoCheckNote()},js 字串,web/app.js:1260
 s0336,<li><span></span><p>產生步驟圖中…</p></li>,<li><span></span><p>Generating step images…</p></li>,js 字串,web/app.js:1271
 s0337,保濕＋防曬,Moisturizer + sunscreen,js 字串,web/app.js:1295 web/app.js:1319
-s0338,先擦保濕，再擦防曬，等吸收再上妝；淺色區塊沒有黑色素保護，特別怕曬。照光治療日是否上妝，請依醫師指示。,"Apply moisturizer first, then sunscreen, and wait for them to absorb before makeup. Lighter patches have no melanin protection and are especially sensitive to the sun. On treatment days, follow your doctor's advice on whether to wear makeup.",js 字串,web/app.js:1295
+s0338,先擦保濕，再擦防曬，等吸收再上妝；色素少的皮膚較容易曬傷，請做好防曬。照光治療日是否上妝，請依醫師指示。,"Apply moisturizer first, then sunscreen, and wait for them to absorb before makeup. Skin with little pigment burns more easily, so use sunscreen. On treatment days, follow your doctor's advice on whether to wear makeup.",js 字串,web/app.js:1295
 s0339,校色：只點在淺色區塊上,Color correcting: dab only on the lighter patch,js 字串,web/app.js:1296
 s0340,綠色虛線就是範圍。用指尖或小刷在淺色區塊中央薄薄點上蜜桃／橘色，不要沾到旁邊的正常皮膚。,"The green dashed line is the area. With a fingertip or a small brush, dab a thin layer of peach/orange in the middle of the lighter patch, without getting it on the regular skin next to it.",js 字串,web/app.js:1296
 s0341,遮瑕：從中央往外推,Concealer: push outward from the center,js 字串,web/app.js:1297
@@ -544,9 +544,9 @@ s0571,不用力擦。,Do not wipe hard.,py 字串,app/color_engine.py:440 app/co
 s0572,溫和清潔、保濕，不搓不刷,"Gentle cleansing and moisturizing, no rubbing or brushing",py 字串,app/color_engine.py:443 app/color_engine.py:443
 s0573,摩擦、抓、用力刷都可能在該處長出新的淺色區塊。,"Rubbing, scratching, and brushing hard may cause new lighter patches to appear there.",py 字串,app/color_engine.py:443 app/color_engine.py:443
 s0574,防曬 SPF50+，大範圍擦,"Sunscreen SPF50+, applied over a wide area",py 字串,app/color_engine.py:444 app/color_engine.py:444
-s0575,淺色區塊處容易曬傷；周圍皮膚不曬黑，色差也比較小。,"Lighter patches burn easily; if the surrounding skin does not tan, the color difference is also smaller.",py 字串,app/color_engine.py:444 app/color_engine.py:444
+s0575,色素少的皮膚較容易曬傷，請做好防曬；周圍皮膚不曬黑，色差也比較小。,"Skin with little pigment burns more easily, so use sunscreen; if the surrounding skin does not tan, the color difference is also smaller.",py 字串,app/color_engine.py:444 app/color_engine.py:444
 s0576,避開可能誘發淺色區塊的成分,Avoid ingredients that may trigger lighter patches,py 字串,app/color_engine.py:446 app/color_engine.py:446
-s0577,染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白產品；在哪裡用、哪裡出現淺色區塊就停用並看醫師。,"Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes, whitening products; if lighter patches appear where you use one, stop using it and see a doctor.",py 字串,app/color_engine.py:446 app/color_engine.py:446
+s0577,染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白產品都可能刺激皮膚；若出現新的或擴大的淺色區塊，請看皮膚科醫師。,"Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes and whitening products can irritate skin; if you notice new or spreading lighter patches, see a dermatologist.",py 字串,app/color_engine.py:446 app/color_engine.py:446
 s0578,是否上妝、塗什麼，請依醫師或治療單位的指示；沒有特別指示時，一般保濕可以。,"Whether to wear makeup, and what to apply, is up to your doctor or treatment provider; without other instructions, regular moisturizer is fine.",py 字串,app/color_engine.py:447 app/color_engine.py:447
 s0579,局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色）,Spot color correcting: dab peach/orange only on the lighter patches (no green),py 字串,app/color_engine.py:448 app/color_engine.py:448
 s0580,淺色區塊缺色素，先校色粉底才不會泛灰；不要整臉上。,"Lighter patches lack pigment, so do color correcting first so the foundation does not turn gray; do not apply it over the whole face.",py 字串,app/color_engine.py:448 app/color_engine.py:448
@@ -888,7 +888,7 @@ s0930,輕壓上妝衛教（待查證）,Dab-on makeup guidance (to be verified),
 s0931,粉底對淺色區塊周圍的膚色選色：面中最多、往外推薄，T 字平刷、眼周最薄；用海綿**點壓**，不要來回搓：摩擦可能在該處長出新的淺色區塊。（化妝師分區上法）,"Choose a foundation to match the skin tone around the lighter patches: most on the center of the face, thinning out toward the edges, flat strokes on the T-zone, thinnest around the eyes; **dab** with a sponge and do not rub back and forth: friction may cause new lighter patches to appear there. (makeup artist zoning technique)",py 字串,app/color_engine.py:373 app/color_engine.py:373
 s0932,黑色素較少時，紫外線防護比較弱。,Sun protection matters more for very light skin.,py 字串,app/color_engine.py:429 app/color_engine.py:429
 s0933,黑色素較少時，強光下很快就可能曬傷,Very light skin can burn quickly in strong light,py 字串,app/color_engine.py:517 app/color_engine.py:517
-s0935,淺色區塊的黑色素較少，特別容易曬傷,Lighter patches have less melanin and sunburn especially easily,py 字串,app/color_engine.py:526 app/color_engine.py:526
+s0935,色素少的皮膚較容易曬傷，請做好防曬,Skin with little pigment burns more easily; use sunscreen,py 字串,app/color_engine.py:526 app/color_engine.py:526
 s0943,依據：一般衛教與美妝資料的整理，不是醫療建議；皮膚有新的變化請找皮膚科醫師。,Based on general skincare and makeup guidance compiled by us; not medical advice. See a dermatologist about any new or changing spot.,html text,web/index.html:58
 s0945,防曬與隔離先上；淺色區塊處對紫外線特別敏感。,Apply sunscreen and primer first; lighter patches are especially sensitive to UV.,py 字串,app/color_engine.py:371 app/color_engine.py:371
 s0946,局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色），分小區塊，不要整臉上。,"Spot color correcting: dab peach/orange only on the lighter patches (no green), in small sections, not over the whole face.",py 字串,app/color_engine.py:372 app/color_engine.py:372
@@ -899,7 +899,7 @@ s0950,防曬、遮陽、長袖、抗 UV 墨鏡一起用。,"Use sunscreen, shade
 s0951,長期日曬會讓皮膚慢慢出現變化；新長的斑點、顏色不均或形狀改變，請給皮膚科醫師檢查。,"Long-term sun exposure gradually changes the skin; have any new spot, uneven color or change in shape checked by a dermatologist.",py 字串,app/color_engine.py:520 app/color_engine.py:520
 s0952,大範圍擦防曬；周圍皮膚不曬黑，色差也比較小。,"Apply sunscreen over a wide area; if the surrounding skin does not tan, the color difference is also smaller.",py 字串,app/color_engine.py:526 app/color_engine.py:526
 s0953,摩擦可能讓該處長出新的淺色區塊。上妝、卸妝都用點壓。,Friction may cause new lighter patches to appear there. Dab when applying and removing makeup.,py 字串,app/color_engine.py:527 app/color_engine.py:527
-s0954,染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白成分（如杜鵑醇）；在哪裡用、哪裡出現淺色區塊就停用並看醫師。,"Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes, whitening ingredients (such as rhododenol); if lighter patches appear where you use one, stop using it and see a doctor.",py 字串,app/color_engine.py:528 app/color_engine.py:528
+s0954,染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白成分都可能刺激皮膚；若出現新的或擴大的淺色區塊，請看皮膚科醫師。,"Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes and whitening ingredients can irritate skin; if you notice new or spreading lighter patches, see a dermatologist.",py 字串,app/color_engine.py:528 app/color_engine.py:528
 s0955,以醫師或衛教人員的說明為準。,Follow your doctor's or health educator's instructions.,py 字串,app/color_engine.py:530 app/color_engine.py:530
 s0956,淺色區塊缺色素：先用指尖只在淺色區塊上薄點蜜桃／橘色校色（深膚色用偏紅的深橘），粉底才不會泛灰；淺色區塊偏粉也不用綠色，綠疊棕色粉底會發灰。,"Lighter patches lack pigment: first dab a thin layer of peach/orange color corrector with a fingertip, only on the lighter patches (for deeper skin tones, use a redder deep orange), so the foundation does not turn gray; even if the lighter patches look pink, do not use green, because green under brown foundation looks gray.",py 字串,app/color_engine.py:365
 s0957,看你選的樣子,See the look you chose,html text,web/index.html:315 web/index.html:359 web/app.js:1444

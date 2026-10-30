@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CSV_EN_SHA = "557054489066979affff33cbcc441e5dc8333e092fca6a7fa52261299e518c6e"   # per-row sha256 of id<TAB>en (946 rows)
+CSV_EN_SHA = "5241f30fdedd1c57390ece8e1866a175cb99bcc0ddf405582a31ae3eaecb6371"   # per-row sha256 of id<TAB>en (946 rows)
 CJK = re.compile(r"[㐀-鿿]")
 
 

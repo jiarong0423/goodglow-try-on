@@ -5,12 +5,12 @@
 Independent hackathon entry, not affiliated with Perfect Corp.; general information only, not medical advice (see [NOTICE.md](NOTICE.md)).
 
 A try-on web app (PWA) built for the **YouCam API Skin AI & eCommerce VTO hackathon, eCommerce VTO track**. It is designed
-for two groups who rarely see themselves in beauty tech (people with albinism and people with vitiligo; the app screens use neutral descriptions of needs instead of condition names):
+for people with very light skin, brows and lashes, and people with lighter patches or uneven tone, who rarely see themselves in beauty tech (the app screens describe what you need, not a condition):
 
 - people with **very light skin, brows and lashes** (albinism; many are also light-sensitive), and
 - people whose skin has **lighter patches and uneven tone** (vitiligo).
 
-The project has **not yet been tested with the people it is for**. Thank you to the people and photographers who make photos of themselves publicly available under open licences. Clear photos of people with albinism or vitiligo are scarce, and frontal ones scarcer. For one example the only suitable photo was a side view, so we used an AI-generated frontal illustration made from it, to demonstrate the method. It is not the person's original photo and is labelled Simulated on screen. The people in these photos did not take part in this project and do not endorse it. Demo photos are public stock photos of models; they are not users and do not endorse it. What each picture is labelled is explained under *Labels on pictures* below; sources and limits are in [`demo/SOURCES.md`](demo/SOURCES.md) and [`evidence/README.md`](evidence/README.md).
+The project has **not yet been tested with the people it is for**. Thank you to the people and photographers who make photos of themselves publicly available under open licences. Clear frontal photos with these skin features under open licences are hard to find. For one example the only suitable photo was a side view, so we used an AI-generated frontal illustration made from it, to demonstrate the method. It is not the person's original photo and is labelled Simulated on screen. The people in these photos did not take part in this project and do not endorse it. Demo photos are public stock photos of models; they are not users and do not endorse it. What each picture is labelled is explained under *Labels on pictures* below; sources and limits are in [`demo/SOURCES.md`](demo/SOURCES.md) and [`evidence/README.md`](evidence/README.md).
 
 ## At a glance: what is real and what is replayed
 

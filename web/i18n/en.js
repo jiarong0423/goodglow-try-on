@@ -1,6 +1,6 @@
 'use strict';
 // 由 tools/build_i18n.py 產生，勿手改。來源 docs/i18n/zh_en_map.csv（英文欄雜湊見下）＋ docs/i18n/position_overrides.csv
-// CSV 英文欄 sha256=557054489066979affff33cbcc441e5dc8333e092fca6a7fa52261299e518c6e
+// CSV 英文欄 sha256=5241f30fdedd1c57390ece8e1866a175cb99bcc0ddf405582a31ae3eaecb6371
 window.I18N_EN = {
  "s0001": "Good Glow Try-On",
  "s0002": "Light-sensitive mode",
@@ -167,7 +167,7 @@ window.I18N_EN = {
  "s0167": "Warm (ivory-leaning)",
  "s0168": "Don't know",
  "s0169": "Very light skin",
- "s0170": "Light-sensitive, with very light brows and lashes",
+ "s0170": "Very light skin, brows and lashes",
  "s0171": "Uneven skin tone",
  "s0172": "Some lighter patches on the face",
  "s0173": "Skin tone",
@@ -287,7 +287,7 @@ window.I18N_EN = {
  "s0332": "Detection on the server is temporarily unreachable; using detection on your phone for now.",
  "s0336": "<li><span></span><p>Generating step images…</p></li>",
  "s0337": "Moisturizer + sunscreen",
- "s0338": "Apply moisturizer first, then sunscreen, and wait for them to absorb before makeup. Lighter patches have no melanin protection and are especially sensitive to the sun. On treatment days, follow your doctor's advice on whether to wear makeup.",
+ "s0338": "Apply moisturizer first, then sunscreen, and wait for them to absorb before makeup. Skin with little pigment burns more easily, so use sunscreen. On treatment days, follow your doctor's advice on whether to wear makeup.",
  "s0339": "Color correcting: dab only on the lighter patch",
  "s0340": "The green dashed line is the area. With a fingertip or a small brush, dab a thin layer of peach/orange in the middle of the lighter patch, without getting it on the regular skin next to it.",
  "s0341": "Concealer: push outward from the center",
@@ -479,9 +479,9 @@ window.I18N_EN = {
  "s0572": "Gentle cleansing and moisturizing, no rubbing or brushing",
  "s0573": "Rubbing, scratching, and brushing hard may cause new lighter patches to appear there.",
  "s0574": "Sunscreen SPF50+, applied over a wide area",
- "s0575": "Lighter patches burn easily; if the surrounding skin does not tan, the color difference is also smaller.",
+ "s0575": "Skin with little pigment burns more easily, so use sunscreen; if the surrounding skin does not tan, the color difference is also smaller.",
  "s0576": "Avoid ingredients that may trigger lighter patches",
- "s0577": "Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes, whitening products; if lighter patches appear where you use one, stop using it and see a doctor.",
+ "s0577": "Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes and whitening products can irritate skin; if you notice new or spreading lighter patches, see a dermatologist.",
  "s0578": "Whether to wear makeup, and what to apply, is up to your doctor or treatment provider; without other instructions, regular moisturizer is fine.",
  "s0579": "Spot color correcting: dab peach/orange only on the lighter patches (no green)",
  "s0580": "Lighter patches lack pigment, so do color correcting first so the foundation does not turn gray; do not apply it over the whole face.",
@@ -812,7 +812,7 @@ window.I18N_EN = {
  "s0931": "Choose a foundation to match the skin tone around the lighter patches: most on the center of the face, thinning out toward the edges, flat strokes on the T-zone, thinnest around the eyes; **dab** with a sponge and do not rub back and forth: friction may cause new lighter patches to appear there. (makeup artist zoning technique)",
  "s0932": "Sun protection matters more for very light skin.",
  "s0933": "Very light skin can burn quickly in strong light",
- "s0935": "Lighter patches have less melanin and sunburn especially easily",
+ "s0935": "Skin with little pigment burns more easily; use sunscreen",
  "s0943": "Based on general skincare and makeup guidance compiled by us; not medical advice. See a dermatologist about any new or changing spot.",
  "s0945": "Apply sunscreen and primer first; lighter patches are especially sensitive to UV.",
  "s0946": "Spot color correcting: dab peach/orange only on the lighter patches (no green), in small sections, not over the whole face.",
@@ -823,7 +823,7 @@ window.I18N_EN = {
  "s0951": "Long-term sun exposure gradually changes the skin; have any new spot, uneven color or change in shape checked by a dermatologist.",
  "s0952": "Apply sunscreen over a wide area; if the surrounding skin does not tan, the color difference is also smaller.",
  "s0953": "Friction may cause new lighter patches to appear there. Dab when applying and removing makeup.",
- "s0954": "Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes, whitening ingredients (such as rhododenol); if lighter patches appear where you use one, stop using it and see a doctor.",
+ "s0954": "Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes and whitening ingredients can irritate skin; if you notice new or spreading lighter patches, see a dermatologist.",
  "s0955": "Follow your doctor's or health educator's instructions.",
  "s0956": "Lighter patches lack pigment: first dab a thin layer of peach/orange color corrector with a fingertip, only on the lighter patches (for deeper skin tones, use a redder deep orange), so the foundation does not turn gray; even if the lighter patches look pink, do not use green, because green under brown foundation looks gray.",
  "s0957": "See the look you chose",
