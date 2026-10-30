@@ -24,7 +24,7 @@ def personalize(steps, skin):
     for text, why in steps:
         if text.startswith("溫和清潔") and "hd_moisture" in low_two:
             text = "溫和清潔，保濕要做足再上妝；不搓不刷"
-            why = "這次膚質分析裡，保濕是分數最低的一項；乾的地方上妝會浮粉。摩擦、抓、用力刷都可能在該處長出新的淺色區塊。"
+            why = "這次膚質分析裡，保濕是分數最低的一項；乾的地方上妝會浮粉。摩擦、抓、用力刷都會刺激皮膚。"
         elif text.startswith("底妝") and no_oil_control:
             text = "底妝：對淺色區塊周圍的膚色選色，面中最多、往外推薄；眼周最薄；海綿點壓"
             why = "照配色卡的底妝色號；往外推到脖子一致。這次分析 T 字、U 字都是中性膚質，不需要特別控油；蜜粉只在淺色區塊輕按，固定遮瑕。不想上可以跳過。"

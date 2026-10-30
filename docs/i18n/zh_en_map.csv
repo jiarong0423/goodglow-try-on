@@ -177,7 +177,7 @@ s0180,第 ${at + 1} 步，共 ${STEPS.length} 步：${STEPS[at]},Step ${at + 1} 
 s0181,伺服器回應格式錯誤,The server's reply was not in the expected format,js 字串,web/app.js:99
 s0182,發生問題，請再試一次,"Something went wrong, please try again",js 字串,web/app.js:100
 s0183,"<img src=""${c.img}"" alt="""" loading=""eager""><span class=""cc-text""><strong>${c.label}</strong><span>${c.desc}</span><em>開始 →</em></span>","<img src=""${c.img}"" alt="""" loading=""eager""><span class=""cc-text""><strong>${c.label}</strong><span>${c.desc}</span><em>Start →</em></span>",js 字串,web/app.js:156
-s0184,☀︎ 淺色區塊比較怕曬：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。,"☀︎ Lighter patches are more sensitive to the sun: before makeup, apply SPF50+ / PA++++ untinted sunscreen, then a moisturizing base, and your makeup will sit better.",js 字串,web/app.js:163
+s0184,☀︎ 淺色區塊要做好防曬：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。,"☀︎ Sun protection matters for lighter patches: before makeup, apply SPF50+ / PA++++ untinted sunscreen, then a moisturizing base, and your makeup will sit better.",js 字串,web/app.js:163
 s0185,${c.label}。開始前提醒：照光治療日是否上妝，請依醫師指示，新產品先在耳後小範圍試，出門前先擦防曬。,"${c.label}. Before you start: on treatment days, follow your doctor's advice on whether to wear makeup, patch test new products on a small area behind the ear first, and apply sunscreen before you head out.",js 字串,web/app.js:173
 s0186,已是暗色畫面（點一下改回白底）,Dark screen is on (tap to switch back to white),js 字串,web/app.js:190
 s0188,把臉放進畫面中間,Put your face in the middle of the frame,js 字串,web/app.js:268 web/app.js:334
@@ -348,7 +348,7 @@ s0354,<li><span></span><p>產生下一步…</p></li>,<li><span></span><p>Genera
 s0355,先擦保濕，再擦無色防曬；淺色區塊對紫外線特別敏感。照光治療日是否上妝，請依醫師指示。,"Apply moisturizer first, then untinted sunscreen; lighter patches are especially sensitive to UV. On treatment days, follow your doctor's advice on whether to wear makeup.",js 字串,web/app.js:1319
 s0356,用指尖在綠色虛線範圍內薄點蜜桃／橘色校色，分小區塊，不要整臉上；不用綠色（疊上膚色粉底會發灰）。,"With a fingertip, dab a thin layer of peach/orange for color correcting within the green dashed area, in small sections, not over the whole face; don't use green (it turns gray under skin-tone foundation).",js 字串,web/app.js:1320
 s0357,遮瑕第一層：海綿點壓,Concealer first layer: sponge-press,js 字串,web/app.js:1321
-s0358,用接近淺色區塊「周圍」膚色的遮瑕，只點在淺色區塊上，用海綿點壓、不要來回搓（摩擦可能長出新的淺色區塊）。,"Use a concealer close to the skin tone ""around"" the lighter patch, dab only on the lighter patch, and press with a sponge without rubbing back and forth (friction may cause new lighter patches).",js 字串,web/app.js:1321
+s0358,用接近淺色區塊「周圍」膚色的遮瑕，只點在淺色區塊上，用海綿點壓、不要來回搓（用力摩擦會刺激皮膚）。,"Use a concealer close to the skin tone ""around"" the lighter patch, dab only on the lighter patch, and press with a sponge without rubbing back and forth (rubbing irritates skin).",js 字串,web/app.js:1321
 s0359,等一下讓第一層服貼，再薄薄補在還看得出差異的地方；已經融合的地方不要再疊，才不會厚重。,"Wait a moment for the first layer to settle, then add a thin layer where a difference still shows; don't layer over areas that already blend in, so it doesn't look heavy.",js 字串,web/app.js:1322
 s0360,交界色差最明顯，用淺一點的遮瑕點在邊緣、往外拍開淡化，讓淺色區塊和周圍膚色接起來。,"The color difference is clearest at the border. Dab a slightly lighter concealer on the edge and pat it outward to fade it, so the lighter patch connects with the surrounding skin tone.",js 字串,web/app.js:1323
 s0361,定妝＋打亮,Setting + highlight,js 字串,web/app.js:1324
@@ -516,7 +516,7 @@ s0534,型錄沒有適合的修容色（粉底不是偏橘就是太淺）：照�
 s0535,型錄裡最接近的粉底仍比目標偏橘：刷很淡、只在顴骨下方，或選灰褐色的修容產品。,"The closest foundation in the catalog is still more orange than the target: brush on very lightly and only under the cheekbones, or choose a gray-brown contour product.",py 字串,app/color_engine.py:316 app/color_engine.py:316
 s0536,色差不大：用一個接近周圍膚色的色號，點壓在淺色區塊上即可。,Small color difference: use one shade close to the surrounding skin tone and dab it over the lighter patch.,py 字串,app/color_engine.py:348 app/color_engine.py:348
 s0537,色差明顯：淺色區塊先局部校色，粉底對周圍膚色，邊緣再用淺一點的遮瑕修邊。,"Clear color difference: first color-correct the lighter patch locally, match the foundation to the surrounding skin tone, then touch up the edges with a slightly lighter concealer.",py 字串,app/color_engine.py:354 app/color_engine.py:354
-s0539,淺色區塊缺色素：先用指尖只在淺色區塊上薄點蜜桃／橘色校色（深膚色用偏紅的深橘），,"Lighter patches lack pigment: first, with a fingertip, dab a thin layer of peach/orange color corrector only on the lighter patches (use a reddish deep orange for deeper skin tones),",py 字串,app/color_engine.py:365
+s0539,淺色區塊顏色較淺：先用指尖只在淺色區塊上薄點蜜桃／橘色校色（深膚色用偏紅的深橘），,"Lighter patches are paler: first, with a fingertip, dab a thin layer of peach/orange color corrector only on the lighter patches (use a reddish deep orange for deeper skin tones),",py 字串,app/color_engine.py:365
 s0540,粉底才不會泛灰；淺色區塊偏粉也不用綠色，綠疊棕色粉底會發灰。,"so the foundation does not turn gray; even if a lighter patch looks pinkish, do not use green, because green layered under brown foundation turns gray.",py 字串,app/color_engine.py:366
 s0542,原膚色較深：校色選偏紅的深橘，粉底對周圍膚色。,"Deeper natural skin tone: choose a reddish deep orange for color correcting, and match the foundation to the surrounding skin tone.",py 字串,app/color_engine.py:369 app/color_engine.py:369
 s0546,面中打亮：額頭中央、鼻樑、下巴、眼下三角，霧面或微光；T 字少量蜜粉按壓控油。,"Center-face highlight: center of the forehead, nose bridge, chin, and the triangle under the eyes, matte or a soft glimmer; press a little loose powder on the T-zone to control oil.",py 字串,app/color_engine.py:374 app/color_engine.py:374
@@ -542,14 +542,14 @@ s0569,照配色卡的色號；保留原樣也可以。,Follow the shades on the 
 s0570,卸妝：溫和卸妝，指尖輕打圈、紙巾輕壓,"Makeup removal: remove gently, with fingertips in light circles and tissue pressed lightly",py 字串,app/color_engine.py:440 app/color_engine.py:440
 s0571,不用力擦。,Do not wipe hard.,py 字串,app/color_engine.py:440 app/color_engine.py:440
 s0572,溫和清潔、保濕，不搓不刷,"Gentle cleansing and moisturizing, no rubbing or brushing",py 字串,app/color_engine.py:443 app/color_engine.py:443
-s0573,摩擦、抓、用力刷都可能在該處長出新的淺色區塊。,"Rubbing, scratching, and brushing hard may cause new lighter patches to appear there.",py 字串,app/color_engine.py:443 app/color_engine.py:443
+s0573,摩擦、抓、用力刷都會刺激皮膚。,"Rubbing, scratching and brushing hard irritate skin.",py 字串,app/color_engine.py:443 app/color_engine.py:443
 s0574,防曬 SPF50+，大範圍擦,"Sunscreen SPF50+, applied over a wide area",py 字串,app/color_engine.py:444 app/color_engine.py:444
 s0575,色素少的皮膚較容易曬傷，請做好防曬；周圍皮膚不曬黑，色差也比較小。,"Skin with little pigment burns more easily, so use sunscreen; if the surrounding skin does not tan, the color difference is also smaller.",py 字串,app/color_engine.py:444 app/color_engine.py:444
-s0576,避開可能誘發淺色區塊的成分,Avoid ingredients that may trigger lighter patches,py 字串,app/color_engine.py:446 app/color_engine.py:446
+s0576,避開可能刺激皮膚的成分,Avoid ingredients that may irritate skin,py 字串,app/color_engine.py:446 app/color_engine.py:446
 s0577,染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白產品都可能刺激皮膚；若出現新的或擴大的淺色區塊，請看皮膚科醫師。,"Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes and whitening products can irritate skin; if you notice new or spreading lighter patches, see a dermatologist.",py 字串,app/color_engine.py:446 app/color_engine.py:446
 s0578,是否上妝、塗什麼，請依醫師或治療單位的指示；沒有特別指示時，一般保濕可以。,"Whether to wear makeup, and what to apply, is up to your doctor or treatment provider; without other instructions, regular moisturizer is fine.",py 字串,app/color_engine.py:447 app/color_engine.py:447
 s0579,局部校色：只在淺色區塊上薄點蜜桃／橘色（不用綠色）,Spot color correcting: dab peach/orange only on the lighter patches (no green),py 字串,app/color_engine.py:448 app/color_engine.py:448
-s0580,淺色區塊缺色素，先校色粉底才不會泛灰；不要整臉上。,"Lighter patches lack pigment, so do color correcting first so the foundation does not turn gray; do not apply it over the whole face.",py 字串,app/color_engine.py:448 app/color_engine.py:448
+s0580,淺色區塊顏色較淺，先校色粉底才不會泛灰；不要整臉上。,"Lighter patches are paler, so do color correcting first so the foundation does not turn gray; do not apply it over the whole face.",py 字串,app/color_engine.py:448 app/color_engine.py:448
 s0581,底妝：對淺色區塊周圍的膚色選色，面中最多、往外推薄；T 字平刷、眼周最薄；海綿點壓,"Foundation: choose a shade to match the skin tone around the lighter patches, most on the center of the face and thinned outward; flat strokes on the T-zone, thinnest around the eyes; dab with a sponge",py 字串,app/color_engine.py:449 app/color_engine.py:449
 s0582,照配色卡的底妝色號；往外推到脖子一致。T 字少量蜜粉按壓控油。不想上可以跳過。,Follow the foundation shade on the color card; blend out to the neck so it looks consistent. Press a little loose powder on the T-zone to control oil. You can skip it if you prefer.,py 字串,app/color_engine.py:449 app/color_engine.py:449
 s0583,面中打亮：額頭中央、鼻樑、下巴、眼下三角，選霧面或微光,"Center-face highlight: center of the forehead, nose bridge, chin, and the triangle under the eyes, in matte or a soft glimmer",py 字串,app/color_engine.py:450 app/color_engine.py:450
@@ -569,7 +569,7 @@ s0598,新產品先在耳後或下顎小範圍試，選溫和、無香料,"Try ne
 s0599,不要一開始就買大罐。,Do not buy a large size at first.,py 字串,app/color_engine.py:519 app/color_engine.py:519
 s0600,定期給皮膚科檢查,Have a dermatologist check your skin regularly,py 字串,app/color_engine.py:520 app/color_engine.py:520
 s0604,不要搓、抓、用力刷,"Do not rub, scratch, or brush hard",py 字串,app/color_engine.py:527 app/color_engine.py:527
-s0606,留意可能誘發淺色區塊的成分,Watch for ingredients that may trigger lighter patches,py 字串,app/color_engine.py:528 app/color_engine.py:528
+s0606,留意可能刺激皮膚的成分,Watch for ingredients that may irritate skin,py 字串,app/color_engine.py:528 app/color_engine.py:528
 s0608,新產品先小範圍試，不要急著買大罐,Try new products on a small area first; do not rush to buy a large size,py 字串,app/color_engine.py:529 app/color_engine.py:529
 s0609,出現刺激、過敏就停用。,Stop using a product if you notice irritation or an allergic reaction.,py 字串,app/color_engine.py:529 app/color_engine.py:529
 s0610,照光治療日是否上妝，請依醫師指示；不確定是什麼、或淺色區塊範圍變大，請皮膚科確認,"On treatment days, follow your doctor's advice on whether to wear makeup; if you are not sure what it is, or the lighter patches are getting larger, please have a dermatologist check",py 字串,app/color_engine.py:530 app/color_engine.py:530
@@ -868,7 +868,7 @@ s0909,深淺差一級、色系相近,One level off in depth · similar color fam
 s0910,第 {lv} 級{level_name(lv)}・{fam},Level {lv} {level_name(lv)}・{fam},py f-string,app/brow_card.py:64
 s0911,溫和清潔,Gentle cleansing,py 字串,app/care_rules_vitiligo.py:25 app/care_rules_vitiligo.py:25
 s0912,溫和清潔，保濕要做足再上妝；不搓不刷,Cleanse gently and moisturize well before makeup; no rubbing or scrubbing,py 字串,app/care_rules_vitiligo.py:26 app/care_rules_vitiligo.py:26
-s0913,這次膚質分析裡，保濕是分數最低的一項；乾的地方上妝會浮粉。摩擦、抓、用力刷都可能在該處長出新的淺色區塊。,"In this skin analysis, moisture is the lowest score; makeup can look patchy on dry areas. Rubbing, scratching or hard brushing may cause new lighter patches to appear there.",py 字串,app/care_rules_vitiligo.py:27 app/care_rules_vitiligo.py:27
+s0913,這次膚質分析裡，保濕是分數最低的一項；乾的地方上妝會浮粉。摩擦、抓、用力刷都會刺激皮膚。,"In this skin analysis, moisture is the lowest score; makeup can look patchy on dry areas. Rubbing, scratching or hard brushing irritates skin.",py 字串,app/care_rules_vitiligo.py:27 app/care_rules_vitiligo.py:27
 s0914,底妝：對淺色區塊周圍的膚色選色，面中最多、往外推薄；眼周最薄；海綿點壓,"Foundation: choose a shade to match the skin around the lighter patches; most in the center of the face, thinned out toward the edges; thinnest around the eyes; press on with a sponge",py 字串,app/care_rules_vitiligo.py:29 app/care_rules_vitiligo.py:29
 s0915,照配色卡的底妝色號；往外推到脖子一致。這次分析 T 字、U 字都是中性膚質，不需要特別控油；蜜粉只在淺色區塊輕按，固定遮瑕。不想上可以跳過。,"Use the foundation shade from your color card; blend out to the neck so it matches. In this analysis both the T-zone and U-zone are a balanced skin type, so no special oil control is needed; lightly press powder only onto the lighter patches to set the concealer. You can skip it if you prefer.",py 字串,app/care_rules_vitiligo.py:30 app/care_rules_vitiligo.py:30
 s0916,眼下：先薄點一層桃杏色校色，再上遮瑕；量少、點壓,"Under the eyes: first dot on a thin layer of peach-apricot color correcting, then concealer; use a small amount and press it on",py 字串,app/care_rules_vitiligo.py:34 app/care_rules_vitiligo.py:34
@@ -885,7 +885,7 @@ s0927,示範型錄色號可對照,demo-catalog shades you can match against,js �
 s0928,虛構品牌,fictional brands,js 字串,web/app.js:1995
 s0929,柔和・極簡,Soft & minimal,$.albinism_M.title,demo/final/recipes.json
 s0930,輕壓上妝衛教（待查證）,Dab-on makeup guidance (to be verified),$.steps[3].source,app/full_looks.json
-s0931,粉底對淺色區塊周圍的膚色選色：面中最多、往外推薄，T 字平刷、眼周最薄；用海綿**點壓**，不要來回搓：摩擦可能在該處長出新的淺色區塊。（化妝師分區上法）,"Choose a foundation to match the skin tone around the lighter patches: most on the center of the face, thinning out toward the edges, flat strokes on the T-zone, thinnest around the eyes; **dab** with a sponge and do not rub back and forth: friction may cause new lighter patches to appear there. (makeup artist zoning technique)",py 字串,app/color_engine.py:373 app/color_engine.py:373
+s0931,粉底對淺色區塊周圍的膚色選色：面中最多、往外推薄，T 字平刷、眼周最薄；用海綿**點壓**，不要來回搓：用力摩擦會刺激皮膚。（化妝師分區上法）,"Choose a foundation to match the skin tone around the lighter patches: most on the center of the face, thinning out toward the edges, flat strokes on the T-zone, thinnest around the eyes; **dab** with a sponge and do not rub back and forth: rubbing irritates skin. (makeup artist zoning technique)",py 字串,app/color_engine.py:373 app/color_engine.py:373
 s0932,黑色素較少時，紫外線防護比較弱。,Sun protection matters more for very light skin.,py 字串,app/color_engine.py:429 app/color_engine.py:429
 s0933,黑色素較少時，強光下很快就可能曬傷,Very light skin can burn quickly in strong light,py 字串,app/color_engine.py:517 app/color_engine.py:517
 s0935,色素少的皮膚較容易曬傷，請做好防曬,Skin with little pigment burns more easily; use sunscreen,py 字串,app/color_engine.py:526 app/color_engine.py:526
@@ -898,10 +898,10 @@ s0949,照光治療日是否上妝，請依醫師指示。,"On treatment days, fo
 s0950,防曬、遮陽、長袖、抗 UV 墨鏡一起用。,"Use sunscreen, shade, long sleeves, and UV-blocking sunglasses together.",py 字串,app/color_engine.py:517 app/color_engine.py:517
 s0951,長期日曬會讓皮膚慢慢出現變化；新長的斑點、顏色不均或形狀改變，請給皮膚科醫師檢查。,"Long-term sun exposure gradually changes the skin; have any new spot, uneven color or change in shape checked by a dermatologist.",py 字串,app/color_engine.py:520 app/color_engine.py:520
 s0952,大範圍擦防曬；周圍皮膚不曬黑，色差也比較小。,"Apply sunscreen over a wide area; if the surrounding skin does not tan, the color difference is also smaller.",py 字串,app/color_engine.py:526 app/color_engine.py:526
-s0953,摩擦可能讓該處長出新的淺色區塊。上妝、卸妝都用點壓。,Friction may cause new lighter patches to appear there. Dab when applying and removing makeup.,py 字串,app/color_engine.py:527 app/color_engine.py:527
+s0953,用力摩擦會刺激皮膚。上妝、卸妝都用點壓。,Rubbing irritates skin. Dab when applying and removing makeup.,py 字串,app/color_engine.py:527 app/color_engine.py:527
 s0954,染髮劑（PPD）、香水體香劑（PTBP）、部分唇眼彩染料、美白成分都可能刺激皮膚；若出現新的或擴大的淺色區塊，請看皮膚科醫師。,"Hair dye (PPD), perfume and deodorant (PTBP), some lip and eye color dyes and whitening ingredients can irritate skin; if you notice new or spreading lighter patches, see a dermatologist.",py 字串,app/color_engine.py:528 app/color_engine.py:528
 s0955,以醫師或衛教人員的說明為準。,Follow your doctor's or health educator's instructions.,py 字串,app/color_engine.py:530 app/color_engine.py:530
-s0956,淺色區塊缺色素：先用指尖只在淺色區塊上薄點蜜桃／橘色校色（深膚色用偏紅的深橘），粉底才不會泛灰；淺色區塊偏粉也不用綠色，綠疊棕色粉底會發灰。,"Lighter patches lack pigment: first dab a thin layer of peach/orange color corrector with a fingertip, only on the lighter patches (for deeper skin tones, use a redder deep orange), so the foundation does not turn gray; even if the lighter patches look pink, do not use green, because green under brown foundation looks gray.",py 字串,app/color_engine.py:365
+s0956,淺色區塊顏色較淺：先用指尖只在淺色區塊上薄點蜜桃／橘色校色（深膚色用偏紅的深橘），粉底才不會泛灰；淺色區塊偏粉也不用綠色，綠疊棕色粉底會發灰。,"Lighter patches are paler: first dab a thin layer of peach/orange color corrector with a fingertip, only on the lighter patches (for deeper skin tones, use a redder deep orange), so the foundation does not turn gray; even if the lighter patches look pink, do not use green, because green under brown foundation looks gray.",py 字串,app/color_engine.py:365
 s0957,看你選的樣子,See the look you chose,html text,web/index.html:315 web/index.html:359 web/app.js:1444
 s0958,點一下看你選的樣子,Tap to see the look you chose,js 字串,web/app.js:1445
 s0959,點一下回到你的照片,Tap to go back to your photo,js 字串,web/app.js:1445

@@ -163,7 +163,7 @@ function renderStart() {
 }
 const CARE_TIP = {                        // Skincare reminder (the adjacent suggestion is placed after the skin-tone step, before the try-on and at the top of the palette card)
   albinism: __t('s0066', '☀︎ 淺色肌膚的光防護是第一步：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。'),
-  vitiligo: __t('s0184', '☀︎ 淺色區塊比較怕曬：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。'),
+  vitiligo: __t('s0184', '☀︎ 淺色區塊要做好防曬：妝前先擦 SPF50+／PA++++ 無色防曬，再用保濕打底，妝會更服貼。'),
 };
 function chooseCondition(c) {
   const prefs = load(PREFS_KEY) || {};
@@ -1339,7 +1339,7 @@ async function camoGuide() {
   const steps = [
     { t: __t('s0337', '保濕＋防曬'), d: __t('s0355', '先擦保濕，再擦無色防曬；淺色區塊對紫外線特別敏感。照光治療日是否上妝，請依醫師指示。'), r: { coverage: 0, concealer: false, corrector: false } },
     { t: __t('s0255', '局部校色（只點在淺色區塊上）'), d: __t('s0356', '用指尖在綠色虛線範圍內薄點蜜桃／橘色校色，分小區塊，不要整臉上；不用綠色（疊上膚色粉底會發灰）。'), r: { coverage: 0, concealer: false, corrector: true }, outline: true, m: (base.corrector || [])[0] },
-    { t: __t('s0357', '遮瑕第一層：海綿點壓'), d: __t('s0358', '用接近淺色區塊「周圍」膚色的遮瑕，只點在淺色區塊上，用海綿點壓、不要來回搓（摩擦可能長出新的淺色區塊）。'), r: { coverage: cov, passes: 1 }, m: (base.concealer || [])[0] },
+    { t: __t('s0357', '遮瑕第一層：海綿點壓'), d: __t('s0358', '用接近淺色區塊「周圍」膚色的遮瑕，只點在淺色區塊上，用海綿點壓、不要來回搓（用力摩擦會刺激皮膚）。'), r: { coverage: cov, passes: 1 }, m: (base.concealer || [])[0] },
     { t: __t('s0343', '第二層：只補還看得出來的地方'), d: __t('s0359', '等一下讓第一層服貼，再薄薄補在還看得出差異的地方；已經融合的地方不要再疊，才不會厚重。'), r: { coverage: cov, passes: 2 }, m: (base.concealer || [])[0] },
     { t: __t('s0345', '修邊：交界往外拍開'), d: __t('s0360', '交界色差最明顯，用淺一點的遮瑕點在邊緣、往外拍開淡化，讓淺色區塊和周圍膚色接起來。'), r: { coverage: cov, passes: 3, feather: 16 }, m: (base.edge || [])[0] },
     { t: __t('s0361', '定妝＋打亮'), d: __t('s0362', '少量蜜粉輕壓定妝，T 字控油；最後在額頭中央、鼻樑、眼下顴骨、下巴點一點打亮，臉才不會遮完顯得暗沉、扁平。'), r: { coverage: cov, passes: 3, feather: 16, highlight: Math.max(0.4, Number($('camo-hi').value) / 100) }, m: (base.foundation || [])[0] },
